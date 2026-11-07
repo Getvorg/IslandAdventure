@@ -18,7 +18,7 @@ namespace IslandAdventure.Players
             yield return sword;
 
             Item wings = new Item();
-            wings.SetDefaults(ItemID.CelestialStarboard);
+            wings.SetDefaults(ItemID.LongRainbowTrailWings);
             yield return wings;
         }
     }
