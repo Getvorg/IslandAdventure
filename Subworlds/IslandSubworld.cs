@@ -120,8 +120,9 @@ namespace IslandAdventure.Subworlds
                     int dy = y - centerY;
                     if (dx * dx + dy * dy <= radius * radius)
                     {
-                        Main.tile[x, y].HasTile = false;
-                        Main.tile[x, y].LiquidAmount = 0;
+                        Tile tile = Main.tile[x, y];
+                        tile.HasTile = false;
+                        tile.LiquidAmount = 0;
                     }
                 }
             }
