@@ -18,12 +18,14 @@ namespace IslandAdventure.Subworlds
 
         public override List<GenPass> Tasks => new List<GenPass>
         {
-            new PassLegacy("Forest", GenerateForest)
+            new PassLegacy("Forest island", GenerateForest)
         };
 
         private void GenerateForest(GenerationProgress progress, GameConfiguration configuration)
         {
-            progress.Message = "Growing a forest";
+            progress.Message = "Generating forest and oceans";
+            const int coastWidth = 400;
+            const int seaLevel = 300;
             int center = Width / 2;
             int[] surface = new int[Width];
             double phase = WorldGen.genRand.NextDouble() * Math.PI * 2;
@@ -44,7 +46,31 @@ namespace IslandAdventure.Subworlds
                 double hills = 22 * Math.Sin(x / 95.0 + phase)
                     + 9 * Math.Sin(x / 33.0 + secondPhase);
                 int ground = 300 + (int)(hills * blend);
+                int distanceFromEdge = Math.Min(x, Width - 1 - x);
+                bool coast = distanceFromEdge < coastWidth;
+                if (coast)
+                {
+                    double shore = distanceFromEdge / (double)coastWidth;
+                    shore = shore * shore * (3 - 2 * shore);
+                    ground = 295 + (int)(145 * (1 - shore));
+                }
+                else
+                {
+                    // Join the beach to inland hills without a vertical cliff.
+                    double inland = Math.Clamp((distanceFromEdge - coastWidth) / 100.0, 0, 1);
+                    ground = 295 + (int)((ground - 295) * inland);
+                }
                 surface[x] = ground;
+
+                if (coast)
+                {
+                    for (int y = seaLevel; y < ground; y++)
+                    {
+                        Tile water = Main.tile[x, y];
+                        water.LiquidType = LiquidID.Water;
+                        water.LiquidAmount = byte.MaxValue;
+                    }
+                }
 
                 for (int y = ground; y < Height; y++)
                 {
@@ -52,8 +78,10 @@ namespace IslandAdventure.Subworlds
                     tile.HasTile = true;
                     tile.TileType = y < ground + 65 + (int)(8 * Math.Sin(x / 47.0))
                         ? TileID.Dirt : TileID.Stone;
+                    if (coast && y < ground + 16)
+                        tile.TileType = TileID.Sand;
                     tile.LiquidAmount = 0;
-                    if (y > ground + 2 && y < Main.rockLayer)
+                    if (!coast && y > ground + 2 && y < Main.rockLayer)
                         tile.WallType = WallID.DirtUnsafe;
                 }
                 progress.Set(0.4 * x / Width);
