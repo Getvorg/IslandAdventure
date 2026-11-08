@@ -25,5 +25,17 @@ namespace IslandAdventure.Players
 
         public override bool CanUseItem(Item item) => !Locked;
         public override bool ImmuneTo(PlayerDeathReason damageSource, int cooldownCounter, bool dodgeable) => Locked;
+
+        public override void ModifyScreenPosition()
+        {
+            if (Player.whoAmI == Main.myPlayer) BoatTravelSystem.ApplyCamera();
+        }
+
+        public override void TransformDrawData(ref PlayerDrawSet drawInfo)
+        {
+            if (BoatTravelSystem.IsWorldScene && !BoatTravelSystem.RenderingPassenger
+                && drawInfo.drawPlayer.whoAmI == Main.myPlayer)
+                drawInfo.DrawDataCache.Clear();
+        }
     }
 }
