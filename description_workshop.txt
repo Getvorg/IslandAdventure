@@ -1,46 +1,42 @@
 [h1]Island Adventure[/h1]
-[b]Путешествия к новым берегам Terraria[/b]
+[b]English / Русский — early test version / ранняя версия[/b]
 
-За привычным океаном начинается другое приключение. Найдите Рыбака, разбудите его и отправьтесь вместе с ним на лодке исследовать новый остров.
+[h2]English[/h2]
+Sail with the Angler beyond Terraria's familiar shores! Explore a separate, persistent island with forests, two oceans, ordinary ores, underground layers, caverns and the Underworld.
 
-[b]Ранняя тестовая версия. Сейчас доступен один дополнительный остров; лор, дальнейшие острова и прогрессия находятся в разработке.[/b]
-
-[h2]Что уже есть[/h2]
 [list]
-[*][b]Отдельный сохраняемый остров.[/b] Леса, океаны по обоим краям, обычные руды, подземные слои, пещеры и ад. На острове нет пустыни, джунглей, снежного биома, Порчи, Багрянца и данжа Скелетрона.
-[*][b]Переправа с Рыбаком.[/b] Анимированные отплытие и прибытие с лодкой, пассажирами и движением камеры. Вода, небо, освещение и причалы — часть настоящего игрового мира.
-[*][b]Рыбацкий дом и причалы.[/b] Дом у левого океана основного мира с кроватью, люстрой, морскими украшениями и сундуком со снастями. На острове вас встречает отдельный причал у правого берега.
-[*][b]Морские противники.[/b] Русалки и более крупные русалы с бирюзовыми и красными вариантами. Они преследуют пловцов, атакуют рывком и теряют подвижность на суше.
-[*][b]Путешествующий спутник.[/b] Рыбак перемещается вместе с игроком. Время суток и состояние его рыболовного задания переносятся между мирами.
-[*][b]Обычное начало игры.[/b] Новые персонажи получают стандартный стартовый набор Terraria.
+[*]Animated boat journeys with the Angler, real-world water, piers and camera movement.
+[*]A fishing cottage by the main world's left ocean and a return pier on the island's right shore.
+[*]Hostile mermaids and larger mermen with animated teal and crimson variants.
+[*]Shared time of day and Angler fishing-quest state between the two worlds.
+[*]Standard Terraria starting inventory for new characters.
 [/list]
 
-[h2]Как начать[/h2]
+[b]Start:[/b] enable [b]Subworld Library[/b] and Island Adventure, create a new main world, then find and wake the sleeping Angler. Talk to him to travel by boat. The island generates on your first visit and is saved for future journeys.
+
+[b]Current limits:[/b] single-player boat travel only. Buildings are generated in new worlds and are not added automatically to old maps. One additional island is available; the main game's progression remains in the original world. Tidelite has ore, bars, building materials, equipment and recipes, but no natural deposits yet, so testing tools or earlier samples are needed. Further islands, new biomes and bosses are not included in this version.
+
+[h2]Русский[/h2]
+Отправляйтесь с Рыбаком к новым берегам Terraria! Исследуйте отдельный сохраняемый остров с лесами, двумя океанами, обычными рудами, подземными слоями, пещерами и адом.
+
 [list]
-[*]Установите и включите [b]Subworld Library[/b] вместе с Island Adventure.
-[*]Создайте новый основной мир: при его генерации появятся дом Рыбака и левый причал.
-[*]Найдите спящего Рыбака на океанском берегу и разбудите его, как в обычной Terraria.
-[*]Поговорите с Рыбаком и выберите кнопку путешествия на лодке. Отправиться также можно у лодки возле причала.
-[*]При первом посещении остров создаётся, при следующих — загружается его сохранение. Вернуться можно через лодку у правого причала острова.
+[*]Анимированная переправа с Рыбаком, настоящая игровая вода, причалы и движение камеры.
+[*]Рыбацкий дом у левого океана основного мира и обратный причал справа на острове.
+[*]Враждебные русалки и более крупные русалы с бирюзовыми и красными вариантами.
+[*]Перенос времени суток и состояния рыболовного задания между мирами.
+[*]Стандартный стартовый набор Terraria для новых персонажей.
 [/list]
 
-[h2]Что важно знать[/h2]
-[list]
-[*]Мод рассчитан на [b]одиночную игру[/b]. Лодочная переправа в мультиплеере пока недоступна.
-[*]Новые постройки размещаются при генерации мира и не добавляются автоматически в старые карты.
-[*]Основное прохождение Terraria остаётся в основном мире. Дополнительный остров пока предназначен для исследования.
-[*][b]Приливит пока экспериментальный.[/b] Руда, слитки, кирпичи, стены, меч и инструменты уже имеют текстуры и рецепты, но природных месторождений ещё нет. Без ранее полученных образцов или средств тестирования материал пока недоступен в обычном прохождении.
-[*]Новые биомы, острова, боссы и полноценная прогрессия пока не входят в текущую версию.
-[/list]
+[b]Начало:[/b] включите [b]Subworld Library[/b] и Island Adventure, создайте новый основной мир, найдите спящего Рыбака и разбудите его. Поговорите с ним для путешествия на лодке. При первом посещении остров создаётся и сохраняется для следующих поездок.
 
-[h2]Зависимость и версия игры[/h2]
-[b]Необходима Subworld Library.[/b]
-Мод разрабатывается для Terraria 1.4.4.9 и соответствующей ветки tModLoader 1.4.4.
+[b]Ограничения:[/b] переправа пока только одиночная. Постройки появляются при новой генерации, старые карты автоматически не перестраиваются. Доступен один дополнительный остров; основное прохождение остаётся в исходном мире. Приливит и его крафты уже есть, но месторождений пока нет: нужны ранее полученные образцы или средства тестирования. Новые острова, особые биомы и боссы в эту версию не входят.
 
-[h2]Обратная связь[/h2]
-Нашли ошибку? Укажите версию tModLoader, список других модов и действия, после которых возникла проблема. Прикрепите client.log, если он доступен.
+[h2]Requirements / Требования[/h2]
+Terraria 1.4.4.9 + tModLoader 1.4.4 + [b]Subworld Library[/b].
 
-[url=https://github.com/Getvorg/IslandAdventure/issues]Сообщить об ошибке на GitHub[/url]
-[url=https://github.com/Getvorg/IslandAdventure]Исходный код проекта[/url]
+[url=https://github.com/Getvorg/IslandAdventure/issues]Bug reports / Сообщить об ошибке[/url]
+Include your tModLoader version, enabled mods and steps to reproduce; attach client.log if available.
+Укажите версию tModLoader, список модов и шаги воспроизведения; по возможности приложите client.log.
 
-Автор: [b]Getvorg[/b]
+[url=https://github.com/Getvorg/IslandAdventure]Source / Исходный код[/url]
+Author / Автор: [b]Getvorg[/b]

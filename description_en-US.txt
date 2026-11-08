@@ -1,0 +1,16 @@
+Island Adventure — sail beyond Terraria's familiar shores.
+
+Find and wake the Angler, visit his cottage by the main world's left ocean, and travel with him by boat to another island. Explore a separate, persistent world with forests, oceans, ordinary ores, underground layers, caverns and the Underworld. A pier on the island's right shore provides the return journey.
+
+Hostile mermaids and larger mermen inhabit the island's oceans, each with animated teal and crimson variants.
+
+New characters keep Terraria's standard starting inventory. The main game's progression remains in your original world.
+
+Requires Subworld Library. The current version is intended for single-player; boat travel is not available in multiplayer.
+
+Create a new main world with this mod enabled to generate the Angler's cottage and piers. You must first find the sleeping Angler on an ocean shore and wake him.
+
+Early development: content and balance are still evolving. Tidelite ore, bars, building materials and equipment have been added, but natural deposits are not generated yet. The material is not currently obtainable through normal progression.
+
+Author: Getvorg
+Source and bug reports: https://github.com/Getvorg/IslandAdventure

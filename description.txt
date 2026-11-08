@@ -1,16 +1,15 @@
-Island Adventure — путешествия к новым берегам Terraria.
+ISLAND ADVENTURE — ENGLISH
+Sail with the Angler to a separate, persistent island with forest, oceans, caves, ordinary ores and the Underworld. Discover coastal buildings and animated mermaids and mermen in teal and crimson variants.
 
-Найдите и разбудите Рыбака, доберитесь до его дома у левого океана и отправляйтесь с ним на лодке к другому острову. Вас ждёт отдельный сохраняемый мир с лесами, океанами, подземными слоями, пещерами и адом. У правого берега острова расположен причал для обратного путешествия.
+Requires Subworld Library. Single-player boat travel only. Create a new main world for the cottage and piers, then find and wake the sleeping Angler. New characters keep the standard Terraria starting inventory.
 
-В океанах острова обитают враждебные русалки и более крупные русалы. У обоих мобов есть бирюзовый и красный варианты с собственной анимацией плавания.
+Early development: one additional island is available. Main progression remains in the original world. Tidelite has recipes, but natural deposits are not generated yet, so it is not obtainable through normal progression.
 
-Новые персонажи получают стандартный стартовый набор Terraria. Основное прохождение и прогрессия остаются в основном мире.
+РУССКИЙ
+Путешествуйте с Рыбаком на отдельный сохраняемый остров с лесом, океанами, пещерами, обычными рудами и адом. Вас ждут прибрежные постройки, русалки и русалы с бирюзовыми и красными вариантами.
 
-Требуется Subworld Library. Текущая версия рассчитана на одиночную игру; лодочная переправа в мультиплеере пока недоступна.
+Требуется Subworld Library. Переправа доступна только в одиночной игре. Создайте новый основной мир для дома и причалов, найдите спящего Рыбака и разбудите его. Стартовое снаряжение стандартное.
 
-Для появления дома Рыбака и новых причалов создайте новый основной мир с включённым модом. Сначала найдите спящего Рыбака на берегу и разбудите его.
+Ранняя версия: доступен один дополнительный остров. Основное прохождение остаётся в исходном мире. Рецепты приливита есть, но месторождения пока не генерируются, поэтому в обычном прохождении он недоступен.
 
-Ранняя версия: контент и баланс ещё развиваются. Приливит, его слитки, строительные материалы и снаряжение уже добавлены, но месторождения руды пока не генерируются, поэтому материал ещё недоступен обычным прохождением.
-
-Автор: Getvorg
-Исходники и сообщения об ошибках: https://github.com/Getvorg/IslandAdventure
+Getvorg — https://github.com/Getvorg/IslandAdventure

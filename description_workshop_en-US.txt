@@ -1,0 +1,46 @@
+[h1]Island Adventure[/h1]
+[b]Sail beyond Terraria's familiar shores[/b]
+
+Wake the Angler and join him aboard his boat to explore another island.
+
+[b]Early test version. One additional island is currently available; lore, further islands and progression are still in development.[/b]
+
+[h2]Current features[/h2]
+[list]
+[*][b]A separate, persistent island.[/b] Forest, oceans on both sides, ordinary ores, underground layers, caverns and the Underworld. The island has no desert, jungle, snow biome, Corruption, Crimson or Dungeon.
+[*][b]Boat travel with the Angler.[/b] Animated departure and arrival with passengers and a moving camera. Water, sky, lighting and piers are part of the actual game world.
+[*][b]Coastal buildings.[/b] A fishing cottage and pier by the main world's left ocean, with a bed, chandelier, nautical decor and a fishing-supplies chest. A separate pier awaits on the island's right shore.
+[*][b]Sea creatures.[/b] Hostile mermaids and larger mermen, with animated teal and crimson variants. They pursue swimmers, lunge and struggle on land.
+[*][b]A travelling companion.[/b] The Angler accompanies you. Time of day and his fishing-quest state carry between worlds.
+[*][b]A normal start.[/b] New characters receive Terraria's standard starting inventory.
+[/list]
+
+[h2]Getting started[/h2]
+[list]
+[*]Install and enable [b]Subworld Library[/b] and Island Adventure.
+[*]Create a new main world to generate the cottage and left pier.
+[*]Find the sleeping Angler on an ocean shore and wake him as in vanilla Terraria.
+[*]Talk to him and choose the boat-travel button, or board near the boat at the pier.
+[*]The island generates on your first visit and loads its saved world on later visits. Return via the right-hand island pier.
+[/list]
+
+[h2]Development status[/h2]
+[list]
+[*]Intended for [b]single-player[/b]. Multiplayer boat travel is not available yet.
+[*]Buildings are placed during world generation and are not automatically added to old maps.
+[*]The original world retains Terraria's main progression. The additional island is currently for exploration.
+[*][b]Tidelite is experimental.[/b] Ore, bars, bricks, walls, a sword and tools have textures and recipes, but natural ore deposits are not generated yet. Previously obtained samples or testing tools are needed to access it.
+[*]Further islands, new biomes, bosses and a complete progression system are not included in this release.
+[/list]
+
+[h2]Requirements[/h2]
+[b]Subworld Library is required.[/b]
+Developed for Terraria 1.4.4.9 and the matching tModLoader 1.4.4 branch.
+
+[h2]Feedback[/h2]
+When reporting an issue, include your tModLoader version, other enabled mods and steps to reproduce it. Attach client.log if available.
+
+[url=https://github.com/Getvorg/IslandAdventure/issues]Report a bug[/url]
+[url=https://github.com/Getvorg/IslandAdventure]Source code[/url]
+
+Author: [b]Getvorg[/b]
