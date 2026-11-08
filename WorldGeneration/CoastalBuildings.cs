@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.ObjectData;
 using Terraria.WorldBuilding;
 
 namespace IslandAdventure.WorldGeneration
@@ -12,65 +13,57 @@ namespace IslandAdventure.WorldGeneration
         public static Rectangle PlaceFisherHouse()
         {
             FindShore(left: true, out int shoreX, out int seaY, out int shoreY);
-            const int width = 29;
-            int left = shoreX + 8;
+            const int width = 23;
+            int left = shoreX + 5;
             int floor = Math.Min(seaY - 3, shoreY - 1);
             for (int x = left; x < left + width; x++)
                 floor = Math.Min(floor, FindGround(x) - 1);
 
-            Rectangle area = new Rectangle(left - 3, floor - 21, width + 16, 33);
+            Rectangle area = new Rectangle(left - 4, floor - 22, width + 13, 34);
             ClearArea(area.Left, area.Top, area.Right, floor);
-
-            // Raised timber floor and masonry plinth; piles reach the beach.
             for (int x = left; x < left + width; x++)
             {
-                SetBlock(x, floor, TileID.PalmWood);
-                SetBlock(x, floor + 1, TileID.GrayBrick);
-                SetBlock(x, floor + 2, TileID.GrayBrick);
+                SetBlock(x, floor, TileID.RichMahogany);
+                SetBlock(x, floor + 1, TileID.StoneSlab);
             }
-            for (int x = left; x < left + width; x += 7)
-                PlacePile(x, floor + 3);
+            for (int x = left; x < left + width; x += 6)
+                PlacePile(x, floor + 2);
 
-            for (int x = left; x < left + width; x++)
+            // Low sleeping annex joins a taller living room through an open arch.
+            BuildRoom(left, floor, 8, 6);
+            BuildRoom(left + 7, floor, 16, 10);
+            for (int y = floor - 5; y < floor; y++)
             {
-                SetBlock(x, floor - 10, TileID.PalmWood);
-                for (int y = floor - 9; y < floor; y++)
-                {
-                    Tile tile = Main.tile[x, y];
-                    tile.WallType = WallID.Wood;
-                    if (x == left || x == left + width - 1)
-                        SetBlock(x, y, TileID.PalmWood);
-                }
+                Tile tile = Main.tile[left + 7, y];
+                tile.ClearTile();
             }
-
-            // A stepped red gable with a timber-lined attic.
-            for (int offset = -2; offset < width + 2; offset++)
+            for (int offset = -2; offset <= 6; offset++)
             {
-                int roofY = floor - 18 + Math.Abs(offset - width / 2) / 2;
+                int roofY = floor - 8 - (offset + 2) / 3;
                 for (int y = roofY; y <= roofY + 1; y++)
-                    SetBlock(left + offset, y, TileID.RedBrick);
-                if (offset > 0 && offset < width - 1)
-                {
-                    for (int y = roofY + 2; y < floor - 10; y++)
-                    {
-                        Tile tile = Main.tile[left + offset, y];
-                        tile.WallType = WallID.Wood;
-                    }
-                }
+                    SetBlock(left + offset, y, TileID.BorealWood);
+                if (offset > 0)
+                    FillWall(left + offset, roofY + 2, left + offset + 1, floor - 6, WallID.PalmWood);
             }
-
-            // Glass is background wall, so the room remains walkable.
-            foreach (int offset in new[] { 5, 19 })
+            for (int offset = 6; offset <= 24; offset++)
             {
-                for (int x = left + offset; x < left + offset + 4; x++)
-                    for (int y = floor - 7; y < floor - 4; y++)
-                    {
-                        Tile tile = Main.tile[x, y];
-                        tile.WallType = WallID.Glass;
-                    }
+                int roofY = floor - 16 + Math.Abs(offset - 14) / 2;
+                SetBlock(left + offset, roofY, TileID.BorealWood);
+                SetBlock(left + offset, roofY + 1, TileID.RichMahogany);
+                if (offset > 7 && offset < 22)
+                    FillWall(left + offset, roofY + 2, left + offset + 1, floor - 10, WallID.PalmWood);
             }
+            // A capped brick chimney breaks up the silhouette.
+            for (int x = left + 18; x <= left + 19; x++)
+                for (int y = floor - 19; y <= floor - 12; y++)
+                    SetBlock(x, y, TileID.RedBrick);
+            for (int x = left + 17; x <= left + 20; x++)
+                SetBlock(x, floor - 20, TileID.StoneSlab);
 
-            // PlaceDoor takes the middle of the three-tile opening.
+            FillWall(left + 2, floor - 5, left + 6, floor - 3, WallID.Glass);
+            FillWall(left + 19, floor - 8, left + 22, floor - 6, WallID.Glass);
+            Item door = new Item();
+            door.SetDefaults(ItemID.PalmWoodDoor);
             foreach (int x in new[] { left, left + width - 1 })
             {
                 for (int y = floor - 3; y < floor; y++)
@@ -78,20 +71,31 @@ namespace IslandAdventure.WorldGeneration
                     Tile tile = Main.tile[x, y];
                     tile.ClearTile();
                 }
-                if (!WorldGen.PlaceDoor(x, floor - 2, TileID.ClosedDoor))
+                if (!WorldGen.PlaceDoor(x, floor - 2, TileID.ClosedDoor, door.placeStyle))
                     throw new InvalidOperationException("Could not place the fisher house door.");
             }
 
-            WorldGen.PlaceTile(left + 12, floor - 1, TileID.Tables, mute: true);
-            WorldGen.PlaceTile(left + 9, floor - 1, TileID.Chairs, mute: true);
-            WorldGen.PlaceTile(left + 15, floor - 1, TileID.Chairs, mute: true);
-            WorldGen.PlaceTile(left + 23, floor - 1, TileID.WorkBenches, mute: true);
-            WorldGen.PlaceTile(left + 2, floor - 6, TileID.Torches, mute: true);
-            WorldGen.PlaceTile(left + 26, floor - 6, TileID.Torches, mute: true);
+            PlaceOnSurface(ItemID.PalmWoodBed, left + 2, floor);
+            PlaceOnSurface(ItemID.PalmWoodChair, left + 9, floor);
+            PlaceOnSurface(ItemID.PalmWoodTable, left + 11, floor);
+            PlaceOnSurface(ItemID.WorkBench, left + 14, floor);
+            PlaceOnSurface(ItemID.Barrel, left + 20, floor);
+            PlaceItem(ItemID.PalmWoodChandelier, left + 13, floor - 9);
+            PlaceItem(ItemID.TreasureMap, left + 16, floor - 6);
+            PlaceItem(ItemID.CompassRose, left + 13, floor - 14);
+            for (int x = left + 9; x <= left + 11; x++)
+                SetBlock(x, floor - 5, TileID.BorealWood);
+            PlaceOnSurface(ItemID.ShipInABottle, left + 9, floor - 5);
+            PlaceFishingChest(left + 17, floor);
 
-            Rectangle pier = BuildPier(left - 1, shoreX - 62, floor);
-            // Short steps connect the raised house to the inland beach.
-            for (int step = 0; step < 10; step++)
+            Rectangle pier = BuildPier(left - 1, shoreX - 27, floor);
+            // Sheltered two-tile veranda, with a hanging palm-wood lantern.
+            for (int x = left - 3; x < left; x++)
+                SetBlock(x, floor - 6, TileID.BorealWood);
+            for (int y = floor - 5; y < floor; y++)
+                SetBlock(left - 3, y, TileID.WoodenBeam);
+            PlaceItem(ItemID.PalmWoodLantern, left - 2, floor - 5);
+            for (int step = 0; step < 7; step++)
             {
                 int x = left + width + step;
                 int y = Math.Min(floor + step / 2, FindGround(x));
@@ -104,15 +108,93 @@ namespace IslandAdventure.WorldGeneration
             return footprint;
         }
 
+        private static void BuildRoom(int left, int floor, int width, int height)
+        {
+            for (int x = left; x < left + width; x++)
+            {
+                SetBlock(x, floor - height, TileID.RichMahogany);
+                for (int y = floor - height + 1; y < floor; y++)
+                {
+                    Tile tile = Main.tile[x, y];
+                    tile.WallType = y >= floor - 3 ? WallID.Planked : WallID.PalmWood;
+                    if (x == left || x == left + width - 1)
+                        SetBlock(x, y, y >= floor - 2 ? TileID.StoneSlab : TileID.PalmWood);
+                }
+            }
+        }
+
+        private static void FillWall(int left, int top, int right, int bottom, ushort type)
+        {
+            for (int x = left; x < right; x++)
+                for (int y = top; y < bottom; y++)
+                {
+                    Tile tile = Main.tile[x, y];
+                    tile.WallType = type;
+                }
+        }
+
+        private static Item Furniture(int itemId, out TileObjectData data)
+        {
+            Item item = new Item();
+            item.SetDefaults(itemId);
+            data = TileObjectData.GetTileData(item.createTile, item.placeStyle, 0);
+            if (data == null)
+                throw new InvalidOperationException("Missing furniture data for item " + itemId);
+            return item;
+        }
+
+        private static void PlaceOnSurface(int itemId, int left, int floor)
+        {
+            Furniture(itemId, out TileObjectData data);
+            PlaceItem(itemId, left, floor - data.Height);
+        }
+
+        private static void PlaceItem(int itemId, int left, int top)
+        {
+            Item item = Furniture(itemId, out TileObjectData data);
+            if (TileID.Sets.BasicChest[item.createTile])
+            {
+                if (WorldGen.PlaceChest(left + data.Origin.X, top + data.Origin.Y,
+                    (ushort)item.createTile, style: item.placeStyle) < 0)
+                    throw new InvalidOperationException("Could not place storage item " + itemId);
+            }
+            else
+                WorldGen.PlaceObject(left + data.Origin.X, top + data.Origin.Y,
+                    item.createTile, mute: true, style: item.placeStyle, direction: 1);
+            Tile tile = Main.tile[left, top];
+            if (!tile.HasTile || tile.TileType != item.createTile)
+                throw new InvalidOperationException($"Could not place decoration {itemId} at {left}, {top}.");
+        }
+
+        private static void PlaceFishingChest(int left, int floor)
+        {
+            Item item = Furniture(ItemID.CoralChest, out TileObjectData data);
+            int chestIndex = WorldGen.PlaceChest(left + data.Origin.X,
+                floor - data.Height + data.Origin.Y, (ushort)item.createTile, style: item.placeStyle);
+            if (chestIndex < 0)
+                throw new InvalidOperationException("Could not place the fishing supplies chest.");
+            Chest chest = Main.chest[chestIndex];
+            chest.name = "Снасти Рыбака";
+            int[] types = { ItemID.ReinforcedFishingPole, ItemID.ApprenticeBait,
+                ItemID.FishingPotion, ItemID.SonarPotion, ItemID.CratePotion,
+                ItemID.Rope, ItemID.Glowstick, ItemID.Bass };
+            int[] stacks = { 1, 25, 3, 3, 3, 75, 20, 5 };
+            for (int i = 0; i < types.Length; i++)
+            {
+                chest.item[i].SetDefaults(types[i]);
+                chest.item[i].stack = stacks[i];
+            }
+        }
+
         public static Rectangle PlaceIslandPier()
         {
             FindShore(left: false, out int shoreX, out int seaY, out int shoreY);
-            int start = shoreX - 12;
+            int start = shoreX - 6;
             int floor = Math.Min(seaY - 3, shoreY - 1);
             for (int x = start; x <= shoreX; x++)
                 floor = Math.Min(floor, FindGround(x) - 1);
 
-            Rectangle footprint = BuildPier(start, shoreX + 62, floor);
+            Rectangle footprint = BuildPier(start, shoreX + 30, floor);
             WorldGen.RangeFrame(footprint.Left - 2, footprint.Top - 2,
                 footprint.Right + 2, Math.Min(Main.maxTilesY - 2, footprint.Bottom + 2));
             GenVars.structures.AddProtectedStructure(footprint);
@@ -123,27 +205,37 @@ namespace IslandAdventure.WorldGeneration
         {
             int left = Math.Min(start, end);
             int right = Math.Max(start, end);
+            bool facesLeft = end < start;
             ClearArea(left, floor - 7, right + 1, floor);
             for (int x = left; x <= right; x++)
             {
-                SetBlock(x, floor, TileID.PalmWood);
-                for (int y = floor - 2; y < floor; y++)
-                {
-                    Tile tile = Main.tile[x, y];
-                    tile.WallType = WallID.WoodenFence;
-                }
+                SetBlock(x, floor, (x - left) % 8 == 0 ? TileID.BorealWood : TileID.PalmWood);
+                if ((x - left) % 10 < 7)
+                    FillWall(x, floor - 2, x + 1, floor, WallID.WoodenFence);
             }
-
             int deepest = floor + 1;
-            for (int x = left + 2; x <= right; x += 8)
+            for (int x = left + 2; x <= right; x += 9)
                 deepest = Math.Max(deepest, PlacePile(x, floor + 1));
-            foreach (int x in new[] { left + 3, right - 3 })
+
+            int post = facesLeft ? left + 2 : right - 2;
+            int lamp = facesLeft ? post + 2 : post - 3;
+            for (int y = floor - 5; y < floor; y++)
+                SetBlock(post, y, TileID.BorealWood);
+            for (int x = Math.Min(post, lamp); x <= Math.Max(post, lamp) + 1; x++)
+                SetBlock(x, floor - 5, TileID.RichMahogany);
+            PlaceItem(ItemID.PalmWoodLantern, lamp, floor - 4);
+
+            int middle = (left + right) / 2;
+            PlaceOnSurface(ItemID.OceanCrate, middle, floor);
+            PlaceOnSurface(ItemID.Barrel, middle + 4, floor);
+            for (int y = floor + 1; y <= floor + 6; y++)
             {
-                for (int y = floor - 4; y < floor; y++)
-                    SetBlock(x, y, TileID.PalmWood);
-                WorldGen.PlaceTile(x, floor - 5, TileID.Torches, mute: true);
+                Tile tile = Main.tile[post + (facesLeft ? -1 : 1), y];
+                if (tile.HasTile)
+                    break;
+                tile.HasTile = true;
+                tile.TileType = TileID.Rope;
             }
-            WorldGen.PlaceObject((left + right) / 2, floor - 1, TileID.FishingCrate, mute: true);
             return new Rectangle(left, floor - 8, right - left + 1, deepest - floor + 9);
         }
 
