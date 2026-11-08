@@ -51,6 +51,7 @@ namespace IslandAdventure.Systems
             bool safeHarbor = foundHarbor && harbor.TryLanding(player, out landing);
             if (!safeHarbor && toIsland)
                 return Reject("Не найден безопасный причал. Проверь, что на настиле есть свободное место.");
+            if (!ModContent.GetInstance<AnglerCompanionSystem>().CanBoard(toIsland)) return false;
             if (!sequence.Begin(toIsland)) return false;
             try
             {
@@ -169,6 +170,7 @@ namespace IslandAdventure.Systems
                     Vector2 landing = Main.LocalPlayer.position;
                     bool safe = found && harbor.TryLanding(Main.LocalPlayer, out landing);
                     ConfigureScene(harbor, safe, landing);
+                    ModContent.GetInstance<AnglerCompanionSystem>().Arrive();
                     sequence.DestinationReady();
                     if (safe)
                     {
@@ -193,6 +195,7 @@ namespace IslandAdventure.Systems
                 loadingSince = DateTime.UtcNow;
                 try
                 {
+                    ModContent.GetInstance<AnglerCompanionSystem>().DetachForTransfer();
                     bool accepted;
                     if (sequence.ToIsland) accepted = SubworldSystem.Enter<IslandSubworld>();
                     else { SubworldSystem.Exit(); accepted = Main.gameMenu; }
@@ -230,6 +233,7 @@ namespace IslandAdventure.Systems
 
         private static void Cancel(bool restoreLanding)
         {
+            if (restoreLanding) ModContent.GetInstance<AnglerCompanionSystem>().RestoreRejectedDeparture();
             if (restoreLanding && sceneHasHarbor && !Main.gameMenu && !Main.LocalPlayer.dead)
                 MovePlayer(landingAnchor);
             sequence.Reset();
@@ -364,7 +368,8 @@ namespace IslandAdventure.Systems
             if (Main.mapFullscreen || Main.LocalPlayer.dead) return true;
             int talk = Main.LocalPlayer.talkNPC;
             bool angler = talk >= 0 && talk < Main.maxNPCs && Main.npc[talk].active
-                && Main.npc[talk].type == NPCID.Angler && !SubworldSystem.AnyActive();
+                && Main.npc[talk].type == NPCID.Angler
+                && (!SubworldSystem.AnyActive() || SubworldSystem.IsActive<IslandSubworld>());
             HarborSystem harbor = ModContent.GetInstance<HarborSystem>();
             bool nearDock = false;
             if (harbor.HasHarbor)

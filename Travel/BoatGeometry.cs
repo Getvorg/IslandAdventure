@@ -39,5 +39,12 @@ namespace IslandAdventure.Travel
                 if (doubled <= dx) { error += dx; y += sy; }
             }
         }
+
+        public static IEnumerable<Rectangle> PixelGridLine(Vector2 start, Vector2 end, float thickness)
+        {
+            if ((end - start).LengthSquared() > 512 * 512) yield break;
+            foreach (Rectangle pixel in PixelLine(start / 2, end / 2, Math.Min(16, thickness) / 2))
+                yield return new Rectangle(pixel.X * 2, pixel.Y * 2, pixel.Width * 2, pixel.Height * 2);
+        }
     }
 }

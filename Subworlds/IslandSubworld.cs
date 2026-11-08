@@ -17,6 +17,11 @@ namespace IslandAdventure.Subworlds
         public override bool ShouldSave => true;
         public override bool NormalUpdates => true;
         public override void DrawMenu(GameTime gameTime) => BoatTravelSystem.DrawLoading();
+        public override void CopyMainWorldData() => WorldTravelStateSystem.CopyToBridge();
+        public override void CopySubworldData() => WorldTravelStateSystem.CopyToBridge();
+        public override void ReadCopiedMainWorldData() => WorldTravelStateSystem.ReadBridge();
+        public override void ReadCopiedSubworldData() => WorldTravelStateSystem.ReadBridge();
+        public override void OnLoad() => WorldTravelStateSystem.CompleteLoad();
 
         public override List<GenPass> Tasks => new List<GenPass>
         {

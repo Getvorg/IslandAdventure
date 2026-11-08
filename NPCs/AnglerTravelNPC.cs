@@ -5,6 +5,7 @@ using Terraria.ModLoader;
 using IslandAdventure.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using IslandAdventure.Subworlds;
 
 namespace IslandAdventure.NPCs
 {
@@ -17,7 +18,9 @@ namespace IslandAdventure.NPCs
 
         public override void GetChat(NPC npc, ref string chat)
         {
-            if (!SubworldSystem.AnyActive())
+            if (SubworldSystem.IsActive<IslandSubworld>())
+                chat += "\n\nЛодка ждёт у правого причала. Когда захочешь — поплывём домой вместе!";
+            else if (!SubworldSystem.AnyActive())
                 chat += "\n\nУ левого причала ждёт моя лодка. Могу отвезти тебя на другой остров!";
         }
     }
