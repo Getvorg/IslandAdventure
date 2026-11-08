@@ -1,1 +1,52 @@
-
+{
+  "Items": {
+    "TideliteOre": {
+      "DisplayName": "Tidelite Ore",
+      "Tooltip": ""
+    },
+    "TideliteBar": {
+      "DisplayName": "Tidelite Bar",
+      "Tooltip": ""
+    },
+    "TideliteBrick": {
+      "DisplayName": "Tidelite Brick",
+      "Tooltip": ""
+    },
+    "TideliteBrickWall": {
+      "DisplayName": "Tidelite Brick Wall",
+      "Tooltip": ""
+    },
+    "TideliteSword": {
+      "DisplayName": "Tidelite Sword",
+      "Tooltip": ""
+    },
+    "TidelitePickaxe": {
+      "DisplayName": "Tidelite Pickaxe",
+      "Tooltip": ""
+    },
+    "TideliteAxe": {
+      "DisplayName": "Tidelite Axe",
+      "Tooltip": ""
+    },
+    "TideliteHammer": {
+      "DisplayName": "Tidelite Hammer",
+      "Tooltip": ""
+    }
+  },
+  "Tiles": {
+    "TideliteOreTile": {
+      "MapEntry": "Tidelite Ore"
+    },
+    "TideliteBarTile": {
+      "MapEntry": "Tidelite Bar"
+    },
+    "TideliteBrickTile": {
+      "MapEntry": "Tidelite Brick"
+    }
+  },
+  "Walls": {
+    "TideliteWall": {
+      "DisplayName": "Tidelite Brick Wall"
+    }
+  }
+}

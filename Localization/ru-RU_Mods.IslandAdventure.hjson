@@ -1,0 +1,52 @@
+{
+  "Items": {
+    "TideliteOre": {
+      "DisplayName": "Приливитовая руда",
+      "Tooltip": "Тёмный камень хранит цвет морских глубин"
+    },
+    "TideliteBar": {
+      "DisplayName": "Приливитовый слиток",
+      "Tooltip": "Четыре куска руды, жар печи и немного терпения"
+    },
+    "TideliteBrick": {
+      "DisplayName": "Приливитовый кирпич",
+      "Tooltip": "Морская прожилка в отполированном камне"
+    },
+    "TideliteBrickWall": {
+      "DisplayName": "Приливитовая кирпичная стена",
+      "Tooltip": ""
+    },
+    "TideliteSword": {
+      "DisplayName": "Приливитовый меч",
+      "Tooltip": ""
+    },
+    "TidelitePickaxe": {
+      "DisplayName": "Приливитовая кирка",
+      "Tooltip": ""
+    },
+    "TideliteAxe": {
+      "DisplayName": "Приливитовый топор",
+      "Tooltip": ""
+    },
+    "TideliteHammer": {
+      "DisplayName": "Приливитовый молот",
+      "Tooltip": ""
+    }
+  },
+  "Tiles": {
+    "TideliteOreTile": {
+      "MapEntry": "Приливитовая руда"
+    },
+    "TideliteBarTile": {
+      "MapEntry": "Приливитовый слиток"
+    },
+    "TideliteBrickTile": {
+      "MapEntry": "Приливитовый кирпич"
+    }
+  },
+  "Walls": {
+    "TideliteWall": {
+      "DisplayName": "Приливитовая кирпичная стена"
+    }
+  }
+}
