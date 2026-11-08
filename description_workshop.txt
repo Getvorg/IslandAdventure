@@ -14,7 +14,7 @@ Sail with the Angler beyond Terraria's familiar shores! Explore a separate, pers
 
 [b]Start:[/b] enable [b]Subworld Library[/b] and Island Adventure, create a new main world, then find and wake the sleeping Angler. Talk to him to travel by boat. The island generates on your first visit and is saved for future journeys.
 
-[b]Current limits:[/b] single-player boat travel only. Buildings are generated in new worlds and are not added automatically to old maps. One additional island is available; the main game's progression remains in the original world. Tidelite has ore, bars, building materials, equipment and recipes, but no natural deposits yet, so testing tools or earlier samples are needed. Further islands, new biomes and bosses are not included in this version.
+[b]Current limits:[/b] single-player boat travel only. Buildings are generated in new worlds and are not added automatically to old maps. One additional island is available; the main game's progression remains in the original world. Tidelite has ore, bars, building materials, equipment and recipes, but no natural deposits yet, so testing tools or earlier samples are needed. Further islands, special biomes and a complete progression system are not included in this version.
 
 [h2]Русский[/h2]
 Отправляйтесь с Рыбаком к новым берегам Terraria! Исследуйте отдельный сохраняемый остров с лесами, двумя океанами, обычными рудами, подземными слоями, пещерами и адом.
@@ -29,7 +29,7 @@ Sail with the Angler beyond Terraria's familiar shores! Explore a separate, pers
 
 [b]Начало:[/b] включите [b]Subworld Library[/b] и Island Adventure, создайте новый основной мир, найдите спящего Рыбака и разбудите его. Поговорите с ним для путешествия на лодке. При первом посещении остров создаётся и сохраняется для следующих поездок.
 
-[b]Ограничения:[/b] переправа пока только одиночная. Постройки появляются при новой генерации, старые карты автоматически не перестраиваются. Доступен один дополнительный остров; основное прохождение остаётся в исходном мире. Приливит и его крафты уже есть, но месторождений пока нет: нужны ранее полученные образцы или средства тестирования. Новые острова, особые биомы и боссы в эту версию не входят.
+[b]Ограничения:[/b] переправа пока только одиночная. Постройки появляются при новой генерации, старые карты автоматически не перестраиваются. Доступен один дополнительный остров; основное прохождение остаётся в исходном мире. Приливит и его крафты уже есть, но месторождений пока нет: нужны ранее полученные образцы или средства тестирования. Новые острова, особые биомы и полноценная прогрессия пока не добавлены.
 
 [h2]Requirements / Требования[/h2]
 Terraria 1.4.4.9 + tModLoader 1.4.4 + [b]Subworld Library[/b].
@@ -40,3 +40,9 @@ Include your tModLoader version, enabled mods and steps to reproduce; attach cli
 
 [url=https://github.com/Getvorg/IslandAdventure]Source / Исходный код[/url]
 Author / Автор: [b]Getvorg[/b]
+
+[h2]Mermaid Queen boss[/h2]
+A pink-haired and pink-scaled queen with pearlescent skin and a tiara, slightly larger than the Eye of Cthulhu. She charges with a separate dash animation, dives to send waves left and right, and summons morays. Craft a reusable [b]Royal Conch[/b] at a Work Bench: 5 Coral + 5 Seashells + 1 Fallen Star. Use it near a deep ocean on the second island. Single-player prototype; balance and unique rewards are still in development.
+
+[h2]Босс — Королева Русалок[/h2]
+Розовые волосы и чешуя, перламутровая кожа, диадема; размер чуть больше Глаза Ктулху. Атакует рывком с отдельной анимацией, ныряет и выпускает волны в обе стороны, призывает мурен. [b]Королевская раковина[/b]: 5 кораллов + 5 ракушек + 1 упавшая звезда у верстака. Не расходуется, используется у глубокого океана второго острова. Первая версия одиночная; баланс и уникальные награды ещё в разработке.

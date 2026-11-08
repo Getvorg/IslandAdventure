@@ -5,11 +5,15 @@ Requires Subworld Library. Single-player boat travel only. Create a new main wor
 
 Early development: one additional island is available. Main progression remains in the original world. Tidelite has recipes, but natural deposits are not generated yet, so it is not obtainable through normal progression.
 
+The Mermaid Queen boss is now available: pink scales and hair, pearl skin and a tiara; dash attacks, diving waves and summoned morays. Craft the reusable Royal Conch from 5 Coral, 5 Seashells and 1 Fallen Star at a Work Bench, then use it at a deep ocean on the second island.
+
 РУССКИЙ
 Путешествуйте с Рыбаком на отдельный сохраняемый остров с лесом, океанами, пещерами, обычными рудами и адом. Вас ждут прибрежные постройки, русалки и русалы с бирюзовыми и красными вариантами.
 
 Требуется Subworld Library. Переправа доступна только в одиночной игре. Создайте новый основной мир для дома и причалов, найдите спящего Рыбака и разбудите его. Стартовое снаряжение стандартное.
 
 Ранняя версия: доступен один дополнительный остров. Основное прохождение остаётся в исходном мире. Рецепты приливита есть, но месторождения пока не генерируются, поэтому в обычном прохождении он недоступен.
+
+Добавлена Королева Русалок: розовая чешуя и волосы, перламутровая кожа, диадема. Атаки — рывки, нырок с двумя волнами и призыв мурен. Королевская раковина: 5 кораллов + 5 ракушек + 1 упавшая звезда у верстака, не расходуется; призыв у глубокого океана второго острова.
 
 Getvorg — https://github.com/Getvorg/IslandAdventure

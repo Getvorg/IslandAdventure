@@ -31,6 +31,10 @@
     "TideliteHammer": {
       "DisplayName": "Tidelite Hammer",
       "Tooltip": ""
+    },
+    "RoyalConch": {
+      "DisplayName": "Royal Conch",
+      "Tooltip": "Summons the Mermaid Queen at an ocean on the second island\nNot consumed\nSingle-player prototype"
     }
   },
   "Tiles": {
@@ -57,6 +61,26 @@
     "Merman": {
       "DisplayName": "Merman",
       "Bestiary": "A larger sea dweller. Pursues swimmers near the island shores, but struggles on dry land."
+    },
+    "MermaidQueen": {
+      "DisplayName": "Mermaid Queen",
+      "Bestiary": "An ocean sovereign who charges her challengers, raises waves and calls morays to her side."
+    },
+    "RoyalMoray": {
+      "DisplayName": "Royal Moray"
     }
+  },
+  "Projectiles": {
+    "RoyalWave": {
+      "DisplayName": "Royal Wave"
+    }
+  },
+  "QueenEncounter": {
+    "SinglePlayer": "This boss encounter is currently available in single-player.",
+    "AlreadyActive": "The Mermaid Queen is already present.",
+    "IslandOnly": "Use the conch at an ocean on the second island.",
+    "DeepOcean": "Stand near a deep ocean to summon the Mermaid Queen.",
+    "NoSlot": "Could not summon the boss: the creature limit has been reached.",
+    "Summoned": "The Mermaid Queen has answered your call!"
   }
 }

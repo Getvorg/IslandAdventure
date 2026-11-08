@@ -30,7 +30,7 @@ Wake the Angler and join him aboard his boat to explore another island.
 [*]Buildings are placed during world generation and are not automatically added to old maps.
 [*]The original world retains Terraria's main progression. The additional island is currently for exploration.
 [*][b]Tidelite is experimental.[/b] Ore, bars, bricks, walls, a sword and tools have textures and recipes, but natural ore deposits are not generated yet. Previously obtained samples or testing tools are needed to access it.
-[*]Further islands, new biomes, bosses and a complete progression system are not included in this release.
+[*]Further islands, new biomes and a complete progression system are not included in this release.
 [/list]
 
 [h2]Requirements[/h2]
@@ -44,3 +44,6 @@ When reporting an issue, include your tModLoader version, other enabled mods and
 [url=https://github.com/Getvorg/IslandAdventure]Source code[/url]
 
 Author: [b]Getvorg[/b]
+
+[h2]Mermaid Queen boss[/h2]
+A pink-haired and pink-scaled queen with pearlescent skin and a tiara, slightly larger than the Eye of Cthulhu. She charges with a separate dash animation, dives to send waves left and right, and summons morays. Craft a reusable [b]Royal Conch[/b] at a Work Bench: 5 Coral + 5 Seashells + 1 Fallen Star. Use it near a deep ocean on the second island. Single-player prototype; balance and unique rewards are still in development.
