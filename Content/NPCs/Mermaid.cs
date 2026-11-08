@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
+using ReLogic.Content;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -15,7 +17,23 @@ namespace IslandAdventure.Content.NPCs
     public class Mermaid : ModNPC
     {
         public const int FrameCount = 6;
+        public const string RedTexturePath = "IslandAdventure/Assets/NPCs/Mermaid_Red";
+        private static Asset<Texture2D> redTexture;
+        public bool IsRed => NPC.ai[3] == 1;
         public override string Texture => "IslandAdventure/Assets/NPCs/Mermaid";
+
+        public override void Load()
+        {
+            if (!Main.dedServ) redTexture = ModContent.Request<Texture2D>(RedTexturePath);
+        }
+        public override void Unload() => redTexture = null;
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient) return;
+            NPC.ai[3] = Main.rand.NextBool(3) ? 1 : 0;
+            NPC.netUpdate = true;
+        }
 
         public override void SetStaticDefaults() => Main.npcFrameCount[Type] = FrameCount;
 
@@ -130,7 +148,7 @@ namespace IslandAdventure.Content.NPCs
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Texture2D texture = IsRed ? redTexture.Value : TextureAssets.Npc[Type].Value;
             spriteBatch.Draw(texture, NPC.Center - screenPos, NPC.frame, drawColor, NPC.rotation,
                 new Vector2(texture.Width / 2f, texture.Height / FrameCount / 2f), NPC.scale,
                 NPC.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
@@ -148,7 +166,7 @@ namespace IslandAdventure.Content.NPCs
             if (Main.dedServ) return;
             for (int i = 0; i < (NPC.life <= 0 ? 16 : 4); i++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1,
-                    newColor: new Color(93, 205, 190));
+                    newColor: IsRed ? new Color(228, 103, 91) : new Color(93, 205, 190));
         }
     }
 }
