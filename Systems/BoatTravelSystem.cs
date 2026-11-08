@@ -12,6 +12,7 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using ReLogic.Content;
 
 namespace IslandAdventure.Systems
 {
@@ -24,6 +25,9 @@ namespace IslandAdventure.Systems
         private static Guid sourceWorld;
         private static Guid mainWorld;
         private static Vector2 worldMouse;
+        private static Player passenger;
+        private static bool daylight;
+        private static int moonPhase;
         public static bool IsCinematic => sequence.Cinematic;
         public static bool IsLoading => sequence.Phase == TravelPhase.Loading;
 
@@ -40,6 +44,32 @@ namespace IslandAdventure.Systems
             if (!harbor.DiscoverExistingPier() && toIsland)
                 return Reject("Причал не найден. Нужен мир с прибрежной постройкой Island Adventure.");
             if (!sequence.Begin(toIsland)) return false;
+            daylight = Main.dayTime;
+            moonPhase = Main.moonPhase;
+            try
+            {
+                // The same preview path used by Terraria's character-selection UI.
+                passenger = Main.LocalPlayer.SerializedClone();
+                passenger.active = true;
+                passenger.dead = false;
+                passenger.direction = toIsland ? -1 : 1;
+                passenger.inventory[passenger.selectedItem] = new Item();
+                passenger.mount.Dismount(passenger);
+                using (new Main.CurrentPlayerOverride(passenger))
+                {
+                    passenger.ResetEffects();
+                    passenger.ResetVisibleAccessories();
+                    passenger.UpdateDyes();
+                    passenger.PlayerFrame();
+                }
+            }
+            catch (Exception exception)
+            {
+                sequence.Reset();
+                passenger = null;
+                ModContent.GetInstance<BoatTravelSystem>().Mod.Logger.Error("Boat passenger preview failed", exception);
+                return Reject("Не удалось подготовить персонажа к переправе. Подробности в client.log.");
+            }
             Main.LocalPlayer.mount.Dismount(Main.LocalPlayer);
             Main.LocalPlayer.RemoveAllGrapplingHooks();
             Main.LocalPlayer.StopVanityActions();
@@ -155,11 +185,20 @@ namespace IslandAdventure.Systems
                 player.immune = true;
                 player.immuneTime = Math.Max(player.immuneTime, 120);
                 SoundEngine.PlaySound(SoundID.Splash with { Volume = 0.4f }, player.Center);
+                passenger = null;
             }
         }
 
-        public override void PreSaveAndQuit() { sequence.Reset(); reveal = 0; sourceWorld = mainWorld = Guid.Empty; }
-        public override void Unload() { sequence.Reset(); reveal = 0; sourceWorld = mainWorld = Guid.Empty; BoatArt.Unload(); }
+        public override void PreSaveAndQuit() { sequence.Reset(); reveal = 0; sourceWorld = mainWorld = Guid.Empty; passenger = null; }
+        public override void Unload() { sequence.Reset(); reveal = 0; sourceWorld = mainWorld = Guid.Empty; passenger = null; BoatArt.Unload(); }
+
+        public override void PostUpdateEverything()
+        {
+            if (Main.dedServ || Main.gameMenu) return;
+            HarborSystem harbor = ModContent.GetInstance<HarborSystem>();
+            if (harbor.HasHarbor)
+                Lighting.AddLight(harbor.BoatPosition + new Vector2(harbor.FacesLeft ? -54 : 54, -26), 0.45f, 0.3f, 0.12f);
+        }
 
         public override void PostDrawTiles()
         {
@@ -172,7 +211,8 @@ namespace IslandAdventure.Systems
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                 SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null,
                 Main.GameViewMatrix.TransformationMatrix);
-            BoatArt.Draw(Main.spriteBatch, position, 1f, harbor.FacesLeft, Main.GlobalTimeWrappedHourly);
+            Color light = Color.Lerp(Lighting.GetColor(harbor.Boat.X, harbor.Boat.Y - 1), Color.White, 0.15f);
+            BoatArt.Draw(Main.spriteBatch, position, 1f, harbor.FacesLeft, Main.GlobalTimeWrappedHourly, lighting: light);
             Main.spriteBatch.End();
         }
 
@@ -232,7 +272,7 @@ namespace IslandAdventure.Systems
                 Vector2 route = harbor.BoatPosition - land;
                 float t = MathHelper.Clamp(Vector2.Dot(Main.LocalPlayer.Center - land, route) / Math.Max(1, route.LengthSquared()), 0, 1);
                 nearDock = Vector2.Distance(Main.LocalPlayer.Center, land + route * t) < 160;
-                Rectangle boatBounds = new Rectangle((int)harbor.BoatPosition.X - 52, (int)harbor.BoatPosition.Y - 55, 104, 70);
+                Rectangle boatBounds = new Rectangle((int)harbor.BoatPosition.X - 68, (int)harbor.BoatPosition.Y - 58, 136, 78);
                 if (nearDock && talk < 0 && boatBounds.Contains(worldMouse.ToPoint()))
                 {
                     Main.LocalPlayer.mouseInterface = true;
@@ -264,8 +304,7 @@ namespace IslandAdventure.Systems
         {
             Vector2 mouse = Main.MouseScreen;
             bool hover = bounds.Contains(mouse.ToPoint());
-            Box(Main.spriteBatch, bounds, hover ? new Color(49, 113, 126) : new Color(25, 60, 78));
-            Box(Main.spriteBatch, new Rectangle(bounds.X, bounds.Y, bounds.Width, 2), new Color(202, 161, 95));
+            Utils.DrawInvBG(Main.spriteBatch, bounds, hover ? new Color(70, 91, 154) : new Color(40, 53, 105));
             Utils.DrawBorderString(Main.spriteBatch, text, new Vector2(bounds.Center.X, bounds.Y + 10), Color.White, 0.85f, 0.5f);
             if (!hover) return false;
             Main.LocalPlayer.mouseInterface = true;
@@ -285,72 +324,56 @@ namespace IslandAdventure.Systems
         {
             Vector2 size = Canvas;
             float time = Main.GlobalTimeWrappedHourly;
-            float horizon = size.Y * 0.46f;
-            float sea = size.Y * 0.69f;
-            Box(batch, new Rectangle(0, 0, (int)size.X, (int)size.Y), new Color(39, 80, 111));
-            for (int row = 0; row < 30; row++)
-            {
-                float p = row / 30f;
-                Color color = Color.Lerp(new Color(78, 148, 167), new Color(15, 46, 76), p);
-                Box(batch, new Rectangle(0, (int)(horizon + p * (size.Y - horizon)), (int)size.X,
-                    (int)((size.Y - horizon) / 30) + 2), color);
-            }
-            Box(batch, new Rectangle((int)(size.X * 0.77f), (int)(horizon * 0.3f), 42, 42), new Color(246, 210, 144));
-            for (int row = 0; row < 12; row++)
-                for (int wave = -1; wave < 10; wave++)
-                {
-                    float x = wave * 130 + (float)Math.Sin(row * 9) * 65 + time * (row % 2 == 0 ? 13 : -10) % 130;
-                    float y = horizon + 14 + row * (size.Y - horizon) / 12;
-                    Box(batch, new Rectangle((int)x, (int)y, 28 + row * 2, 2), new Color(144, 212, 214) * 0.3f);
-                }
-            float scale = Math.Min(3f, size.X / 260f);
+            float horizon = size.Y * 0.49f;
+            float sea = size.Y * 0.73f;
+            float scale = size.X >= 900 ? 2 : 1;
             bool left = sequence.ToIsland;
             float xBoat = size.X / 2;
             if (!loading)
             {
-                if (sequence.Phase == TravelPhase.Departing)
-                {
-                    float p = MathHelper.SmoothStep(0, 1, sequence.Elapsed / TravelSequence.DepartureSeconds);
-                    xBoat = MathHelper.Lerp(size.X / 2, left ? -170 * scale : size.X + 170 * scale, p);
-                }
-                else
-                {
-                    float p = MathHelper.SmoothStep(0, 1, sequence.Elapsed / TravelSequence.ArrivalSeconds);
-                    xBoat = MathHelper.Lerp(left ? size.X + 170 * scale : -170 * scale, size.X / 2, p);
-                }
+                float duration = sequence.Phase == TravelPhase.Departing
+                    ? TravelSequence.DepartureSeconds : TravelSequence.ArrivalSeconds;
+                float p = MathHelper.SmoothStep(0, 1, sequence.Elapsed / duration);
+                xBoat = sequence.Phase == TravelPhase.Departing
+                    ? MathHelper.Lerp(size.X / 2, left ? -170 * scale : size.X + 170 * scale, p)
+                    : MathHelper.Lerp(left ? size.X + 170 * scale : -170 * scale, size.X / 2, p);
             }
-            Vector2 boat = new Vector2(xBoat, sea);
-            for (int ripple = 0; ripple < 9; ripple++)
-            {
-                float p = (time * 0.7f + ripple / 9f) % 1;
-                float wakeX = xBoat + (left ? 1 : -1) * (40 + p * 65) * scale;
-                float wakeY = sea + (3 + (float)Math.Sin(p * 9 + ripple)) * scale;
-                Box(batch, new Rectangle((int)wakeX, (int)wakeY, (int)((12 - p * 9) * scale), 2),
-                    new Color(190, 231, 221) * ((1 - p) * 0.65f));
-            }
+            // Batch the tiled water and pier before drawing shader-equipped actors.
+            batch.End();
+            batch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
+                DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+            DrawSky(batch, size, horizon, time);
+            DrawSea(batch, size, horizon, scale, time);
             if (!loading)
+                DrawPier(batch, size, sea, scale, sequence.Phase == TravelPhase.Departing ? left : !left);
+            for (int ripple = 0; ripple < 7; ripple++)
             {
-                bool right = sequence.Phase == TravelPhase.Departing ? left : !left;
-                int edge = (int)(size.X * (right ? 0.65f : 0.35f));
-                int deckY = (int)(sea - 12 * scale);
-                int start = right ? edge : 0;
-                int width = right ? (int)size.X - edge : edge;
-                Box(batch, new Rectangle(start, deckY, width, (int)(3 * scale)), new Color(136, 90, 57));
-                Box(batch, new Rectangle(start, deckY, width, (int)scale), new Color(213, 166, 93));
-                for (int x = start + 12; x < start + width; x += 70)
-                {
-                    Box(batch, new Rectangle(x, deckY + 3, 6, 115), new Color(69, 53, 44));
-                    Box(batch, new Rectangle(x, deckY - 22, 4, 22), new Color(147, 105, 65));
-                }
+                float p = (time * 0.65f + ripple / 7f) % 1;
+                float wakeX = xBoat + (left ? 1 : -1) * (46 + p * 47) * scale;
+                float wakeY = sea + (2 + (float)Math.Sin(p * 9 + ripple)) * scale;
+                Box(batch, new Rectangle((int)wakeX, (int)wakeY, (int)((9 - p * 6) * scale), (int)scale),
+                    new Color(172, 211, 239) * ((1 - p) * 0.6f));
             }
-            DrawPassengers(batch, boat + new Vector2(0, -14 * scale + (float)Math.Sin(time * 2.2f) * 1.4f * scale), scale, loading, left);
-            BoatArt.Draw(batch, boat, scale, left, time);
-            Box(batch, new Rectangle(0, 0, (int)size.X, 45), Color.Black * 0.7f);
-            Box(batch, new Rectangle(0, (int)size.Y - 83, (int)size.X, 83), Color.Black * 0.7f);
+            batch.End();
+            batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp,
+                DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+            Vector2 boat = new Vector2((float)Math.Round(xBoat), sea);
+            float bob = (float)Math.Round(Math.Sin(time * 2.2f) * scale);
+            DrawPassengers(batch, boat + new Vector2(0, -8 * scale + bob), scale, left);
+            Color boatLight = daylight ? Color.White : new Color(155, 178, 216);
+            BoatArt.Draw(batch, boat, scale, left, time, rowing: true, lighting: boatLight);
+            Box(batch, new Rectangle((int)(xBoat - 49 * scale), (int)(sea + 4 * scale), (int)(99 * scale), (int)(4 * scale)),
+                new Color(32, 93, 171) * 0.35f);
             string title = sequence.ToIsland ? "К новому острову" : "Обратно домой";
-            Utils.DrawBorderString(batch, title, new Vector2(size.X / 2, 14), Color.Wheat, 1, 0.5f);
+            Utils.DrawBorderString(batch, title, new Vector2(size.X / 2, 22), Color.White, 1, 0.5f);
             if (loading)
-                Utils.DrawBorderString(batch, Main.statusText, new Vector2(size.X / 2, size.Y - 55), Color.White, 0.8f, 0.5f);
+            {
+                int width = Math.Min(600, (int)size.X - 32);
+                Rectangle panel = new Rectangle(((int)size.X - width) / 2, (int)size.Y - 90, width, 58);
+                Utils.DrawInvBG(batch, panel, new Color(37, 48, 96) * 0.9f);
+                float textScale = Math.Min(0.8f, (width - 32) / Math.Max(1, FontAssets.MouseText.Value.MeasureString(Main.statusText).X));
+                Utils.DrawBorderString(batch, Main.statusText, new Vector2(size.X / 2, panel.Y + 18), Color.White, textScale, 0.5f);
+            }
             else
             {
                 float fade = sequence.Phase == TravelPhase.Departing
@@ -361,42 +384,121 @@ namespace IslandAdventure.Systems
             }
         }
 
-        private static void DrawPassengers(SpriteBatch batch, Vector2 deck, float scale, bool loading, bool left)
-        {
-            float actorScale = scale * 0.55f;
-            Vector2 playerFeet = deck + new Vector2(-14 * scale, 0);
-            Player player = Main.LocalPlayer;
-            Box(batch, new Rectangle((int)(playerFeet.X - 5 * actorScale), (int)(playerFeet.Y - 20 * actorScale),
-                (int)(10 * actorScale), (int)(18 * actorScale)), player.shirtColor);
-            if (!loading)
-            {
-                Main.PlayerRenderer.DrawPlayerHead(Main.Camera, player, playerFeet - new Vector2(0, 32 * actorScale), scale: actorScale);
-                Main.pixelShader.CurrentTechnique.Passes[0].Apply();
-            }
-            else
-                Box(batch, new Rectangle((int)(playerFeet.X - 5 * actorScale), (int)(playerFeet.Y - 31 * actorScale),
-                    (int)(10 * actorScale), (int)(11 * actorScale)), player.skinColor);
+        private static Texture2D Vanilla(Asset<Texture2D> asset)
+            => asset.IsLoaded ? asset.Value : Main.Assets.Request<Texture2D>(asset.Name, AssetRequestMode.ImmediateLoad).Value;
 
-            if (!loading)
+        private static void DrawSky(SpriteBatch batch, Vector2 size, float horizon, float time)
+        {
+            Color top = daylight ? new Color(63, 112, 224) : new Color(9, 14, 40);
+            Color bottom = daylight ? new Color(143, 182, 240) : new Color(38, 49, 89);
+            for (int row = 0; row < 40; row++)
             {
-                Main.instance.LoadNPC(NPCID.Angler);
-                Texture2D npc = TextureAssets.Npc[NPCID.Angler].Value;
-                int frameHeight = npc.Height / Main.npcFrameCount[NPCID.Angler];
-                batch.Draw(npc, deck + new Vector2(12 * scale, 0), new Rectangle(0, 0, npc.Width, frameHeight), Color.White,
-                    0, new Vector2(npc.Width / 2f, frameHeight), actorScale,
-                    left ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
+                float t = row / 39f;
+                Box(batch, new Rectangle(0, (int)(horizon * row / 40), (int)size.X, (int)(horizon / 40) + 2), Color.Lerp(top, bottom, t));
             }
-            else
+            Texture2D skyObject = daylight ? Vanilla(TextureAssets.Sun) : Vanilla(TextureAssets.Moon[0]);
+            int height = daylight ? skyObject.Height : skyObject.Height / 8;
+            Rectangle frame = new Rectangle(0, daylight ? 0 : height * (moonPhase % 8), skyObject.Width, height);
+            batch.Draw(skyObject, new Vector2((int)(size.X * 0.76f), (int)(horizon * 0.25f)), frame,
+                Color.White, 0, new Vector2(skyObject.Width / 2f, height / 2f), 1, SpriteEffects.None, 0);
+            if (!daylight)
+                for (int star = 0; star < 50; star++)
+                {
+                    int x = (int)((star * 137.3f + 31) % size.X);
+                    int y = (int)((star * 47.7f + 11) % (horizon - 20));
+                    Box(batch, new Rectangle(x, y, star % 3 == 0 ? 2 : 1, 2), Color.White * (0.45f + 0.2f * (float)Math.Sin(time + star)));
+                }
+            for (int cloud = 0; cloud < 7; cloud++)
             {
-                Vector2 captain = deck + new Vector2(12 * scale, 0);
-                Box(batch, new Rectangle((int)(captain.X - 5 * actorScale), (int)(captain.Y - 21 * actorScale),
-                    (int)(10 * actorScale), (int)(20 * actorScale)), new Color(158, 93, 65));
-                Box(batch, new Rectangle((int)(captain.X - 5 * actorScale), (int)(captain.Y - 32 * actorScale),
-                    (int)(10 * actorScale), (int)(11 * actorScale)), new Color(236, 176, 132));
+                Texture2D image = Vanilla(TextureAssets.Cloud[(cloud * 3) % 12]);
+                float x = (cloud * 311 + time * (3 + cloud % 3)) % (size.X + 260) - 160;
+                float y = 35 + cloud % 3 * (horizon - 100) / 3;
+                batch.Draw(image, new Vector2((int)x, (int)y), null,
+                    daylight ? Color.White * 0.8f : new Color(90, 105, 146) * 0.6f,
+                    0, Vector2.Zero, 1, SpriteEffects.None, 0);
             }
         }
 
+        private static void DrawSea(SpriteBatch batch, Vector2 size, float horizon, float scale, float time)
+        {
+            Texture2D water = Vanilla(TextureAssets.Liquid[0]);
+            int frameY = ((int)(time * 7) % Math.Max(1, water.Height / 18)) * 18;
+            frameY = Math.Min(frameY, Math.Max(0, water.Height - 16));
+            Rectangle source = new Rectangle(0, frameY, Math.Min(16, water.Width), Math.Min(16, water.Height));
+            int tile = (int)(16 * scale);
+            for (int y = (int)horizon; y < size.Y; y += tile)
+            {
+                float depth = (y - horizon) / Math.Max(1, size.Y - horizon);
+                Color tint = Color.Lerp(daylight ? new Color(135, 174, 235) : new Color(65, 86, 143),
+                    daylight ? new Color(43, 70, 145) : new Color(22, 31, 70), depth);
+                Box(batch, new Rectangle(0, y, (int)size.X, tile), Color.Lerp(new Color(37, 91, 197), new Color(10, 24, 79), depth));
+                for (int x = 0; x < size.X; x += tile)
+                    batch.Draw(water, new Rectangle(x, y, tile, tile), source, tint * 0.72f);
+            }
+            for (int wave = -1; wave < (int)size.X / 32 + 1; wave++)
+            {
+                int x = wave * 32;
+                int y = (int)horizon + (int)(Math.Sin(wave * 0.9 + time * 1.5) * scale);
+                Box(batch, new Rectangle(x, y, 18, (int)Math.Max(1, scale)), new Color(133, 181, 231) * 0.8f);
+            }
+        }
+
+        private static void DrawPier(SpriteBatch batch, Vector2 size, float sea, float scale, bool right)
+        {
+            Main.instance.LoadTiles(TileID.PalmWood);
+            Main.instance.LoadTiles(TileID.WoodenBeam);
+            Texture2D planks = TextureAssets.Tile[TileID.PalmWood].Value;
+            Texture2D beam = TextureAssets.Tile[TileID.WoodenBeam].Value;
+            int tile = (int)(16 * scale);
+            int edge = (int)(size.X * (right ? 0.65f : 0.35f));
+            int deckY = (int)(sea - 27 * scale);
+            int start = right ? edge : 0;
+            int end = right ? (int)size.X + tile : edge;
+            Rectangle plankFrame = new Rectangle(18, 18, 16, 16);
+            Rectangle beamFrame = new Rectangle(0, 0, 16, 16);
+            for (int x = start; x < end; x += tile)
+            {
+                batch.Draw(planks, new Rectangle(x, deckY, tile, tile), plankFrame, Color.White);
+                if ((x - start) / tile % 3 == 0)
+                    for (int y = deckY + tile; y < size.Y; y += tile)
+                        batch.Draw(beam, new Rectangle(x, y, tile, tile), beamFrame,
+                            y > sea ? new Color(93, 121, 171) : Color.White);
+            }
+            int postX = right ? edge + tile : edge - tile * 2;
+            for (int y = deckY - tile * 4; y < deckY; y += tile)
+                batch.Draw(beam, new Rectangle(postX, y, tile, tile), beamFrame, Color.White);
+            for (int x = right ? edge : edge - tile * 2; x < (right ? edge + tile * 2 : edge); x += tile)
+                batch.Draw(planks, new Rectangle(x, deckY - tile * 4, tile, tile), plankFrame, Color.White);
+            BoatArt.DrawItem(batch, ItemID.PalmWoodLantern,
+                new Vector2(right ? edge + tile / 2f : edge - tile / 2f, deckY - tile), scale, Color.White);
+            BoatArt.DrawItem(batch, ItemID.WoodenCrate,
+                new Vector2(right ? edge + 65 * scale : edge - 65 * scale, deckY), scale * 0.65f, Color.White);
+        }
+
+        private static void DrawPassengers(SpriteBatch batch, Vector2 deck, float scale, bool left)
+        {
+            if (passenger != null)
+            {
+                using (new Main.CurrentPlayerOverride(passenger))
+                {
+                    passenger.direction = left ? -1 : 1;
+                    passenger.bodyFrame.Y = passenger.legFrame.Y = passenger.headFrame.Y = 0;
+                    Vector2 feet = deck + new Vector2(-18 * scale, 0);
+                    Vector2 position = feet - new Vector2(passenger.width / 2f, passenger.height * (scale + 1) / 2f);
+                    Main.PlayerRenderer.DrawPlayer(Main.Camera, passenger, position + Main.screenPosition,
+                        0, Vector2.Zero, 0, scale);
+                    Main.pixelShader.CurrentTechnique.Passes[0].Apply();
+                }
+            }
+            Main.instance.LoadNPC(NPCID.Angler);
+            Texture2D npc = TextureAssets.Npc[NPCID.Angler].Value;
+            int frameHeight = npc.Height / Main.npcFrameCount[NPCID.Angler];
+            batch.Draw(npc, deck + new Vector2(18 * scale, 0), new Rectangle(0, 0, npc.Width, frameHeight),
+                daylight ? Color.White : new Color(179, 192, 225), 0, new Vector2(npc.Width / 2f, frameHeight), scale,
+                left ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
+        }
+
         private static void Box(SpriteBatch batch, Rectangle rectangle, Color color)
-            => batch.Draw(TextureAssets.MagicPixel.Value, rectangle, color);
+            => batch.Draw(TextureAssets.MagicPixel.Value, rectangle, new Rectangle(0, 0, 1, 1), color);
     }
 }
