@@ -3,6 +3,7 @@ using SubworldLibrary;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using IslandAdventure.Systems;
 
 namespace IslandAdventure.Commands
 {
@@ -27,7 +28,7 @@ namespace IslandAdventure.Commands
                 return;
             }
 
-            SubworldSystem.Exit();
+            BoatTravelSystem.TryStart(toIsland: false);
         }
     }
 }

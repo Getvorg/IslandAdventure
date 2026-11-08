@@ -4,6 +4,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ObjectData;
 using Terraria.WorldBuilding;
+using Terraria.ModLoader;
+using IslandAdventure.Systems;
 
 namespace IslandAdventure.WorldGeneration
 {
@@ -88,7 +90,7 @@ namespace IslandAdventure.WorldGeneration
             PlaceOnSurface(ItemID.ShipInABottle, left + 9, floor - 5);
             PlaceFishingChest(left + 17, floor);
 
-            Rectangle pier = BuildPier(left - 1, shoreX - 27, floor);
+            Rectangle pier = BuildPier(left - 1, shoreX - 27, floor, seaY);
             // Sheltered two-tile veranda, with a hanging palm-wood lantern.
             for (int x = left - 3; x < left; x++)
                 SetBlock(x, floor - 6, TileID.BorealWood);
@@ -194,14 +196,14 @@ namespace IslandAdventure.WorldGeneration
             for (int x = start; x <= shoreX; x++)
                 floor = Math.Min(floor, FindGround(x) - 1);
 
-            Rectangle footprint = BuildPier(start, shoreX + 30, floor);
+            Rectangle footprint = BuildPier(start, shoreX + 30, floor, seaY);
             WorldGen.RangeFrame(footprint.Left - 2, footprint.Top - 2,
                 footprint.Right + 2, Math.Min(Main.maxTilesY - 2, footprint.Bottom + 2));
             GenVars.structures.AddProtectedStructure(footprint);
             return footprint;
         }
 
-        private static Rectangle BuildPier(int start, int end, int floor)
+        private static Rectangle BuildPier(int start, int end, int floor, int seaY)
         {
             int left = Math.Min(start, end);
             int right = Math.Max(start, end);
@@ -236,6 +238,9 @@ namespace IslandAdventure.WorldGeneration
                 tile.HasTile = true;
                 tile.TileType = TileID.Rope;
             }
+            ModContent.GetInstance<HarborSystem>().SetHarbor(
+                new Point(facesLeft ? right - 5 : left + 3, floor),
+                new Point(end + (facesLeft ? -5 : 5), seaY), facesLeft);
             return new Rectangle(left, floor - 8, right - left + 1, deepest - floor + 9);
         }
 

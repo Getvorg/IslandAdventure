@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.IO;
 using Terraria.WorldBuilding;
+using Microsoft.Xna.Framework;
 
 namespace IslandAdventure.Subworlds
 {
@@ -15,6 +16,7 @@ namespace IslandAdventure.Subworlds
         public override int Height => 1200;
         public override bool ShouldSave => true;
         public override bool NormalUpdates => true;
+        public override void DrawMenu(GameTime gameTime) => BoatTravelSystem.DrawLoading();
 
         public override List<GenPass> Tasks => new List<GenPass>
         {
