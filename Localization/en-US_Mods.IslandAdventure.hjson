@@ -48,5 +48,11 @@
     "TideliteWall": {
       "DisplayName": "Tidelite Brick Wall"
     }
+  },
+  "NPCs": {
+    "Mermaid": {
+      "DisplayName": "Mermaid",
+      "Bestiary": "Swims near the island shores and lunges at swimmers who venture too close. Struggles on dry land."
+    }
   }
 }
