@@ -53,6 +53,10 @@
     "Mermaid": {
       "DisplayName": "Mermaid",
       "Bestiary": "Swims near the island shores and lunges at swimmers who venture too close. Struggles on dry land."
+    },
+    "Merman": {
+      "DisplayName": "Merman",
+      "Bestiary": "A larger sea dweller. Pursues swimmers near the island shores, but struggles on dry land."
     }
   }
 }
