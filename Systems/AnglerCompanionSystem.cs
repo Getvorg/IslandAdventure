@@ -30,8 +30,19 @@ namespace IslandAdventure.Systems
             WorldIsIsland = SubworldSystem.IsActive<IslandSubworld>();
         }
 
+        public override void PreWorldGen()
+        {
+            // A new primary world must not inherit the previous world's captain.
+            // Island generation still needs its incoming transfer profile.
+            if (!SubworldSystem.AnyActive())
+                OnWorldLoad();
+        }
+
         public override void SaveWorldData(TagCompound tag)
         {
+            // World creation can run while the previous NPC array is still present.
+            // Never turn those NPCs into the new world's saved companion.
+            if (WorldGen.generatingWorld) return;
             if (!detached) CapturePresent();
             if (profile != null) tag["companion"] = profile;
         }

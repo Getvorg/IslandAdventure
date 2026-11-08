@@ -98,17 +98,20 @@ namespace IslandAdventure.Systems
         public static void CompleteLoad()
         {
             // Fresh vanilla generation resets time/NPC flags after the first read.
-            // Reapply once after it finishes; then let the ordinary clock tick.
+            // Restore for load-time consumers; retain the snapshot until the
+            // post-spawn pre-tick callback, after WorldFile restores its temps.
             if (pending == null) return;
             Apply(pending);
-            pending = null;
         }
 
-        public override void PostUpdateWorld()
+        public override void PreUpdateWorld()
         {
-            // Existing-world reads already applied the clock before gameplay.
-            // Do not apply it again after a tick, especially across dawn/dusk.
-            if (!Main.gameMenu && !WorldGen.generatingWorld) pending = null;
+            // Subworld Library calls WorldFile.SetOngoingToTemps AFTER OnLoad,
+            // overwriting Main.time/dayTime/moonPhase with the destination file.
+            // Restore once after spawning, before the first clock tick (not after it).
+            if (Main.gameMenu || WorldGen.generatingWorld || pending == null) return;
+            Apply(pending);
+            pending = null;
         }
 
         public override void Unload() { pending = null; rootId = Guid.Empty; }
