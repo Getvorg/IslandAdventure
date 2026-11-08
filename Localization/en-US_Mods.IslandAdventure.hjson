@@ -64,7 +64,7 @@
     },
     "MermaidQueen": {
       "DisplayName": "Mermaid Queen",
-      "Bestiary": "An ocean sovereign who charges her challengers, raises waves and calls morays to her side."
+      "Bestiary": "An ocean sovereign whose enchanting song confuses challengers. Charges, raises ever larger waves and calls morays to her side."
     },
     "RoyalMoray": {
       "DisplayName": "Royal Moray"
@@ -73,6 +73,9 @@
   "Projectiles": {
     "RoyalWave": {
       "DisplayName": "Royal Wave"
+    },
+    "RoyalSong": {
+      "DisplayName": "Royal Song"
     }
   },
   "QueenEncounter": {
@@ -81,6 +84,7 @@
     "IslandOnly": "Use the conch at an ocean on the second island.",
     "DeepOcean": "Stand near a deep ocean to summon the Mermaid Queen.",
     "NoSlot": "Could not summon the boss: the creature limit has been reached.",
-    "Summoned": "The Mermaid Queen has answered your call!"
+    "Summoned": "The Mermaid Queen has answered your call!",
+    "Singing": "The Queen begins to sing!"
   }
 }

@@ -12,7 +12,7 @@ Create a new main world with this mod enabled to generate the Angler's cottage a
 
 Early development: content and balance are still evolving. Tidelite ore, bars, building materials and equipment have been added, but natural deposits are not generated yet. The material is not currently obtainable through normal progression.
 
-Challenge the Mermaid Queen: a pink-scaled, pearl-skinned ocean boss with dash attacks, diving waves and summoned morays. Craft the reusable Royal Conch from 5 Coral, 5 Seashells and 1 Fallen Star at a Work Bench, then use it at a deep ocean on the second island.
+Challenge the Mermaid Queen: a pink-scaled, pearl-skinned ocean boss with dash attacks, three growing pairs of waves, summoned morays and a song that inflicts Confused for 5 seconds; every attack has its own animation. Craft the reusable Royal Conch from 5 Coral, 5 Seashells and 1 Fallen Star at a Work Bench, then use it at a deep ocean on the second island.
 
 Author: Getvorg
 Source and bug reports: https://github.com/Getvorg/IslandAdventure

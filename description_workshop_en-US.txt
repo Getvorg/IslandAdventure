@@ -46,4 +46,4 @@ When reporting an issue, include your tModLoader version, other enabled mods and
 Author: [b]Getvorg[/b]
 
 [h2]Mermaid Queen boss[/h2]
-A pink-haired and pink-scaled queen with pearlescent skin and a tiara, slightly larger than the Eye of Cthulhu. She charges with a separate dash animation, dives to send waves left and right, and summons morays. Craft a reusable [b]Royal Conch[/b] at a Work Bench: 5 Coral + 5 Seashells + 1 Fallen Star. Use it near a deep ocean on the second island. Single-player prototype; balance and unique rewards are still in development.
+A pink-haired and pink-scaled queen with pearlescent skin and a tiara, slightly larger than the Eye of Cthulhu. She charges, dives to send three increasingly large wave pairs left and right, summons morays, and sings to inflict Confused for 5 seconds. Each attack has its own animation. Craft a reusable [b]Royal Conch[/b] at a Work Bench: 5 Coral + 5 Seashells + 1 Fallen Star. Use it near a deep ocean on the second island. Single-player prototype; balance and unique rewards are still in development.

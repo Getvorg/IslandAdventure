@@ -24,6 +24,10 @@ frames() {
     rm "$queen_tmp"/frame-*.png
 }
 frames "$root/tools/art/queen-source.png" 3 4 112 112 10 "$root/Assets/NPCs/Bosses/MermaidQueen.png"
+# Rows 0/1 are the original swim/dash; append dive, summon and singing banks.
+frames "$root/tools/art/queen-attacks-source.png" 6 3 112 112 10 "$queen_tmp/attacks.png"
+magick "$root/Assets/NPCs/Bosses/MermaidQueen.png" "$queen_tmp/attacks.png" -append -depth 8 \
+    PNG32:"$root/Assets/NPCs/Bosses/MermaidQueen.png"
 frames "$root/tools/art/moray-source.png" 2 3 72 40 6 "$root/Assets/NPCs/RoyalMoray.png"
 # Boss portrait from the first frame, with a transparent 2x pixel grid.
 magick "$root/Assets/NPCs/Bosses/MermaidQueen.png" -crop 96x96+106+0 +repage \

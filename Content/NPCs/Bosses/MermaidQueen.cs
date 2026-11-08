@@ -10,12 +10,13 @@ using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Localization;
 using IslandAdventure.Content.Projectiles;
 using IslandAdventure.Systems;
 
 namespace IslandAdventure.Content.NPCs.Bosses
 {
-    public enum QueenAttack { Hover, DashWindup, Dash, Recover, DiveWindup, Dive, Emerge, Summon, Retreat }
+    public enum QueenAttack { Hover, DashWindup, Dash, Recover, DiveWindup, Dive, Emerge, Summon, Retreat, WaveBarrage, Sing }
 
     [AutoloadBossHead]
     public class MermaidQueen : ModNPC
@@ -23,6 +24,12 @@ namespace IslandAdventure.Content.NPCs.Bosses
         public const int BodyWidth = 132, BodyHeight = 180, FrameSize = 224;
         public const int FramesPerAnimation = 6;
         private float arenaX, diveX;
+        private int lastAnimation = -1;
+        public int AnimationRow => State switch {
+            QueenAttack.DashWindup or QueenAttack.Dash => 1,
+            QueenAttack.DiveWindup or QueenAttack.Dive or QueenAttack.WaveBarrage or QueenAttack.Emerge => 2,
+            QueenAttack.Summon => 3, QueenAttack.Sing => 4, _ => 0
+        };
         public QueenAttack State => (QueenAttack)(int)NPC.ai[0];
         public float SeaY => NPC.ai[3];
         private bool Authority => Main.netMode != NetmodeID.MultiplayerClient;
@@ -31,7 +38,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 12;
+            Main.npcFrameCount[Type] = 5 * FramesPerAnimation;
             NPCID.Sets.TrailCacheLength[Type] = 6;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
@@ -85,7 +92,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
         private void NextAttack()
         {
             if (!Authority) return;
-            NPC.ai[2] = (NPC.ai[2] + 1) % 3;
+            NPC.ai[2] = (NPC.ai[2] + 1) % 4;
             Enter(QueenAttack.Hover);
         }
         private void MoveTo(Vector2 point, float speed)
@@ -137,13 +144,14 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     MoveTo(new Vector2(player.Center.X - NPC.direction * 260, hoverY), 6);
                     if (timer >= (Fast ? 55 : 80))
                     {
-                        switch ((int)NPC.ai[2] % 3)
+                        switch ((int)NPC.ai[2] % 4)
                         {
                             case 0: Enter(QueenAttack.DashWindup); break;
                             case 1:
                                 if (Authority) diveX = QueenEncounter.TryFindSea(player, out Vector2 water) ? water.X : arenaX;
                                 Enter(QueenAttack.DiveWindup); break;
-                            default: Enter(QueenAttack.Summon); break;
+                            case 2: Enter(QueenAttack.Summon); break;
+                            default: Enter(QueenAttack.Sing); break;
                         }
                     }
                     break;
@@ -176,7 +184,14 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     NPC.velocity.X *= 0.85f; NPC.velocity.Y = 15;
                     NPC.rotation = NPC.direction * 0.6f;
                     if ((NPC.Center.Y >= SeaY + 115 || timer >= 50) && Authority)
-                    { SpawnWaves(); Enter(QueenAttack.Emerge); NPC.velocity = new Vector2(0, -8); }
+                    { Enter(QueenAttack.WaveBarrage); NPC.velocity = Vector2.Zero; }
+                    break;
+                case QueenAttack.WaveBarrage:
+                    // Keep the source fixed so all three pairs are evenly spaced.
+                    NPC.velocity = Vector2.Zero;
+                    if (Authority && (timer == 1 || timer == 39 || timer == 77))
+                        SpawnWaves(((int)timer - 1) / 38);
+                    if (timer >= 105) { Enter(QueenAttack.Emerge); NPC.velocity = new Vector2(0, -8); }
                     break;
                 case QueenAttack.Emerge:
                     if (timer == 1 && !Main.dedServ) SoundEngine.PlaySound(SoundID.Splash, NPC.Center);
@@ -190,18 +205,32 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     if (timer == 50 && Authority) SpawnMorays();
                     if (timer >= 95) NextAttack();
                     break;
+                case QueenAttack.Sing:
+                    if (timer < 35) MoveTo(new Vector2(player.Center.X - NPC.direction * 260, hoverY - 20), 5);
+                    else NPC.velocity *= 0.88f;
+                    if (timer == 1 && !Main.dedServ)
+                        CombatText.NewText(NPC.Hitbox, Color.LightPink,
+                            Language.GetTextValue("Mods.IslandAdventure.QueenEncounter.Singing"));
+                    if (timer < 70 && (int)timer % 8 == 0) Cue(3);
+                    if (timer == 70 && Authority)
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero,
+                            ModContent.ProjectileType<RoyalSong>(), 0, 0, Main.myPlayer, NPC.whoAmI + 1);
+                    if (!Main.dedServ && (timer == 35 || timer == 52 || timer == 70))
+                        SoundEngine.PlaySound(SoundID.Item26 with { Pitch = (timer - 52) / 85f }, NPC.Center);
+                    if (timer >= 130) NextAttack();
+                    break;
             }
             if (BoatTravelSystem.IsCinematic) NPC.damage = 0;
             else NPC.damage = NPC.defDamage;
         }
 
-        private void SpawnWaves()
+        private void SpawnWaves(int size)
         {
-            int damage = NPC.GetAttackDamage_ForProjectiles(22, 18);
+            int damage = NPC.GetAttackDamage_ForProjectiles(22 + size * 4, 18 + size * 3);
             foreach (int direction in new[] { -1, 1 })
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(NPC.Center.X, SeaY - 32),
                     new Vector2(direction * 6, 0), ModContent.ProjectileType<RoyalWave>(), damage, 2,
-                    Main.myPlayer, NPC.whoAmI + 1, SeaY);
+                    Main.myPlayer, NPC.whoAmI + 1, SeaY, size);
             NPC.netUpdate = true;
         }
         private void SpawnMorays()
@@ -225,7 +254,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     if (Main.netMode == NetmodeID.Server) NetMessage.SendData(MessageID.SyncNPC, number: npc.whoAmI);
                 }
             foreach (Projectile projectile in Main.projectile)
-                if (projectile.active && projectile.type == ModContent.ProjectileType<RoyalWave>() && projectile.ai[0] == NPC.whoAmI + 1)
+                if (projectile.active && (projectile.type == ModContent.ProjectileType<RoyalWave>() || projectile.type == ModContent.ProjectileType<RoyalSong>()) && projectile.ai[0] == NPC.whoAmI + 1)
                     projectile.Kill();
         }
         public override void OnKill() => ClearSummons();
@@ -239,9 +268,10 @@ namespace IslandAdventure.Content.NPCs.Bosses
 
         public override void FindFrame(int frameHeight)
         {
-            bool streamlined = State == QueenAttack.Dash || State == QueenAttack.Dive;
-            NPC.frameCounter += streamlined ? 0.3 : 0.14;
-            NPC.frame.Y = ((streamlined ? 6 : 0) + (int)NPC.frameCounter % 6) * frameHeight;
+            int animation = AnimationRow;
+            if (lastAnimation != animation) { NPC.frameCounter = 0; lastAnimation = animation; }
+            NPC.frameCounter += State == QueenAttack.Dash || State == QueenAttack.Dive ? 0.3 : 0.14;
+            NPC.frame.Y = (animation * FramesPerAnimation + (int)NPC.frameCounter % FramesPerAnimation) * frameHeight;
         }
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => !BoatTravelSystem.IsCinematic && State != QueenAttack.Retreat;
         public override bool PreDraw(SpriteBatch batch, Vector2 screenPos, Color drawColor)

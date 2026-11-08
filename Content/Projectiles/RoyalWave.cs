@@ -18,7 +18,7 @@ namespace IslandAdventure.Content.Projectiles
             Projectile.width = 112; Projectile.height = 96;
             Projectile.hostile = true; Projectile.friendly = false;
             Projectile.tileCollide = false; Projectile.ignoreWater = true;
-            Projectile.penetrate = -1; Projectile.timeLeft = 150;
+            Projectile.penetrate = -1; Projectile.timeLeft = 180;
         }
         public override void AI()
         {
@@ -26,7 +26,13 @@ namespace IslandAdventure.Content.Projectiles
             if (owner < 0 || owner >= Main.maxNPCs || !Main.npc[owner].active
                 || Main.npc[owner].type != ModContent.NPCType<MermaidQueen>())
             { Projectile.Kill(); return; }
-            Projectile.Center = new Vector2(Projectile.Center.X, Projectile.ai[1] - 32 + (float)Math.Sin(Projectile.timeLeft * 0.2f) * 2);
+            Vector2 center = Projectile.Center;
+            Projectile.scale = 1 + MathHelper.Clamp(Projectile.ai[2], 0, 2) * 0.5f;
+            // The hitbox grows with the visible wave; every size stays at the sea surface.
+            Projectile.width = (int)(112 * Projectile.scale);
+            Projectile.height = (int)(96 * Projectile.scale);
+            Projectile.Center = new Vector2(center.X, Projectile.ai[1] + 16 - Projectile.height / 2f
+                + (float)Math.Sin(Projectile.timeLeft * 0.2f) * 2);
             Projectile.Opacity = Math.Min(1, Projectile.timeLeft / 20f) * 0.9f;
             if (Projectile.position.X < 16 || Projectile.position.X > Main.maxTilesX * 16 - 144)
                 Projectile.Kill();
@@ -37,7 +43,7 @@ namespace IslandAdventure.Content.Projectiles
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null,
                 Color.Lerp(lightColor, Color.White, 0.25f) * Projectile.Opacity, 0,
-                texture.Size() / 2, 1, Projectile.velocity.X < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+                texture.Size() / 2, Projectile.scale, Projectile.velocity.X < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
             return false;
         }
     }
