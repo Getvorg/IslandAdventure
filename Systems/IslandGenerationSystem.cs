@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using IslandAdventure.WorldGeneration;
+using SubworldLibrary;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
@@ -40,7 +42,18 @@ namespace IslandAdventure.Systems
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             if (!GeneratingIsland)
+            {
+                if (!SubworldSystem.AnyActive())
+                {
+                    tasks.Add(new PassLegacy("Fisher house and pier", (progress, configuration) =>
+                    {
+                        progress.Message = "Строительство дома Рыбака на левом берегу";
+                        Mod.Logger.Info("Main world fisher house: " + CoastalBuildings.PlaceFisherHouse());
+                    }, 50));
+                    totalWeight = tasks.Sum(pass => pass.Weight);
+                }
                 return;
+            }
 
             // Never filter the primary world, or run unrelated mod generation passes
             // in a subworld whose excluded biomes those mods may expect to exist.
@@ -80,6 +93,11 @@ namespace IslandAdventure.Systems
                 }, inner.Weight);
             }
 
+            tasks.Add(new PassLegacy("Island boat pier", (progress, configuration) =>
+            {
+                progress.Message = "Строительство причала на правом берегу";
+                Mod.Logger.Info("Island right pier: " + CoastalBuildings.PlaceIslandPier());
+            }, 50));
             totalWeight = tasks.Sum(pass => pass.Weight);
             Mod.Logger.Info("Island vanilla generation passes: " + string.Join(", ", tasks.Select(pass => pass.Name)));
         }
