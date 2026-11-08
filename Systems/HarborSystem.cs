@@ -18,7 +18,7 @@ namespace IslandAdventure.Systems
         public bool HasHarbor => Landing.X > 20 && Landing.X < Main.maxTilesX - 20
             && Landing.Y > 20 && Landing.Y < Main.maxTilesY - 20
             && Boat.X > 10 && Boat.X < Main.maxTilesX - 10 && Boat.Y > 20 && Boat.Y < Main.maxTilesY - 20;
-        public Vector2 BoatPosition => new Vector2(Boat.X * 16 + 8, Boat.Y * 16);
+        public Vector2 BoatPosition => new Vector2(Boat.X * 16 + 8 + (FacesLeft ? -32 : 32), Boat.Y * 16);
 
         public void SetHarbor(Point landing, Point boat, bool facesLeft)
         {

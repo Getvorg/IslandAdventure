@@ -11,7 +11,8 @@ namespace IslandAdventure.Travel
     {
         public const int Width = BoatPixelArt.Width;
         public const int Height = BoatPixelArt.Height;
-        public const int Waterline = 40;
+        public const int Waterline = BoatPixelArt.Waterline;
+        public const int SeatHeight = -18;
         private static Texture2D texture;
 
         private static Texture2D Texture()
@@ -29,13 +30,13 @@ namespace IslandAdventure.Travel
             Vector2 center = new Vector2((float)Math.Round(waterline.X),
                 (float)Math.Round(waterline.Y + Math.Sin(time * 2.2f) * scale));
             // Vanilla prop sprites tie the custom hull to the game's palette.
-            Vector2 Prop(float x, float y) => center + new Vector2(left ? 64 - x : x - 64, y - Waterline) * scale;
-            DrawItem(batch, ItemID.WoodenCrate, Prop(20, 24), scale, tint);
-            batch.Draw(Texture(), center, null, tint, 0, new Vector2(64, Waterline), scale,
+            Vector2 Prop(float x, float y) => center + new Vector2(left ? Width / 2f - x : x - Width / 2f, y - Waterline) * scale;
+            DrawItem(batch, ItemID.WoodenCrate, Prop(27, 39), scale, tint);
+            batch.Draw(Texture(), center, null, tint, 0, new Vector2(Width / 2f, Waterline), scale,
                 left ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             Main.instance.LoadItem(ItemID.PalmWoodLantern);
             Texture2D lantern = TextureAssets.Item[ItemID.PalmWoodLantern].Value;
-            Vector2 lanternTop = Prop(118, 5);
+            Vector2 lanternTop = Prop(175, 18);
             batch.Draw(lantern, lanternTop, null, Color.White, 0,
                 new Vector2(lantern.Width / 2f, 0), scale, SpriteEffects.None, 0);
             var oar = BoatGeometry.Oar(center, scale, left, time, rowing);

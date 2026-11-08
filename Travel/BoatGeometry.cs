@@ -9,10 +9,10 @@ namespace IslandAdventure.Travel
         public static (Vector2 Pivot, Vector2 Tip, Vector2 Blade) Oar(Vector2 center, float scale,
             bool left, float time, bool rowing)
         {
-            float swing = rowing ? (float)Math.Sin(time * 3.5f) * 7 : 0;
-            Vector2 pivot = center + new Vector2(left ? 12 : -12, -10) * scale;
-            Vector2 tip = pivot + new Vector2((left ? -1 : 1) * (25 + swing), 17) * scale;
-            return (pivot, tip, tip + new Vector2(left ? -7 : 7, 5) * scale);
+            float swing = rowing ? (float)Math.Sin(time * 3.5f) * 9 : 0;
+            Vector2 pivot = center + new Vector2(left ? 20 : -20, -16) * scale;
+            Vector2 tip = pivot + new Vector2((left ? -1 : 1) * (35 + swing), 24) * scale;
+            return (pivot, tip, tip + new Vector2(left ? -10 : 10, 6) * scale);
         }
 
         // Destination rectangles keep the result independent of MagicPixel's

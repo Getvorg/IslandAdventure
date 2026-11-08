@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ObjectData;
+using Terraria.Enums;
 using Terraria.WorldBuilding;
 using Terraria.ModLoader;
 using IslandAdventure.Systems;
@@ -15,55 +16,57 @@ namespace IslandAdventure.WorldGeneration
         public static Rectangle PlaceFisherHouse()
         {
             FindShore(left: true, out int shoreX, out int seaY, out int shoreY);
-            const int width = 23;
+            const int width = 27;
             int left = shoreX + 5;
             int floor = Math.Min(seaY - 3, shoreY - 1);
             for (int x = left; x < left + width; x++)
                 floor = Math.Min(floor, FindGround(x) - 1);
 
-            Rectangle area = new Rectangle(left - 4, floor - 22, width + 13, 34);
+            Rectangle area = new Rectangle(left - 4, floor - 25, width + 13, 38);
             ClearArea(area.Left, area.Top, area.Right, floor);
             for (int x = left; x < left + width; x++)
             {
                 SetBlock(x, floor, TileID.RichMahogany);
                 SetBlock(x, floor + 1, TileID.StoneSlab);
             }
-            for (int x = left; x < left + width; x += 6)
+            for (int x = left + 1; x < left + width; x += 6)
                 PlacePile(x, floor + 2);
 
-            // Low sleeping annex joins a taller living room through an open arch.
-            BuildRoom(left, floor, 8, 6);
-            BuildRoom(left + 7, floor, 16, 10);
-            for (int y = floor - 5; y < floor; y++)
+            // A continuous pitched roof: hammered roof tiles over a solid fascia.
+            // Background walls start BELOW the fascia and INSIDE the side posts.
+            // Putting walls behind sloped exterior tiles makes them bleed outside.
+            for (int dx = -2; dx <= 28; dx++)
             {
-                Tile tile = Main.tile[left + 7, y];
-                tile.ClearTile();
+                int roofY = floor - 20 + Math.Abs(dx - 13);
+                SetShapedBlock(left + dx, roofY, TileID.BorealWood,
+                    dx < 13 ? SlopeType.SlopeDownLeft : dx > 13 ? SlopeType.SlopeDownRight : SlopeType.Solid);
+                SetBlock(left + dx, roofY + 1, TileID.RichMahogany);
+                if (dx > 0 && dx < width - 1)
+                    for (int y = roofY + 2; y < floor; y++)
+                        FillWall(left + dx, y, left + dx + 1, y + 1,
+                            y >= floor - 3 ? WallID.Planked : WallID.PalmWood);
             }
-            for (int offset = -2; offset <= 6; offset++)
-            {
-                int roofY = floor - 8 - (offset + 2) / 3;
-                for (int y = roofY; y <= roofY + 1; y++)
-                    SetBlock(left + offset, y, TileID.BorealWood);
-                if (offset > 0)
-                    FillWall(left + offset, roofY + 2, left + offset + 1, floor - 6, WallID.PalmWood);
-            }
-            for (int offset = 6; offset <= 24; offset++)
-            {
-                int roofY = floor - 16 + Math.Abs(offset - 14) / 2;
-                SetBlock(left + offset, roofY, TileID.BorealWood);
-                SetBlock(left + offset, roofY + 1, TileID.RichMahogany);
-                if (offset > 7 && offset < 22)
-                    FillWall(left + offset, roofY + 2, left + offset + 1, floor - 10, WallID.PalmWood);
-            }
-            // A capped brick chimney breaks up the silhouette.
-            for (int x = left + 18; x <= left + 19; x++)
-                for (int y = floor - 19; y <= floor - 12; y++)
-                    SetBlock(x, y, TileID.RedBrick);
-            for (int x = left + 17; x <= left + 20; x++)
-                SetBlock(x, floor - 20, TileID.StoneSlab);
+            for (int dx = 0; dx < width; dx += width - 1)
+                for (int y = floor - 6; y < floor; y++)
+                    SetBlock(left + dx, y, y >= floor - 2 ? TileID.StoneSlab : TileID.PalmWood);
 
-            FillWall(left + 2, floor - 5, left + 6, floor - 3, WallID.Glass);
-            FillWall(left + 19, floor - 8, left + 22, floor - 6, WallID.Glass);
+            // Exposed ceiling beam and an attic with a small seaward window.
+            for (int dx = 5; dx <= 21; dx++)
+                SetBlock(left + dx, floor - 11, TileID.RichMahogany);
+            FillWall(left + 8, floor - 13, left + 11, floor - 11, WallID.Glass);
+            FillWall(left + 2, floor - 6, left + 6, floor - 4, WallID.Glass);
+            FillWall(left + 21, floor - 6, left + 25, floor - 4, WallID.Glass);
+            // Window sills are above head height, not obstacles on the floor.
+            for (int dx = 2; dx <= 5; dx++) SetShapedBlock(left + dx, floor - 4, TileID.BorealWood, half: true);
+            for (int dx = 21; dx <= 24; dx++) SetShapedBlock(left + dx, floor - 4, TileID.BorealWood, half: true);
+
+            // Asymmetric capped chimney, with no background outside its bricks.
+            for (int x = left + 21; x <= left + 22; x++)
+                for (int y = floor - 20; y <= floor - 10; y++)
+                    SetBlock(x, y, TileID.RedBrick);
+            for (int x = left + 20; x <= left + 23; x++)
+                SetShapedBlock(x, floor - 21, TileID.StoneSlab, half: true);
+
             Item door = new Item();
             door.SetDefaults(ItemID.PalmWoodDoor);
             foreach (int x in new[] { left, left + width - 1 })
@@ -78,51 +81,36 @@ namespace IslandAdventure.WorldGeneration
             }
 
             PlaceOnSurface(ItemID.PalmWoodBed, left + 2, floor);
-            PlaceOnSurface(ItemID.PalmWoodChair, left + 9, floor);
-            PlaceOnSurface(ItemID.PalmWoodTable, left + 11, floor);
+            PlaceOnSurface(ItemID.PalmWoodChair, left + 8, floor);
+            PlaceOnSurface(ItemID.PalmWoodTable, left + 10, floor);
             PlaceOnSurface(ItemID.WorkBench, left + 14, floor);
-            PlaceOnSurface(ItemID.Barrel, left + 20, floor);
-            PlaceItem(ItemID.PalmWoodChandelier, left + 13, floor - 9);
-            PlaceItem(ItemID.TreasureMap, left + 16, floor - 6);
-            PlaceItem(ItemID.CompassRose, left + 13, floor - 14);
-            for (int x = left + 9; x <= left + 11; x++)
-                SetBlock(x, floor - 5, TileID.BorealWood);
-            PlaceOnSurface(ItemID.ShipInABottle, left + 9, floor - 5);
-            PlaceFishingChest(left + 17, floor);
+            PlaceOnSurface(ItemID.Barrel, left + 23, floor);
+            PlaceItem(ItemID.PalmWoodChandelier, left + 13, floor - 10);
+            PlaceItem(ItemID.TreasureMap, left + 16, floor - 8);
+            PlaceItem(ItemID.CompassRose, left + 13, floor - 16);
+            for (int x = left + 7; x <= left + 9; x++)
+                SetBlock(x, floor - 6, TileID.BorealWood);
+            PlaceOnSurface(ItemID.ShipInABottle, left + 7, floor - 6);
+            PlaceFishingChest(left + 18, floor);
 
             Rectangle pier = BuildPier(left - 1, shoreX - 27, floor, seaY);
-            // Sheltered two-tile veranda, with a hanging palm-wood lantern.
+            // Walk-through veranda posts use non-solid wooden beams.
             for (int x = left - 3; x < left; x++)
-                SetBlock(x, floor - 6, TileID.BorealWood);
-            for (int y = floor - 5; y < floor; y++)
+                SetShapedBlock(x, floor - 7, TileID.BorealWood, half: x == left - 3);
+            for (int y = floor - 6; y < floor; y++)
                 SetBlock(left - 3, y, TileID.WoodenBeam);
-            PlaceItem(ItemID.PalmWoodLantern, left - 2, floor - 5);
+            PlaceItem(ItemID.PalmWoodLantern, left - 2, floor - 6);
             for (int step = 0; step < 7; step++)
             {
                 int x = left + width + step;
                 int y = Math.Min(floor + step / 2, FindGround(x));
-                SetBlock(x, y, TileID.PalmWood);
+                SetShapedBlock(x, y, TileID.PalmWood, half: step % 2 == 0);
             }
             Rectangle footprint = Rectangle.Union(area, pier);
             WorldGen.RangeFrame(footprint.Left - 2, footprint.Top - 2,
                 footprint.Right + 2, Math.Min(Main.maxTilesY - 2, footprint.Bottom + 2));
             GenVars.structures.AddProtectedStructure(footprint);
             return footprint;
-        }
-
-        private static void BuildRoom(int left, int floor, int width, int height)
-        {
-            for (int x = left; x < left + width; x++)
-            {
-                SetBlock(x, floor - height, TileID.RichMahogany);
-                for (int y = floor - height + 1; y < floor; y++)
-                {
-                    Tile tile = Main.tile[x, y];
-                    tile.WallType = y >= floor - 3 ? WallID.Planked : WallID.PalmWood;
-                    if (x == left || x == left + width - 1)
-                        SetBlock(x, y, y >= floor - 2 ? TileID.StoneSlab : TileID.PalmWood);
-                }
-            }
         }
 
         private static void FillWall(int left, int top, int right, int bottom, ushort type)
@@ -217,19 +205,25 @@ namespace IslandAdventure.WorldGeneration
             }
             int deepest = floor + 1;
             for (int x = left + 2; x <= right; x += 9)
+            {
                 deepest = Math.Max(deepest, PlacePile(x, floor + 1));
+                if (x > left) SetShapedBlock(x - 1, floor + 1, TileID.BorealWood, SlopeType.SlopeUpLeft);
+                if (x < right) SetShapedBlock(x + 1, floor + 1, TileID.BorealWood, SlopeType.SlopeUpRight);
+            }
 
             int post = facesLeft ? left + 2 : right - 2;
             int lamp = facesLeft ? post + 2 : post - 3;
             for (int y = floor - 5; y < floor; y++)
-                SetBlock(post, y, TileID.BorealWood);
+                SetBlock(post, y, TileID.WoodenBeam);
             for (int x = Math.Min(post, lamp); x <= Math.Max(post, lamp) + 1; x++)
-                SetBlock(x, floor - 5, TileID.RichMahogany);
+                SetShapedBlock(x, floor - 5, TileID.RichMahogany, half: x != lamp && x != lamp + 1);
             PlaceItem(ItemID.PalmWoodLantern, lamp, floor - 4);
 
-            int middle = (left + right) / 2;
-            PlaceOnSurface(ItemID.OceanCrate, middle, floor);
-            PlaceOnSurface(ItemID.Barrel, middle + 4, floor);
+            // No crates, barrels or solid bollards in the walking lane.
+            // Mooring ropes and alternating rear fence panels provide detail.
+            foreach (int pile in new[] { left + 2, right - 2 })
+                for (int y = floor + 1; y <= floor + 3; y++)
+                    FillWall(pile - 1, y, pile + 2, y + 1, WallID.WoodenFence);
             for (int y = floor + 1; y <= floor + 6; y++)
             {
                 Tile tile = Main.tile[post + (facesLeft ? -1 : 1), y];
@@ -303,6 +297,15 @@ namespace IslandAdventure.WorldGeneration
                 if (WorldGen.SolidTile(x, y))
                     return y;
             throw new InvalidOperationException("Could not find coastal ground at x=" + x);
+        }
+
+        private static void SetShapedBlock(int x, int y, ushort type,
+            SlopeType slope = SlopeType.Solid, bool half = false)
+        {
+            SetBlock(x, y, type);
+            Tile tile = Main.tile[x, y];
+            tile.Slope = slope;
+            tile.IsHalfBlock = half;
         }
 
         private static void SetBlock(int x, int y, ushort type)

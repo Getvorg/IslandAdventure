@@ -125,7 +125,7 @@ namespace IslandAdventure.Systems
             if (!IsWorldScene) return;
             float bob = (float)Math.Round(Math.Sin(Main.GlobalTimeWrappedHourly * 2.2f));
             Player player = Main.LocalPlayer;
-            anchor = MovingBoat + new Vector2(-18, -8 + bob) - new Vector2(player.width / 2f, player.height);
+            anchor = MovingBoat + new Vector2(-24, BoatArt.SeatHeight + bob) - new Vector2(player.width / 2f, player.height);
         }
 
         public static void HoldPlayer(Player player)
@@ -264,7 +264,7 @@ namespace IslandAdventure.Systems
             {
                 Vector2 boat = IsWorldScene ? MovingBoat : harbor.BoatPosition;
                 bool left = IsWorldScene ? BoatFacesLeft : harbor.FacesLeft;
-                Lighting.AddLight(boat + new Vector2(left ? -54 : 54, -26), 0.45f, 0.3f, 0.12f);
+                Lighting.AddLight(boat + new Vector2(left ? -79 : 79, -38), 0.45f, 0.3f, 0.12f);
             }
         }
 
@@ -288,7 +288,7 @@ namespace IslandAdventure.Systems
                 if (moving)
                 {
                     float bob = (float)Math.Round(Math.Sin(Main.GlobalTimeWrappedHourly * 2.2f));
-                    DrawPassengers(world + new Vector2(0, -8 + bob), left, light);
+                    DrawPassengers(world + new Vector2(0, BoatArt.SeatHeight + bob), left, light);
                 }
                 BoatArt.Draw(Main.spriteBatch, position, 1, left, Main.GlobalTimeWrappedHourly, rowing: moving, lighting: light);
             }
@@ -306,7 +306,7 @@ namespace IslandAdventure.Systems
                     {
                         passenger.direction = left ? -1 : 1;
                         passenger.bodyFrame.Y = passenger.legFrame.Y = passenger.headFrame.Y = 0;
-                        passenger.position = deck + new Vector2(-18 - passenger.width / 2f, -passenger.height);
+                        passenger.position = deck + new Vector2(-24 - passenger.width / 2f, -passenger.height);
                         Main.PlayerRenderer.DrawPlayer(Main.Camera, passenger, passenger.position, 0, Vector2.Zero);
                     }
                 }
@@ -319,7 +319,7 @@ namespace IslandAdventure.Systems
             Main.instance.LoadNPC(NPCID.Angler);
             Texture2D npc = TextureAssets.Npc[NPCID.Angler].Value;
             int frameHeight = npc.Height / Main.npcFrameCount[NPCID.Angler];
-            Main.spriteBatch.Draw(npc, deck + new Vector2(18, 0) - Main.screenPosition,
+            Main.spriteBatch.Draw(npc, deck + new Vector2(24, 0) - Main.screenPosition,
                 new Rectangle(0, 0, npc.Width, frameHeight), light, 0,
                 new Vector2(npc.Width / 2f, frameHeight), 1,
                 left ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
@@ -378,7 +378,8 @@ namespace IslandAdventure.Systems
                 Vector2 route = harbor.BoatPosition - land;
                 float t = MathHelper.Clamp(Vector2.Dot(Main.LocalPlayer.Center - land, route) / Math.Max(1, route.LengthSquared()), 0, 1);
                 nearDock = Vector2.Distance(Main.LocalPlayer.Center, land + route * t) < 160;
-                Rectangle bounds = new Rectangle((int)harbor.BoatPosition.X - 68, (int)harbor.BoatPosition.Y - 58, 136, 78);
+                Rectangle bounds = new Rectangle((int)harbor.BoatPosition.X - BoatArt.Width / 2,
+                    (int)harbor.BoatPosition.Y - BoatArt.Waterline, BoatArt.Width, BoatArt.Height);
                 if (nearDock && talk < 0 && bounds.Contains(worldMouse.ToPoint()))
                 {
                     Main.LocalPlayer.mouseInterface = true;

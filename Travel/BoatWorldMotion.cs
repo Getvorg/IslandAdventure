@@ -22,6 +22,9 @@ namespace IslandAdventure.Travel
             Vector2 visible = viewport / zoom;
             float skySpace = Math.Min(100, visible.Y * 0.18f);
             Vector2 focus = Vector2.Lerp(landing, boat, 0.85f) + new Vector2(0, -skySpace);
+            // Keep the wider hull inside the view even at a high zoom.
+            float horizontalRoom = Math.Max(0, visible.X / 2 - BoatPixelArt.Width / 2f - 16);
+            focus.X = Math.Clamp(focus.X, boat.X - horizontalRoom, boat.X + horizontalRoom);
             Vector2 topLeft = focus - visible / 2;
             Vector2 visibleTopLeft = new Vector2(Math.Clamp(topLeft.X, 16, Math.Max(16, world.X - visible.X - 16)),
                 Math.Clamp(topLeft.Y, 16, Math.Max(16, world.Y - visible.Y - 16)));
