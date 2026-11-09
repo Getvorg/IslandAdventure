@@ -25,6 +25,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
         public const int FramesPerAnimation = 6;
         private float arenaX, diveX;
         private int lastAnimation = -1;
+        private int summonCooldown, songCooldown;
         public int AnimationRow => State switch {
             QueenAttack.DashWindup or QueenAttack.Dash => 1,
             QueenAttack.DiveWindup or QueenAttack.Dive or QueenAttack.WaveBarrage or QueenAttack.Emerge => 2,
@@ -63,6 +64,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
         public override void OnSpawn(IEntitySource source)
         {
             arenaX = diveX = NPC.Center.X;
+            NPC.ai[2] = -1; // Last attack, not a fixed cycle index.
             if (NPC.ai[3] <= 0)
             {
                 NPC.TargetClosest();
@@ -73,8 +75,8 @@ namespace IslandAdventure.Content.NPCs.Bosses
             NPC.netUpdate = true;
         }
 
-        public override void SendExtraAI(BinaryWriter writer) { writer.Write(arenaX); writer.Write(diveX); }
-        public override void ReceiveExtraAI(BinaryReader reader) { arenaX = reader.ReadSingle(); diveX = reader.ReadSingle(); }
+        public override void SendExtraAI(BinaryWriter writer) { writer.Write(arenaX); writer.Write(diveX); writer.Write(summonCooldown); writer.Write(songCooldown); }
+        public override void ReceiveExtraAI(BinaryReader reader) { arenaX = reader.ReadSingle(); diveX = reader.ReadSingle(); summonCooldown = reader.ReadInt32(); songCooldown = reader.ReadInt32(); }
         public override bool CheckActive() => false;
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry entry)
@@ -92,8 +94,49 @@ namespace IslandAdventure.Content.NPCs.Bosses
         private void NextAttack()
         {
             if (!Authority) return;
-            NPC.ai[2] = (NPC.ai[2] + 1) % 4;
             Enter(QueenAttack.Hover);
+        }
+        private int CountMorays()
+        {
+            int count = 0;
+            foreach (NPC npc in Main.npc)
+                if (npc.active && npc.type == ModContent.NPCType<RoyalMoray>() && npc.ai[0] == NPC.whoAmI + 1) count++;
+            return count;
+        }
+        private QueenAttack ChooseAttack(Player player)
+        {
+            QueenAttack[] attacks = { QueenAttack.DashWindup, QueenAttack.DiveWindup, QueenAttack.Summon, QueenAttack.Sing };
+            int morays = CountMorays();
+            int[] weights = {
+                Vector2.DistanceSquared(player.Center, NPC.Center) > 450 * 450 ? 65 : 28,
+                35,
+                summonCooldown > 0 || morays >= 3 ? 0 : morays == 0 ? 22 : 6,
+                songCooldown > 0 ? 0 : 25
+            };
+            int total = 0;
+            for (int i = 0; i < attacks.Length; i++)
+            {
+                if ((int)attacks[i] == (int)NPC.ai[2]) weights[i] = 0;
+                total += weights[i];
+            }
+            // Dash and dive always remain available, so the total cannot be zero.
+            int roll = Main.rand.Next(total);
+            for (int i = 0; i < attacks.Length; i++)
+            {
+                roll -= weights[i];
+                if (roll < 0) return attacks[i];
+            }
+            return QueenAttack.DashWindup;
+        }
+        private void StartAttack(QueenAttack attack, Player player)
+        {
+            if (!Authority) return;
+            NPC.ai[2] = (int)attack;
+            if (attack == QueenAttack.Summon) summonCooldown = 900;
+            if (attack == QueenAttack.Sing) songCooldown = 600;
+            if (attack == QueenAttack.DiveWindup)
+                diveX = QueenEncounter.TryFindSea(player, out Vector2 water) ? water.X : arenaX;
+            Enter(attack);
         }
         private void MoveTo(Vector2 point, float speed)
         {
@@ -116,6 +159,11 @@ namespace IslandAdventure.Content.NPCs.Bosses
 
         public override void AI()
         {
+            if (Authority)
+            {
+                if (summonCooldown > 0) summonCooldown--;
+                if (songCooldown > 0) songCooldown--;
+            }
             NPC.TargetClosest(false);
             Player player = NPC.HasValidTarget ? Main.player[NPC.target] : null;
             if (State != QueenAttack.Retreat && (player == null || player.dead
@@ -142,18 +190,8 @@ namespace IslandAdventure.Content.NPCs.Bosses
             {
                 case QueenAttack.Hover:
                     MoveTo(new Vector2(player.Center.X - NPC.direction * 260, hoverY), 6);
-                    if (timer >= (Fast ? 55 : 80))
-                    {
-                        switch ((int)NPC.ai[2] % 4)
-                        {
-                            case 0: Enter(QueenAttack.DashWindup); break;
-                            case 1:
-                                if (Authority) diveX = QueenEncounter.TryFindSea(player, out Vector2 water) ? water.X : arenaX;
-                                Enter(QueenAttack.DiveWindup); break;
-                            case 2: Enter(QueenAttack.Summon); break;
-                            default: Enter(QueenAttack.Sing); break;
-                        }
-                    }
+                    if (timer >= (Fast ? 40 : 80) && Authority)
+                        StartAttack(ChooseAttack(player), player);
                     break;
                 case QueenAttack.DashWindup:
                     if (timer < 30) MoveTo(new Vector2(player.Center.X - NPC.direction * 270, hoverY + 40), 5);
@@ -173,12 +211,12 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     break;
                 case QueenAttack.Recover:
                     NPC.velocity *= 0.93f;
-                    if (timer >= 40) NextAttack();
+                    if (timer >= (Fast ? 28 : 40)) NextAttack();
                     break;
                 case QueenAttack.DiveWindup:
                     MoveTo(new Vector2(diveX, SeaY - 180), 8);
                     if ((int)timer % 8 == 0) Cue(2);
-                    if (timer >= 65 && Authority) { NPC.velocity = new Vector2(0, 15); Enter(QueenAttack.Dive); }
+                    if (timer >= (Fast ? 50 : 65) && Authority) { NPC.velocity = new Vector2(0, 15); Enter(QueenAttack.Dive); }
                     break;
                 case QueenAttack.Dive:
                     NPC.velocity.X *= 0.85f; NPC.velocity.Y = 15;
@@ -203,7 +241,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     MoveTo(new Vector2(player.Center.X - NPC.direction * 220, hoverY - 20), 4);
                     if ((int)timer % 6 == 0) Cue(4);
                     if (timer == 50 && Authority) SpawnMorays();
-                    if (timer >= 95) NextAttack();
+                    if (timer >= (Fast ? 80 : 95)) NextAttack();
                     break;
                 case QueenAttack.Sing:
                     if (timer < 35) MoveTo(new Vector2(player.Center.X - NPC.direction * 260, hoverY - 20), 5);
@@ -217,7 +255,11 @@ namespace IslandAdventure.Content.NPCs.Bosses
                             ModContent.ProjectileType<RoyalSong>(), 0, 0, Main.myPlayer, NPC.whoAmI + 1);
                     if (!Main.dedServ && (timer == 35 || timer == 52 || timer == 70))
                         SoundEngine.PlaySound(SoundID.Item26 with { Pitch = (timer - 52) / 85f }, NPC.Center);
-                    if (timer >= 130) NextAttack();
+                    if (timer >= 130)
+                    {
+                        if (Fast) StartAttack(QueenAttack.DashWindup, player);
+                        else NextAttack();
+                    }
                     break;
             }
             if (BoatTravelSystem.IsCinematic) NPC.damage = 0;
@@ -235,9 +277,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
         }
         private void SpawnMorays()
         {
-            int count = 0;
-            foreach (NPC npc in Main.npc)
-                if (npc.active && npc.type == ModContent.NPCType<RoyalMoray>() && npc.ai[0] == NPC.whoAmI + 1) count++;
+            int count = CountMorays();
             for (int i = 0; i < Math.Min(3, 6 - count); i++)
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)arenaX + (i - 1) * 110, (int)SeaY + 80,
                     ModContent.NPCType<RoyalMoray>(), ai0: NPC.whoAmI + 1, ai2: i * 2f, ai3: SeaY);
