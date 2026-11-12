@@ -113,6 +113,9 @@ namespace IslandAdventure.Systems
                 }, inner.Weight);
             }
 
+            int terrain = tasks.FindIndex(pass => pass.Name == "Terrain");
+            tasks.Insert(terrain + 1, new PassLegacy("Dark forest terrain", DarkForestSystem.ShapeTerrain, 30));
+            tasks.Add(new PassLegacy("Dark forest canopy", DarkForestSystem.PlantForest, 30));
             tasks.Add(new PassLegacy("Island boat pier", (progress, configuration) =>
             {
                 progress.Message = "Строительство причала на правом берегу";

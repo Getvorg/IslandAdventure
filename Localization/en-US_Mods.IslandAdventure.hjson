@@ -89,5 +89,10 @@
   },
   "Resume": {
     "LoadFailed": "Could not load the island. Your character remains in the main world."
+  },
+  "Biomes": {
+    "DarkForestBiome": {
+      "DisplayName": "Dark Forest"
+    }
   }
 }
