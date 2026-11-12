@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -56,6 +57,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
             NPC.noGravity = true; NPC.noTileCollide = true;
             NPC.value = Item.buyPrice(gold: 3);
             NPC.npcSlots = 12;
+            NPC.HitSound = SoundID.NPCHit1; NPC.DeathSound = SoundID.NPCDeath1;
             Music = MusicID.Boss3;
         }
 
@@ -203,6 +205,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     }
                     break;
                 case QueenAttack.Dash:
+                    if (timer == 1 && !Main.dedServ) SoundEngine.PlaySound(SoundID.Item71, NPC.Center);
                     if ((int)timer % 3 == 0) Cue(1);
                     if (timer >= 26) Enter(QueenAttack.Recover);
                     break;
@@ -232,6 +235,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     if (timer >= 105) { Enter(QueenAttack.Emerge); NPC.velocity = new Vector2(0, -8); }
                     break;
                 case QueenAttack.Emerge:
+                    if (timer == 1 && !Main.dedServ) SoundEngine.PlaySound(SoundID.Splash, NPC.Center);
                     NPC.velocity.Y = -8;
                     if ((int)timer % 4 == 0) Cue(2);
                     if (timer >= 38) NextAttack();
@@ -252,6 +256,8 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     if (timer == 70 && Authority)
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero,
                             ModContent.ProjectileType<RoyalSong>(), 0, 0, Main.myPlayer, NPC.whoAmI + 1);
+                    if (!Main.dedServ && (timer == 35 || timer == 52 || timer == 70))
+                        SoundEngine.PlaySound(SoundID.Item26 with { Pitch = (timer - 52) / 85f }, NPC.Center);
                     if (timer >= 130)
                     {
                         if (Fast) StartAttack(QueenAttack.DashWindup, player);
