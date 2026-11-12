@@ -35,6 +35,18 @@
     "RoyalConch": {
       "DisplayName": "Royal Conch",
       "Tooltip": "Summons the Mermaid Queen at an ocean on the second island\nNot consumed\nSingle-player prototype"
+    },
+    "DarkSoil": {
+      "DisplayName": "Dark Humus",
+      "Tooltip": ""
+    },
+    "DarkStone": {
+      "DisplayName": "Forest Slate",
+      "Tooltip": ""
+    },
+    "DarkWood": {
+      "DisplayName": "Dark Oak Wood",
+      "Tooltip": ""
     }
   },
   "Tiles": {
@@ -46,11 +58,35 @@
     },
     "TideliteBrickTile": {
       "MapEntry": "Tidelite Brick"
+    },
+    "DarkSoilTile": {
+      "MapEntry": "Dark Humus"
+    },
+    "DarkStoneTile": {
+      "MapEntry": "Forest Slate"
+    },
+    "DarkGrassTile": {
+      "MapEntry": "Dark Forest Turf"
+    },
+    "DarkWoodTile": {
+      "MapEntry": "Dark Oak Wood"
+    },
+    "DarkPlantTile": {
+      "MapEntry": "Forest Undergrowth"
+    },
+    "DarkVineTile": {
+      "MapEntry": "Dark Forest Vines"
     }
   },
   "Walls": {
     "TideliteWall": {
       "DisplayName": "Tidelite Brick Wall"
+    },
+    "DarkSoilWall": {
+      "DisplayName": "Dark Humus Wall"
+    },
+    "DarkStoneWall": {
+      "DisplayName": "Forest Slate Wall"
     }
   },
   "NPCs": {

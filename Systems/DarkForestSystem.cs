@@ -1,5 +1,7 @@
 using System;
 using IslandAdventure.Biomes;
+using IslandAdventure.Content.Tiles;
+using IslandAdventure.Content.Walls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Generation;
@@ -78,18 +80,39 @@ namespace IslandAdventure.Systems
                     break;
                 }
             }
+            int soil = ModContent.TileType<DarkSoilTile>(), grass = ModContent.TileType<DarkGrassTile>();
+            int stone = ModContent.TileType<DarkStoneTile>(), plant = ModContent.TileType<DarkPlantTile>();
+            int vine = ModContent.TileType<DarkVineTile>();
+            // Actual custom materials, not a paint overlay. Preserve ocean sand,
+            // ore veins, liquids, containers and the Underworld.
             for (int x = 500; x < Main.maxTilesX - 500; x++)
-                for (int y = 30; y < Main.worldSurface + 25; y++)
+                for (int y = 30; y < Main.maxTilesY - 200; y++)
                 {
-                    var tile = Main.tile[x, y]; if (!tile.HasTile) continue;
-                    if (tile.TileType == TileID.Grass || tile.TileType == TileID.Plants
-                        || tile.TileType == TileID.Plants2 || tile.TileType == TileID.Vines || tile.TileType == TileID.Trees)
+                    var tile = Main.tile[x, y];
+                    if (tile.HasTile)
                     {
-                        tile.TileColor = (byte)(tile.TileType == TileID.Trees ? PaintID.DeepTealPaint : PaintID.DeepGreenPaint);
-                        painted++;
+                        int replacement = tile.TileType switch {
+                            TileID.Dirt => soil, TileID.Grass => grass, TileID.Stone => stone,
+                            TileID.Plants or TileID.Plants2 => plant, TileID.Vines => vine, _ => -1
+                        };
+                        if (replacement >= 0)
+                        {
+                            tile.TileType = (ushort)replacement; tile.TileColor = PaintID.None;
+                            if (replacement == plant) { tile.TileFrameX = (short)((x % 3) * 18); tile.TileFrameY = 0; }
+                            if (replacement == vine) { tile.TileFrameX = 0; tile.TileFrameY = (short)((x+y)%3*18); }
+                            painted++;
+                        }
+                        if (tile.TileType == TileID.Trees) tile.TileColor = PaintID.None;
                     }
+                    if (tile.WallType is WallID.DirtUnsafe or WallID.DirtUnsafe1 or WallID.DirtUnsafe2
+                        or WallID.DirtUnsafe3 or WallID.DirtUnsafe4 or WallID.GrassUnsafe or WallID.FlowerUnsafe)
+                        tile.WallType = (ushort)ModContent.WallType<DarkSoilWall>();
+                    else if (tile.WallType is WallID.Stone or WallID.RocksUnsafe1 or WallID.RocksUnsafe2
+                        or WallID.RocksUnsafe3 or WallID.RocksUnsafe4)
+                        tile.WallType = (ushort)ModContent.WallType<DarkStoneWall>();
                 }
-            ModContent.GetInstance<DarkForestSystem>().Mod.Logger.Info($"Dark forest canopy: {added} extra trees, {painted} painted vegetation tiles.");
+            WorldGen.RangeFrame(498, 28, Main.maxTilesX - 498, Main.maxTilesY - 198);
+            ModContent.GetInstance<DarkForestSystem>().Mod.Logger.Info($"Dark forest canopy: {added} extra trees, {painted} custom material tiles.");
             progress.Set(1);
         }
     }

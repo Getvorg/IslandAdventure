@@ -35,6 +35,18 @@
     "RoyalConch": {
       "DisplayName": "Королевская раковина",
       "Tooltip": "Призывает Королеву Русалок у океана второго острова\nНе расходуется\nПервая версия боя — одиночная"
+    },
+    "DarkSoil": {
+      "DisplayName": "Тёмный перегной",
+      "Tooltip": ""
+    },
+    "DarkStone": {
+      "DisplayName": "Лесной сланец",
+      "Tooltip": ""
+    },
+    "DarkWood": {
+      "DisplayName": "Древесина тёмного дуба",
+      "Tooltip": ""
     }
   },
   "Tiles": {
@@ -46,11 +58,35 @@
     },
     "TideliteBrickTile": {
       "MapEntry": "Приливитовый кирпич"
+    },
+    "DarkSoilTile": {
+      "MapEntry": "Тёмный перегной"
+    },
+    "DarkStoneTile": {
+      "MapEntry": "Лесной сланец"
+    },
+    "DarkGrassTile": {
+      "MapEntry": "Дернина тёмного леса"
+    },
+    "DarkWoodTile": {
+      "MapEntry": "Древесина тёмного дуба"
+    },
+    "DarkPlantTile": {
+      "MapEntry": "Лесной подлесок"
+    },
+    "DarkVineTile": {
+      "MapEntry": "Лианы тёмного леса"
     }
   },
   "Walls": {
     "TideliteWall": {
       "DisplayName": "Приливитовая кирпичная стена"
+    },
+    "DarkSoilWall": {
+      "DisplayName": "Стена из тёмного перегноя"
+    },
+    "DarkStoneWall": {
+      "DisplayName": "Стена из лесного сланца"
     }
   },
   "NPCs": {
