@@ -15,6 +15,7 @@ namespace IslandAdventure.Subworlds
         public override int Width => 4200;
         public override int Height => 1200;
         public override bool ShouldSave => true;
+        public override int ReturnDestination => ResumeSystem.ReturnDestination();
         public override bool NormalUpdates => true;
         public override void DrawMenu(GameTime gameTime) => BoatTravelSystem.DrawLoading();
         public override void CopyMainWorldData() => WorldTravelStateSystem.CopyToBridge();

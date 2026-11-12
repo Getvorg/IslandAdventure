@@ -86,5 +86,8 @@
     "NoSlot": "Could not summon the boss: the creature limit has been reached.",
     "Summoned": "The Mermaid Queen has answered your call!",
     "Singing": "The Queen begins to sing!"
+  },
+  "Resume": {
+    "LoadFailed": "Could not load the island. Your character remains in the main world."
   }
 }

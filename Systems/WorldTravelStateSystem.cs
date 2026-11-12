@@ -13,6 +13,7 @@ namespace IslandAdventure.Systems
         private const string BridgeKey = "IslandAdventure:SharedTravelState";
         private static TagCompound pending;
         private static Guid rootId;
+        internal static bool HasPendingRestore => pending != null;
 
         public override void OnWorldLoad()
         {
