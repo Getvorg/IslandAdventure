@@ -18,6 +18,24 @@ namespace IslandAdventure.Systems
         public override void OnWorldLoad()
         {
             if (!SubworldSystem.IsActive<IslandSubworld>()) rootId = Main.ActiveWorldFileData.UniqueId;
+            DiscardForeignSnapshot();
+        }
+
+        public override void PreWorldGen()
+        {
+            if (SubworldSystem.AnyActive()) return;
+            // A previous island quit can leave an unapplied bridge snapshot in
+            // memory while the menu is open. A newly generated root starts fresh.
+            pending = null;
+            rootId = Main.ActiveWorldFileData.UniqueId;
+        }
+
+        private static void DiscardForeignSnapshot()
+        {
+            if (pending != null && !SubworldSystem.AnyActive()
+                && Guid.TryParse(pending.GetString("rootId"), out Guid owner)
+                && owner != Guid.Empty && owner != Main.ActiveWorldFileData.UniqueId)
+                pending = null;
         }
 
         public override void SaveWorldData(TagCompound tag)
@@ -111,6 +129,8 @@ namespace IslandAdventure.Systems
             // overwriting Main.time/dayTime/moonPhase with the destination file.
             // Restore once after spawning, before the first clock tick (not after it).
             if (Main.gameMenu || WorldGen.generatingWorld || pending == null) return;
+            DiscardForeignSnapshot();
+            if (pending == null) return;
             Apply(pending);
             pending = null;
         }
