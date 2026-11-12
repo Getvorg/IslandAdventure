@@ -18,6 +18,6 @@ namespace IslandAdventure.Content.Items
     {
         public override string Texture => "IslandAdventure/Assets/Items/DarkWood";
         public override void SetDefaults() { Item.DefaultToPlaceableTile(ModContent.TileType<DarkWoodTile>()); Item.width=Item.height=16; Item.maxStack=9999; }
-        public override void AddRecipes() => RecipeGroup.recipeGroups[RecipeGroupID.Wood].ValidItems.Add(Type);
+
     }
 }

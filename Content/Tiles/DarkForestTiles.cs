@@ -30,13 +30,13 @@ namespace IslandAdventure.Content.Tiles
     {
         public override string Texture => "IslandAdventure/Assets/Tiles/DarkForest/Soil";
         protected override Color MapColor => new Color(52, 35, 27);
-        public override void SetStaticDefaults() { base.SetStaticDefaults(); RegisterItemDrop(ModContent.ItemType<DarkSoil>()); }
+        public override void SetStaticDefaults() { base.SetStaticDefaults(); RegisterItemDrop(ItemID.DirtBlock); }
     }
     public class DarkGrassTile : ForestGround
     {
         public override string Texture => "IslandAdventure/Assets/Tiles/DarkForest/Grass";
         protected override Color MapColor => new Color(39, 45, 25);
-        public override void SetStaticDefaults() { base.SetStaticDefaults(); RegisterItemDrop(ModContent.ItemType<DarkSoil>()); }
+        public override void SetStaticDefaults() { base.SetStaticDefaults(); RegisterItemDrop(ItemID.DirtBlock); }
         public override void RandomUpdate(int i, int j)
         {
             if (WorldGen.genRand.NextBool(8)) WorldGen.SpreadGrass(i, j, ModContent.TileType<DarkSoilTile>(), Type);
@@ -47,7 +47,7 @@ namespace IslandAdventure.Content.Tiles
         public override string Texture => "IslandAdventure/Assets/Tiles/DarkForest/Stone";
         protected override bool Rock => true;
         protected override Color MapColor => new Color(43, 43, 49);
-        public override void SetStaticDefaults() { base.SetStaticDefaults(); RegisterItemDrop(ModContent.ItemType<DarkStone>()); }
+        public override void SetStaticDefaults() { base.SetStaticDefaults(); RegisterItemDrop(ItemID.StoneBlock); }
     }
     public class DarkWoodTile : ModTile
     {
@@ -57,7 +57,7 @@ namespace IslandAdventure.Content.Tiles
             Main.tileSolid[Type] = Main.tileBlockLight[Type] = true;
             DustType = DustID.WoodFurniture; HitSound = SoundID.Dig;
             AddMapEntry(new Color(56, 33, 23), CreateMapEntryName());
-            RegisterItemDrop(ModContent.ItemType<DarkWood>());
+            RegisterItemDrop(ItemID.Wood);
             VanillaFallbackOnModDeletion = TileID.WoodBlock;
         }
     }
