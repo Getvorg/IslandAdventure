@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using MonoMod.RuntimeDetour;
 using IslandAdventure.WorldGeneration;
 using SubworldLibrary;
 using Terraria;
@@ -16,6 +18,24 @@ namespace IslandAdventure.Systems
     public class IslandGenerationSystem : ModSystem
     {
         internal static bool GeneratingIsland;
+        private Hook shimmerCleanupHook;
+
+        public override void Load()
+        {
+            // Final Cleanup unconditionally visits the Shimmer biome coordinates.
+            // With its generation pass removed these are unset; skip only that
+            // helper, preserving the rest of vanilla cleanup and all main worlds.
+            shimmerCleanupHook = new Hook(typeof(WorldGen).GetMethod("ShimmerCleanUp",
+                BindingFlags.Static | BindingFlags.NonPublic), (Action<Action>)(original =>
+                {
+                    if (!GeneratingIsland) original();
+                }));
+        }
+        public override void Unload()
+        {
+            shimmerCleanupHook?.Dispose(); shimmerCleanupHook = null;
+        }
+
 
         // Keep vanilla order. An explicit selection also prevents mixed passes such
         // as Micro Biomes from adding jungle structures or underground cabins.
@@ -24,9 +44,9 @@ namespace IslandAdventure.Systems
             "Reset", "Terrain", "Ocean Sand", "Tunnels", "Mount Caves",
             "Dirt Wall Backgrounds", "Rocks In Dirt", "Dirt In Rocks", "Clay",
             "Small Holes", "Dirt Layer Caves", "Rock Layer Caves", "Surface Caves",
-            "Wavy Caves", "Grass", "Mushroom Patches", "Marble", "Granite", "Silt",
+            "Wavy Caves", "Grass", "Silt",
             "Shinies", "Webs", "Underworld", "Lakes", "Mountain Caves", "Beaches",
-            "Gems", "Gravitating Sand", "Create Ocean Caves", "Shimmer", "Clean Up Dirt",
+            "Gems", "Gravitating Sand", "Create Ocean Caves", "Clean Up Dirt",
             "Dirt Rock Wall Runner", "Settle Liquids", "Remove Water From Sand",
             "Shell Piles", "Smooth World", "Waterfalls", "Wall Variety",
             "Life Crystals", "Buried Chests", "Surface Chests", "Water Chests",
@@ -61,7 +81,7 @@ namespace IslandAdventure.Systems
                 || !WorldGen.VanillaGenPasses.TryGetValue(pass.Name, out GenPass vanilla)
                 || !ReferenceEquals(pass, vanilla));
 
-            foreach (string required in new[] { "Reset", "Terrain", "Shinies", "Underworld", "Shimmer", "Spawn Point", "Final Cleanup" })
+            foreach (string required in new[] { "Reset", "Terrain", "Shinies", "Underworld", "Spawn Point", "Final Cleanup" })
             {
                 if (!tasks.Any(pass => pass.Name == required))
                     throw new InvalidOperationException("Island generation requires vanilla pass: " + required);
