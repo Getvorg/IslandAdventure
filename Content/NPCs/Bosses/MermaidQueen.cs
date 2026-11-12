@@ -3,7 +3,6 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -57,7 +56,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
             NPC.noGravity = true; NPC.noTileCollide = true;
             NPC.value = Item.buyPrice(gold: 3);
             NPC.npcSlots = 12;
-            NPC.HitSound = SoundID.NPCHit1; NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.HitSound = QueenSounds.Hurt; NPC.DeathSound = QueenSounds.Death;
             Music = MusicID.Boss3;
         }
 
@@ -73,6 +72,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
                 else NPC.ai[3] = MathHelper.Clamp(NPC.Center.Y + 180, 200, Main.maxTilesY * 16 - 600);
             }
             NPC.netUpdate = true;
+            QueenSounds.Play(QueenSounds.Awaken, NPC.Center);
         }
 
         public override void SendExtraAI(BinaryWriter writer) { writer.Write(arenaX); writer.Write(diveX); writer.Write(summonCooldown); writer.Write(songCooldown); }
@@ -194,6 +194,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
                         StartAttack(ChooseAttack(player), player);
                     break;
                 case QueenAttack.DashWindup:
+                    if (timer == 1) QueenSounds.Play(QueenSounds.DashCharge, NPC.Center);
                     if (timer < 30) MoveTo(new Vector2(player.Center.X - NPC.direction * 270, hoverY + 40), 5);
                     else NPC.velocity *= 0.9f;
                     if ((int)timer % 8 == 0) Cue(3);
@@ -205,7 +206,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     }
                     break;
                 case QueenAttack.Dash:
-                    if (timer == 1 && !Main.dedServ) SoundEngine.PlaySound(SoundID.Item71, NPC.Center);
+                    if (timer == 1) QueenSounds.Play(QueenSounds.Dash, NPC.Center);
                     if ((int)timer % 3 == 0) Cue(1);
                     if (timer >= 26) Enter(QueenAttack.Recover);
                     break;
@@ -219,6 +220,7 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     if (timer >= (Fast ? 50 : 65) && Authority) { NPC.velocity = new Vector2(0, 15); Enter(QueenAttack.Dive); }
                     break;
                 case QueenAttack.Dive:
+                    if (timer == 1) QueenSounds.Play(QueenSounds.Dive, NPC.Center);
                     NPC.velocity.X *= 0.85f; NPC.velocity.Y = 15;
                     NPC.rotation = NPC.direction * 0.6f;
                     if ((NPC.Center.Y >= SeaY + 115 || timer >= 50) && Authority)
@@ -227,23 +229,30 @@ namespace IslandAdventure.Content.NPCs.Bosses
                 case QueenAttack.WaveBarrage:
                     // Keep the source fixed so all three pairs are evenly spaced.
                     NPC.velocity = Vector2.Zero;
-                    if (Authority && (timer == 1 || timer == 39 || timer == 77))
-                        SpawnWaves(((int)timer - 1) / 38);
+                    if (timer == 1 || timer == 39 || timer == 77)
+                    {
+                        int size = ((int)timer - 1) / 38;
+                        QueenSounds.Play(QueenSounds.Wave with { Pitch = -0.12f * size, Volume = 0.6f + 0.08f * size }, NPC.Center);
+                        if (Authority) SpawnWaves(size);
+                    }
                     if (timer >= 105) { Enter(QueenAttack.Emerge); NPC.velocity = new Vector2(0, -8); }
                     break;
                 case QueenAttack.Emerge:
-                    if (timer == 1 && !Main.dedServ) SoundEngine.PlaySound(SoundID.Splash, NPC.Center);
+                    if (timer == 1) QueenSounds.Play(QueenSounds.Emerge, NPC.Center);
                     NPC.velocity.Y = -8;
                     if ((int)timer % 4 == 0) Cue(2);
                     if (timer >= 38) NextAttack();
                     break;
                 case QueenAttack.Summon:
+                    if (timer == 1) QueenSounds.Play(QueenSounds.Summon, NPC.Center);
                     MoveTo(new Vector2(player.Center.X - NPC.direction * 220, hoverY - 20), 4);
                     if ((int)timer % 6 == 0) Cue(4);
                     if (timer == 50 && Authority) SpawnMorays();
                     if (timer >= (Fast ? 80 : 95)) NextAttack();
                     break;
                 case QueenAttack.Sing:
+                    if (timer == 1) QueenSounds.Play(QueenSounds.Song, NPC.Center);
+                    if (timer == 70) QueenSounds.Play(QueenSounds.SongRelease, NPC.Center);
                     if (timer < 35) MoveTo(new Vector2(player.Center.X - NPC.direction * 260, hoverY - 20), 5);
                     else NPC.velocity *= 0.88f;
                     if (timer == 1 && !Main.dedServ)
@@ -253,8 +262,6 @@ namespace IslandAdventure.Content.NPCs.Bosses
                     if (timer == 70 && Authority)
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero,
                             ModContent.ProjectileType<RoyalSong>(), 0, 0, Main.myPlayer, NPC.whoAmI + 1);
-                    if (!Main.dedServ && (timer == 35 || timer == 52 || timer == 70))
-                        SoundEngine.PlaySound(SoundID.Item26 with { Pitch = (timer - 52) / 85f }, NPC.Center);
                     if (timer >= 130)
                     {
                         if (Fast) StartAttack(QueenAttack.DashWindup, player);
