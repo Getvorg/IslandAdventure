@@ -76,6 +76,18 @@
     },
     "DarkVineTile": {
       "MapEntry": "Лианы тёмного леса"
+    },
+    "GroveGrass": {
+      "MapEntry": "Дернина рощи"
+    },
+    "GroveTuft": {
+      "MapEntry": "Трава рощи"
+    },
+    "GroveBush": {
+      "MapEntry": "Куст рощи"
+    },
+    "GroveFern": {
+      "MapEntry": "Папоротник рощи"
     }
   },
   "Walls": {

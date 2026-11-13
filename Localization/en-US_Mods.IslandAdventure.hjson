@@ -76,6 +76,18 @@
     },
     "DarkVineTile": {
       "MapEntry": "Dark Forest Vines"
+    },
+    "GroveGrass": {
+      "MapEntry": "Grove Turf"
+    },
+    "GroveTuft": {
+      "MapEntry": "Grove Grass"
+    },
+    "GroveBush": {
+      "MapEntry": "Grove Shrub"
+    },
+    "GroveFern": {
+      "MapEntry": "Grove Fern"
     }
   },
   "Walls": {
