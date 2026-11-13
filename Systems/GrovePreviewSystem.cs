@@ -122,8 +122,10 @@ namespace IslandAdventure.Systems
             int floor=Bounds.Bottom-4;
             for(int x=Bounds.Left+2;x<Bounds.Right-2;x++)for(int y=floor;y<=floor+2;y++)
             {
-                var t=Main.tile[x,y];if(t.HasTile)continue;
-                t.HasTile=true;t.TileType=(ushort)(y==floor?ModContent.TileType<GroveGrass>():TileID.Dirt);
+                var t=Main.tile[x,y];
+                if(t.HasTile&&t.TileType==ModContent.TileType<GroveGrass>())t.TileType=TileID.Grass;
+                if(t.HasTile)continue;
+                t.HasTile=true;t.TileType=(ushort)(y==floor?TileID.Grass:TileID.Dirt);
             }
         }
         public bool RefreshPlants(bool rebuildTrees = false)
@@ -172,7 +174,7 @@ namespace IslandAdventure.Systems
             {
                 int x=Bounds.Left+90+shape*4,y=Bounds.Bottom-20;
                 var tile=Main.tile[x,y];if(tile.HasTile)continue;
-                tile.HasTile=true;tile.TileType=(ushort)ModContent.TileType<GroveGrass>();
+                tile.HasTile=true;tile.TileType=TileID.Grass;
                 tile.IsHalfBlock=shape==1;
                 tile.Slope=(Terraria.ID.SlopeType)(shape<2?0:shape-1);
                 WorldGen.SquareTileFrame(x,y);
@@ -180,16 +182,14 @@ namespace IslandAdventure.Systems
         }
         private void EnsureTree(int x,int floor)
         {
-            // Grow on vanilla grass first, then use the grove's native ModTree renderer.
+            // Keep native soil/tree identities. The grove changes their drawing only.
             for(int tx=x-2;tx<=x+2;tx++)
             {
                 var ground=Main.tile[tx,floor];
-                if(!ground.HasTile||ground.TileType!=ModContent.TileType<GroveGrass>())return;
+                if(!ground.HasTile||ground.TileType!=TileID.Grass)return;
                 for(int y=floor-40;y<floor;y++)if(Main.tile[tx,y].HasTile)return;
             }
-            for(int tx=x-2;tx<=x+2;tx++){var t=Main.tile[tx,floor];t.TileType=TileID.Grass;}
-            try{if(!WorldGen.GrowEpicTree(x,floor))WorldGen.GrowTree(x,floor);}
-            finally{for(int tx=x-2;tx<=x+2;tx++){var t=Main.tile[tx,floor];t.TileType=(ushort)ModContent.TileType<GroveGrass>();}}
+            if(!WorldGen.GrowEpicTree(x,floor))WorldGen.GrowTree(x,floor);
         }
         private void RemoveSampleTree(int trunkX,int floor)
         {

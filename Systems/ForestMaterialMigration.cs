@@ -16,7 +16,7 @@ namespace IslandAdventure.Systems
         private bool pending;
         public override void OnWorldLoad() => pending = true;
         public static int VanillaTile(int type) => type == ModContent.TileType<DarkSoilTile>() ? TileID.Dirt
-            : type == ModContent.TileType<DarkGrassTile>() ? TileID.Grass
+            : type == ModContent.TileType<DarkGrassTile>() || type == ModContent.TileType<GroveGrass>() ? TileID.Grass
             : type == ModContent.TileType<DarkStoneTile>() ? TileID.Stone
             : type == ModContent.TileType<DarkWoodTile>() ? TileID.WoodBlock
             : type == ModContent.TileType<DarkPlantTile>() ? TileID.Plants
@@ -38,7 +38,7 @@ namespace IslandAdventure.Systems
             if (Main.netMode == NetmodeID.MultiplayerClient) return;
             int soilWall = ModContent.WallType<DarkSoilWall>(), stoneWall = ModContent.WallType<DarkStoneWall>();
             var mapping = new System.Collections.Generic.Dictionary<int,int>();
-            foreach (int id in new[] { ModContent.TileType<DarkSoilTile>(), ModContent.TileType<DarkGrassTile>(), ModContent.TileType<DarkStoneTile>(), ModContent.TileType<DarkWoodTile>(), ModContent.TileType<DarkPlantTile>(), ModContent.TileType<DarkVineTile>() })
+            foreach (int id in new[] { ModContent.TileType<DarkSoilTile>(), ModContent.TileType<DarkGrassTile>(), ModContent.TileType<GroveGrass>(), ModContent.TileType<DarkStoneTile>(), ModContent.TileType<DarkWoodTile>(), ModContent.TileType<DarkPlantTile>(), ModContent.TileType<DarkVineTile>() })
                 mapping[id] = VanillaTile(id);
             bool island = SubworldSystem.IsActive<IslandSubworld>();
             int minX = Main.maxTilesX, minY = Main.maxTilesY, maxX = 0, maxY = 0, changed = 0;
