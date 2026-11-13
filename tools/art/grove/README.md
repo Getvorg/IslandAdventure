@@ -66,3 +66,22 @@ the transition, side sampling at 4px, and undersides use only the sparse y=10..1
 tips. Sampling/drawing is entirely on a 2x2 grid. The source, atlas builder and
 static contact/tree previews were updated together. Static previews use the
 actual top sample range with a schematic soil guide, not client screenshots.
+
+0.4.15: `ground-plants-source.png` is a 4x4 source sheet of eight fine grass
+silhouettes and eight small woodland-flower variations. The dedicated
+`build_grove_ground_plants.sh` packs sixteen 32x32 frames into
+`Assets/Grove/GroundPlants.png` (512x32), and also replaces the gallery's
+Tuft/TallGrass art while preserving their native object footprints/atlas layouts.
+Short grass is fitted to 14x7 logical pixels; taller grass to 12x14, flowers
+to 12x12 or 12x13. The runtime anchors all variants to the soil at the same
+baseline and deterministically chooses flowers about one quarter of the time.
+These remain decorative native Plants/Plants2, not herb/dye resources.
+
+`vine-source.png` now contains four sparse narrow vine designs. The vine builder
+packs four 16x128 columns into a 64x128 sheet: seven consecutive body segments
+and a terminal segment per variety. A chain keeps its root's variety throughout;
+long bodies loop their seven segments, and cutting/growth updates the end frame.
+Vines use vanilla 16px width rather than the previous 32px leafy rope. All new
+atlases retain binary alpha and exact 2x2 source pixels. `ground-plants-preview.png`
+shows the actual packed frames at 4x, and the ecosystem preview is reconstructed
+from the updated game atlases. Both are art previews, not client screenshots.

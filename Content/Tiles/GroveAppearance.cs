@@ -31,6 +31,21 @@ namespace IslandAdventure.Content.Tiles
         public static Rectangle SoilSource(int i,int j)
             => new Rectangle(18+((i+j)%3)*18,18,16,16);
 
+        private static uint PlantHash(int i,int j)
+        {
+            uint value=unchecked((uint)i*73856093u^(uint)j*19349663u);
+            value^=value>>16;value*=0x7feb352du;value^=value>>15;
+            return value;
+        }
+        public static int PlantVariant(int i,int j)
+        {
+            uint hash=PlantHash(i,j);
+            return (int)((hash>>8)%8)+(hash%4==0?8:0);
+        }
+        public static int VineVariant(int i,int rootY)=>(int)(PlantHash(i,rootY)%4);
+        public static Rectangle VineSource(int variant,int segment,bool tip)
+            =>new Rectangle(variant*16,(tip?7:segment%7)*16,16,16);
+
         public override void PostDraw(int i,int j,int type,SpriteBatch batch)
         {
             if(type==TileID.Grass&&InGrove(i,j))GroveGrass.DrawTurf(i,j,batch);
@@ -114,22 +129,23 @@ namespace IslandAdventure.Content.Tiles
                 var vine=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Vine",ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 int root=j;
                 while(root>1&&Main.tile[i,root-1].HasTile&&Main.tile[i,root-1].TileType==TileID.Vines)root--;
+                bool tip=!Main.tile[i,j+1].HasTile||Main.tile[i,j+1].TileType!=TileID.Vines;
+                Rectangle source=VineSource(VineVariant(i,root),j-root,tip);
                 for(int py=0;py<16;py+=2)
                 {
                     float depth=(j-root)*16+py;
                     int shift=(int)System.Math.Round(drive*System.Math.Min(4,depth/16));
-                    batch.Draw(vine,point+new Vector2(shift-8,py),new Rectangle(0,((j-root)%16)*16+py,32,2),light);
+                    batch.Draw(vine,point+new Vector2(shift,py),new Rectangle(source.X,source.Y+py,16,2),light);
                 }
             }
             else
             {
-                // Reuse the approved tuft art, unpacking its two atlas cells.
-                var tuft=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Tuft",ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                int style=(i+j)%3;
-                for(int col=0;col<2;col++)for(int py=0;py<16;py+=2)
+                var plants=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/GroundPlants",ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                int style=PlantVariant(i,j);
+                for(int py=0;py<32;py+=2)
                 {
-                    int shift=GroveWindSystem.Offset(py,16,2,drive);
-                    batch.Draw(tuft,point+new Vector2(col*16-8+shift,py+2),new Rectangle(style*36+col*18,py,16,2),light);
+                    int shift=GroveWindSystem.Offset(py,32,2,drive);
+                    batch.Draw(plants,point+new Vector2(-8+shift,py-16),new Rectangle(style*32,py,32,2),light);
                 }
             }
         }

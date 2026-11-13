@@ -2,9 +2,14 @@
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-# Sixteen 32x16 segments: leaves can extend beyond the native 16px-wide vine.
-# Keep the established 2x2 grid; long vines use successive pieces of one stem.
-magick "$root/tools/art/grove/vine-source.png" -channel A -threshold 70% +channel \
- -trim +repage -filter point -resize 16x128! +dither -colors 20 \
- -channel A -threshold 50% +channel -scale 200% -depth 8 PNG32:"$tmp/vine.png"
-cp "$tmp/vine.png" "$root/Assets/Grove/Vine.png"
+# Four narrow 16x128 vines. Each has seven body frames and one terminal frame.
+read -r width height < <(magick identify -format '%w %h\n' "$root/tools/art/grove/vine-source.png")
+cw=$((width/4)); vines=()
+for n in 0 1 2 3; do
+ file="$tmp/vine-$n.png";vines+=("$file")
+ magick "$root/tools/art/grove/vine-source.png" -crop "${cw}x${height}+$((n*cw))+0" +repage \
+  -channel A -threshold 65% +channel -trim +repage -filter box -resize 6x64! \
+  -channel A -threshold 20% +channel +dither -colors 12 \
+  -background none -gravity center -extent 8x64 -scale 200% -depth 8 PNG32:"$file"
+done
+magick "${vines[@]}" +append -depth 8 PNG32:"$root/Assets/Grove/Vine.png"

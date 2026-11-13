@@ -36,6 +36,23 @@ while read -r name source crop fit cols rows variants; do
 done < "$root/tools/art/grove/objects.tsv"
 # Rebuild the dedicated textured turf rim.
 bash "$root/tools/build_grove_turf.sh"
+bash "$root/tools/build_grove_ground_plants.sh"
+# Refresh object previews from the new actual atlases, not the old source crops.
+for name in Tuft TallGrass; do
+ cols=2; rows=1
+ [[ "$name" == TallGrass ]] && { cols=3; rows=4; }
+ previews=()
+ for ((r=0;r<rows;r++)); do
+  cells=()
+  for ((c=0;c<cols;c++)); do
+   file="$tmp/new-$name-$r-$c.png";cells+=("$file")
+   magick "$root/Assets/Grove/$name.png" -crop "16x16+$((c*18))+$((r*18))" +repage "$file"
+  done
+  file="$tmp/new-$name-row-$r.png";previews+=("$file")
+  magick "${cells[@]}" +append "$file"
+ done
+ magick "${previews[@]}" -append "$tmp/preview-$name.png"
+done
 # New rounded crown. Native foliage frames use a 2px trailing gutter.
 magick "$root/tools/art/grove/tree-foliage-source.png" -crop 930x724+0+0 +repage \
  -channel A -threshold 85% +channel -trim +repage -filter box -resize 124x92 \

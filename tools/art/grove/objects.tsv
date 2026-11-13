@@ -1,4 +1,6 @@
 # name source crop logical-fit tile-width tile-height variants
+# Tuft/TallGrass below are legacy intermediate inputs. Final atlases are rebuilt
+# from ground-plants-source.png by build_grove_ground_plants.sh afterward.
 Tuft foliage-source 512x512+0+0 14x7! 2 1 3
 TallGrass foliage-source 512x512+512+0 22x30! 3 4 1
 Moss foliage-source 512x512+1024+0 30x6 4 1 1
