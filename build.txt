@@ -1,5 +1,5 @@
 displayName = Island Adventure
 author = Getvorg
-version = 0.4.15
+version = 0.4.16
 modReferences = SubworldLibrary
 homepage = https://github.com/Getvorg/IslandAdventure

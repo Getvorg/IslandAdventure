@@ -1,15 +1,17 @@
 # Sacred grove artwork
 
 Sources: `lush-understory-source.png` (approved large shrub/fern),
-`foliage-source.png` (grass, small plants, moss and roots), `props-source.png`
+`foliage-source.png` (small plants, moss and roots), `props-source.png`
 (fallen wood and four rock sizes), `bark-source.png` (new shared bark), `turf-source.png` (continuous ground rim), `tree-foliage-source.png` (rounded crown/branches).
 Bark RGB is calibrated to the opaque brown pixels of the branch sprites;
 the same calibrated material fills trunk and six-pixel branch connectors.
 Generated panel boundaries are recorded explicitly to avoid clipping props.
 
-Run `bash tools/build_grove_preview.sh` from the repository with ImageMagick 7.
+Run `bash tools/build_grove_preview.sh` with ImageMagick 7 and Python/Pillow.
+Small foliage is now authored directly in `tools/build_grove_pixel_foliage.py`.
+The former large grass/vine sources are removed; no reduction is used for them.
 `objects.tsv` records crop rectangles, logical fitting boxes, tile dimensions
-and variant counts. Each game tile is 16x16 with a 2px atlas gutter. Builders
+and variant counts. Each game tile is 16x16 with a 2px atlas gutter. Builders for the other, larger artwork
 reduce artwork to logical resolution first, quantize colors and alpha, and
 then upscale 2x: native art pixels are exactly 2x2, with no partial alpha.
 Both low and tall grass use a narrow blade silhouette; all other silhouettes
@@ -85,3 +87,17 @@ Vines use vanilla 16px width rather than the previous 32px leafy rope. All new
 atlases retain binary alpha and exact 2x2 source pixels. `ground-plants-preview.png`
 shows the actual packed frames at 4x, and the ecosystem preview is reconstructed
 from the updated game atlases. Both are art previews, not client screenshots.
+
+
+0.4.16 supersedes the 0.4.15 reduction workflow for small foliage.
+The Python source contains explicit blade paths, petal patterns and leaf marks.
+Each logical mark writes an opaque 2x2 square directly into the final PNG;
+game sprites are never resized or filtered. Crop/paste only packs atlas cells.
+The sixteen plant frames and four vine columns keep their runtime dimensions.
+All vine frames share a continuous stem at physical x=6..7, including the tip.
+Tuft/TallGrass are drawn directly in their own final footprints as well.
+Only review images use integer nearest-neighbor zoom. Run
+`python3 tools/build_grove_pixel_foliage.py all` (or `plants` / `vines`).
+The shell entry points delegate to this source. Game users need only PNGs,
+not Python. `vines-preview.png` and the ground-plants/ecosystem previews
+show actual packed sprites. The old generated source images are removed.
