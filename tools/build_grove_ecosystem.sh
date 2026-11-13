@@ -34,18 +34,8 @@ while read -r name source crop fit cols rows variants; do
  # Reconstructed, exact game-size object for comparing the whole art set.
  cp "$tmp/native.png" "$tmp/preview-$name.png"
 done < "$root/tools/art/grove/objects.tsv"
-# Dedicated continuous turf, rather than slices of separate moss cushions.
-magick "$root/tools/art/grove/turf-source.png" -channel A -threshold 85% +channel \
- -trim +repage -filter box -resize 24x4! -channel A -threshold 40% +channel \
- +dither -colors 16 "$tmp/turf-logical.png"
-basecolor="$(magick "$tmp/turf-logical.png" -format '%[pixel:p{12,3}]' info:)"
-magick "$tmp/turf-logical.png" -crop 24x2+0+0 +repage "$tmp/turf-top.png"
-magick "$tmp/turf-logical.png" -crop 24x2+0+2 +repage -background "$basecolor" -alpha remove -alpha off "$tmp/turf-base.png"
-magick "$tmp/turf-top.png" "$tmp/turf-base.png" -append -scale 200% "$tmp/turf.png"
-for n in 0 1 2; do
- magick "$tmp/turf.png" -crop "16x8+$((n*16))+0" +repage -background none -gravity northwest -extent 18x8 "$tmp/edge-$n.png"
-done
-magick "$tmp/edge-0.png" "$tmp/edge-1.png" "$tmp/edge-2.png" +append -depth 8 PNG32:"$root/Assets/Grove/GrassEdge.png"
+# Rebuild the dedicated textured turf rim.
+bash "$root/tools/build_grove_turf.sh"
 # New rounded crown. Native foliage frames use a 2px trailing gutter.
 magick "$root/tools/art/grove/tree-foliage-source.png" -crop 930x724+0+0 +repage \
  -channel A -threshold 85% +channel -trim +repage -filter box -resize 124x92 \

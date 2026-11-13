@@ -31,15 +31,22 @@ namespace IslandAdventure.Content.Tiles
             var texture = ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/GrassEdge", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             Vector2 point = new Vector2(i*16,j*16) - Main.screenPosition;
             if (!Main.drawToScreen) point += new Vector2(Main.offScreenRange);
-            int frame = (i % 3) * 18;
+            int frame = (i % (texture.Width / 18)) * 18;
             Color light = Lighting.GetColor(i,j);
             // Pixel-column clipping follows vanilla hammered surfaces exactly.
             for (int x=0; x<16; x++)
             {
+                if (!tile.IsHalfBlock && tile.Slope == SlopeType.Solid)
+                {
+                    // Four pixels of tips above the surface, a dense body over the
+                    // dirt's dark outline, then small trailing roots on the dirt face.
+                    batch.Draw(texture,point+new Vector2(x,-4),new Rectangle(frame+x,0,1,16),light);
+                    continue;
+                }
                 int top = tile.IsHalfBlock ? 8 : tile.Slope == SlopeType.SlopeDownRight ? 15-x
                     : tile.Slope == SlopeType.SlopeDownLeft ? x : 0;
                 int height = System.Math.Min(8,16-top);
-                batch.Draw(texture,point+new Vector2(x,top),new Rectangle(frame+x,8-height,1,height),light);
+                batch.Draw(texture,point+new Vector2(x,top),new Rectangle(frame+x,12-height,1,height),light);
             }
             // A root fan follows the living tree; it occupies no extra collision tiles.
             // Draw once at the trunk center, rather than offsetting it to a flared side root.

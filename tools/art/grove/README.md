@@ -23,8 +23,9 @@ is repaired to be continuous; side-only root/branch shapes stay separate. `Tree_
 the same drawing split into an ordinary 6x2-tile decorative object.
 
 Live trees grow on custom turf, drop vanilla wood, and render in normal world
-lighting. The turf rim has a separate continuous source: the lower 4px of each 16px
-frame are fully opaque. It no longer slices separate moss cushions. The dirt
+lighting. The turf rim has a separate continuous source: six 16x16 frames use a 4px fringe, 8px fully opaque textured body and 4px
+ragged lower edge. Source rows 4..11 cover world y=0..7, hiding the vanilla
+dirt outline. Top/bottom tips retain alpha. It no longer slices separate moss cushions. The dirt
 base remains vanilla Dirt.
 Large shrub and fern source/art were retained from 0.4.3.
 
@@ -41,3 +42,8 @@ roots, 6 for wood/stone props, 4 for other plants. The static renderer now
 includes the actual turf rim and a schematic soil guide.
 `ground-contact-preview.png` assembles the actual rock/log/root atlas cells
 with these native draw offsets to catch floating props before client review.
+
+`bash tools/build_grove_turf.sh` rebuilds only the turf. Its 48x8 logical
+source reduction retains more cluster detail than the old 24x4 strip.
+Six frame gutters remain transparent, but are never sampled by the renderer.
+The body is checked for complete alpha coverage and no near-black opaque pixels.
