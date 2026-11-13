@@ -6,6 +6,7 @@ using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Drawing;
 
 namespace IslandAdventure.Content.Tiles
 {
@@ -61,6 +62,7 @@ namespace IslandAdventure.Content.Tiles
     }
     public abstract class GrovePlant : ModTile
     {
+        public virtual float SwayAmplitude => 0f;
         protected virtual int PlantWidth => 2;
         protected virtual int PlantHeight => 3;
         protected virtual bool Variants => false;
@@ -68,6 +70,40 @@ namespace IslandAdventure.Content.Tiles
         protected virtual int SurfaceOffset => 4;
         protected virtual int MaterialDrop => 0;
         protected virtual Color MapColor => new Color(56,110,66);
+        public override bool PreDraw(int i,int j,SpriteBatch batch)
+        {
+            if(SwayAmplitude<=0)return true;
+            if(TileObjectData.IsTopLeft(i,j))Main.instance.TilesRenderer.AddSpecialPoint(i,j,TileDrawing.TileCounterType.CustomNonSolid);
+            return false;
+        }
+        public override void SpecialDraw(int i,int j,SpriteBatch batch)
+        {
+            var first=Main.tile[i,j];if(!first.HasTile||first.TileType!=Type||SwayAmplitude<=0)return;
+            var data=TileObjectData.GetTileData(first);
+            var renderer=Main.instance.TilesRenderer;
+            float drive=0;
+            if(Main.SettingsEnabled_TilesSwayInWind&&renderer.InAPlaceWithWind(i,j,data.Width,data.Height))
+            {
+                double time=global::IslandAdventure.Systems.GroveWindSystem.Time;
+                float wind=renderer.GetWindCycle(i,j,time*0.1);
+                drive=MathHelper.Clamp(wind+(float)System.Math.Sin(time*1.5+i*.37+j*.13)*.2f,-1,1);
+            }
+            Vector2 screen=Main.Camera.UnscaledPosition;
+            for(int row=0;row<data.Height;row++)for(int col=0;col<data.Width;col++)
+            {
+                var tile=Main.tile[i+col,j+row];
+                if(!tile.HasTile||tile.TileType!=Type||!TileDrawing.IsVisible(tile))continue;
+                var texture=renderer.GetTileDrawTexture(tile,i+col,j+row);
+                Color color=tile.IsTileFullbright?Color.White:Lighting.GetColor(i+col,j+row);
+                for(int py=0;py<16;py+=2)
+                {
+                    int y=row*16+py;
+                    int shift=global::IslandAdventure.Systems.GroveWindSystem.Offset(y,data.Height*16,SwayAmplitude,drive);
+                    batch.Draw(texture,new Vector2((i+col)*16+shift,(j+row)*16+data.DrawYOffset+py)-screen,
+                        new Rectangle(tile.TileFrameX,tile.TileFrameY+py,16,2),color);
+                }
+            }
+        }
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = Main.tileNoFail[Type] = Main.tileLavaDeath[Type] = true;
@@ -94,18 +130,21 @@ namespace IslandAdventure.Content.Tiles
     }
     public class GroveBush : GrovePlant
     {
+        public override float SwayAmplitude => 4f;
         public override string Texture => "IslandAdventure/Assets/Grove/bush";
         protected override int PlantWidth => 7;
         protected override int PlantHeight => 5;
     }
     public class GroveFern : GrovePlant
     {
+        public override float SwayAmplitude => 8f;
         public override string Texture => "IslandAdventure/Assets/Grove/fern";
         protected override int PlantWidth => 8;
         protected override int PlantHeight => 6;
     }
     public class GroveTuft : GrovePlant
     {
+        public override float SwayAmplitude => 2f;
         public override string Texture => "IslandAdventure/Assets/Grove/Tuft";
         protected override int PlantWidth => 2;
         protected override int PlantHeight => 1;
@@ -113,24 +152,28 @@ namespace IslandAdventure.Content.Tiles
     }
     public class GroveTallGrass : GrovePlant
     {
+        public override float SwayAmplitude => 6f;
         public override string Texture => "IslandAdventure/Assets/Grove/TallGrass";
         protected override int PlantWidth => 3;
         protected override int PlantHeight => 4;
     }
     public class GroveSmallBush : GrovePlant
     {
+        public override float SwayAmplitude => 4f;
         public override string Texture => "IslandAdventure/Assets/Grove/SmallBush";
         protected override int PlantWidth => 4;
         protected override int PlantHeight => 3;
     }
     public class GroveSmallFern : GrovePlant
     {
+        public override float SwayAmplitude => 6f;
         public override string Texture => "IslandAdventure/Assets/Grove/SmallFern";
         protected override int PlantWidth => 5;
         protected override int PlantHeight => 4;
     }
     public class GroveMoss : GrovePlant
     {
+        public override float SwayAmplitude => 2f;
         public override string Texture => "IslandAdventure/Assets/Grove/Moss";
         protected override int PlantWidth => 4;
         protected override int PlantHeight => 1;
