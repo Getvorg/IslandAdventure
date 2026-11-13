@@ -81,13 +81,46 @@
       "MapEntry": "Дернина рощи"
     },
     "GroveTuft": {
-      "MapEntry": "Трава рощи"
+      "MapEntry": "Низкая трава рощи"
     },
     "GroveBush": {
       "MapEntry": "Куст рощи"
     },
     "GroveFern": {
       "MapEntry": "Папоротник рощи"
+    },
+    "GroveTallGrass": {
+      "MapEntry": "Высокая трава рощи"
+    },
+    "GroveSmallBush": {
+      "MapEntry": "Малый куст рощи"
+    },
+    "GroveSmallFern": {
+      "MapEntry": "Малый папоротник рощи"
+    },
+    "GroveMoss": {
+      "MapEntry": "Лесной мох"
+    },
+    "GroveRoots": {
+      "MapEntry": "Мшистые корни"
+    },
+    "GroveFallenLog": {
+      "MapEntry": "Сломанный ствол"
+    },
+    "GroveHollowLog": {
+      "MapEntry": "Полый поваленный ствол"
+    },
+    "GrovePebble": {
+      "MapEntry": "Мшистый камень"
+    },
+    "GroveRock": {
+      "MapEntry": "Лесной камень"
+    },
+    "GroveLargeRock": {
+      "MapEntry": "Большой лесной камень"
+    },
+    "GroveBoulder": {
+      "MapEntry": "Древний мшистый валун"
     }
   },
   "Walls": {

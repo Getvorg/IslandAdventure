@@ -15,7 +15,7 @@ namespace IslandAdventure.Content.Trees
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Tree_Tops");
         public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Tree_Branches");
         public override void SetTreeFoliageSettings(int i,int j,Tile tile,int xoffset,ref int treeFrame,int floorY,ref int width,ref int height)
-        { treeFrame=0;width=height=80; }
+        { treeFrame=0;width=192;height=128; }
         public override int DropWood() => ItemID.Wood;
     }
 }

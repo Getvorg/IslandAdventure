@@ -40,6 +40,14 @@ namespace IslandAdventure.Content.Tiles
                 int height = System.Math.Min(8,16-top);
                 batch.Draw(texture,point+new Vector2(x,top),new Rectangle(frame+x,0,1,height),light);
             }
+            // A root fan follows the living tree; it occupies no extra collision tiles.
+            // Draw once at the leftmost base tile, including native flared tree bases.
+            if (Main.tile[i,j-1].HasTile && Main.tile[i,j-1].TileType == TileID.Trees
+                && !(Main.tile[i-1,j-1].HasTile && Main.tile[i-1,j-1].TileType == TileID.Trees))
+            {
+                var roots = ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Tree_Roots", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                batch.Draw(roots,point + new Vector2(8-roots.Width/2,-roots.Height+6),light);
+            }
         }
     }
     public abstract class GrovePlant : ModTile
@@ -47,9 +55,14 @@ namespace IslandAdventure.Content.Tiles
         protected virtual int PlantWidth => 2;
         protected virtual int PlantHeight => 3;
         protected virtual bool Variants => false;
+        protected virtual bool Cuttable => true;
+        protected virtual int MaterialDrop => 0;
+        protected virtual Color MapColor => new Color(56,110,66);
         public override void SetStaticDefaults()
         {
-            Main.tileFrameImportant[Type] = Main.tileCut[Type] = Main.tileNoFail[Type] = Main.tileLavaDeath[Type] = true;
+            Main.tileFrameImportant[Type] = Main.tileNoFail[Type] = Main.tileLavaDeath[Type] = true;
+            Main.tileCut[Type] = Cuttable;
+            Main.tileAxe[Type] = MaterialDrop == ItemID.Wood;
             Main.tileNoAttach[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.Width = PlantWidth;
@@ -61,8 +74,10 @@ namespace IslandAdventure.Content.Tiles
             TileObjectData.newTile.AnchorValidTiles = new[] { TileID.Dirt, TileID.Grass, ModContent.TileType<GroveGrass>() };
             if (Variants) { TileObjectData.newTile.StyleHorizontal = true; TileObjectData.newTile.RandomStyleRange = 3; }
             TileObjectData.addTile(Type);
-            DustType = DustID.Grass; HitSound = SoundID.Grass;
-            AddMapEntry(new Color(62,78,35),CreateMapEntryName());
+            DustType = MaterialDrop == ItemID.StoneBlock ? DustID.Stone : MaterialDrop == ItemID.Wood ? DustID.WoodFurniture : DustID.Grass;
+            HitSound = MaterialDrop == ItemID.StoneBlock ? SoundID.Tink : MaterialDrop == ItemID.Wood ? SoundID.Dig : SoundID.Grass;
+            if (MaterialDrop != 0) RegisterItemDrop(MaterialDrop);
+            AddMapEntry(MapColor,CreateMapEntryName());
             VanillaFallbackOnModDeletion = TileID.Plants;
         }
     }
@@ -81,8 +96,86 @@ namespace IslandAdventure.Content.Tiles
     public class GroveTuft : GrovePlant
     {
         public override string Texture => "IslandAdventure/Assets/Grove/Tuft";
-        protected override int PlantWidth => 1;
-        protected override int PlantHeight => 2;
+        protected override int PlantWidth => 2;
+        protected override int PlantHeight => 1;
         protected override bool Variants => true;
+    }
+    public class GroveTallGrass : GrovePlant
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/TallGrass";
+        protected override int PlantWidth => 3;
+        protected override int PlantHeight => 4;
+    }
+    public class GroveSmallBush : GrovePlant
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/SmallBush";
+        protected override int PlantWidth => 4;
+        protected override int PlantHeight => 3;
+    }
+    public class GroveSmallFern : GrovePlant
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/SmallFern";
+        protected override int PlantWidth => 5;
+        protected override int PlantHeight => 4;
+    }
+    public class GroveMoss : GrovePlant
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/Moss";
+        protected override int PlantWidth => 4;
+        protected override int PlantHeight => 1;
+    }
+    public abstract class GroveWoodDecoration : GrovePlant
+    {
+        protected override bool Cuttable => false;
+        protected override int MaterialDrop => ItemID.Wood;
+        protected override Color MapColor => new Color(87,61,42);
+    }
+    public class GroveRoots : GroveWoodDecoration
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/Roots";
+        protected override int PlantWidth => 6;
+        protected override int PlantHeight => 2;
+    }
+    public class GroveFallenLog : GroveWoodDecoration
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/FallenLog";
+        protected override int PlantWidth => 7;
+        protected override int PlantHeight => 3;
+    }
+    public class GroveHollowLog : GroveWoodDecoration
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/HollowLog";
+        protected override int PlantWidth => 10;
+        protected override int PlantHeight => 4;
+    }
+    public abstract class GroveStoneDecoration : GrovePlant
+    {
+        protected override bool Cuttable => false;
+        protected override int MaterialDrop => ItemID.StoneBlock;
+        protected override Color MapColor => new Color(103,126,130);
+    }
+    public class GrovePebble : GroveStoneDecoration
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/Pebble";
+        protected override int PlantWidth => 2;
+        protected override int PlantHeight => 1;
+    }
+    public class GroveRock : GroveStoneDecoration
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/Rock";
+        protected override int PlantWidth => 4;
+        protected override int PlantHeight => 3;
+    }
+    public class GroveLargeRock : GroveStoneDecoration
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/LargeRock";
+        protected override int PlantWidth => 6;
+        protected override int PlantHeight => 4;
+    }
+    public class GroveBoulder : GroveStoneDecoration
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/Boulder";
+        protected override int PlantWidth => 10;
+        protected override int PlantHeight => 8;
     }
 }

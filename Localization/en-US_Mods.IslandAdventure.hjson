@@ -81,13 +81,46 @@
       "MapEntry": "Grove Turf"
     },
     "GroveTuft": {
-      "MapEntry": "Grove Grass"
+      "MapEntry": "Low Grove Grass"
     },
     "GroveBush": {
       "MapEntry": "Grove Shrub"
     },
     "GroveFern": {
       "MapEntry": "Grove Fern"
+    },
+    "GroveTallGrass": {
+      "MapEntry": "Tall Grove Grass"
+    },
+    "GroveSmallBush": {
+      "MapEntry": "Small Grove Shrub"
+    },
+    "GroveSmallFern": {
+      "MapEntry": "Small Grove Fern"
+    },
+    "GroveMoss": {
+      "MapEntry": "Forest Moss"
+    },
+    "GroveRoots": {
+      "MapEntry": "Mossy Roots"
+    },
+    "GroveFallenLog": {
+      "MapEntry": "Broken Fallen Trunk"
+    },
+    "GroveHollowLog": {
+      "MapEntry": "Hollow Fallen Trunk"
+    },
+    "GrovePebble": {
+      "MapEntry": "Mossy Pebble"
+    },
+    "GroveRock": {
+      "MapEntry": "Forest Rock"
+    },
+    "GroveLargeRock": {
+      "MapEntry": "Large Forest Rock"
+    },
+    "GroveBoulder": {
+      "MapEntry": "Ancient Mossy Boulder"
     }
   },
   "Walls": {
