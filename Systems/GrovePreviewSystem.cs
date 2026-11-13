@@ -15,7 +15,7 @@ namespace IslandAdventure.Systems
         private bool canReturn;
         private string returnOwner;
         private int plantLayout;
-        private const int CurrentPlantLayout = 3;
+        private const int CurrentPlantLayout = 4;
         public override void OnWorldLoad() { Bounds = Rectangle.Empty; canReturn=false; returnOwner=null; plantLayout=0; }
         public override void PreWorldGen() => OnWorldLoad();
         public override void SaveWorldData(TagCompound tag)
@@ -96,9 +96,9 @@ namespace IslandAdventure.Systems
                 if(t.HasTile&&(t.TileType==bush||t.TileType==fern||t.TileType==tuft))t.ClearTile();
             }
             int floor=Bounds.Bottom-4;
-            PlacePlant(Bounds.Left+32,floor,bush,3,2);
-            PlacePlant(Bounds.Left+39,floor,fern,4,3);
-            foreach(int dx in new[]{8,25,28,45,48})PlacePlant(Bounds.Left+dx,floor,tuft,1,2);
+            PlacePlant(Bounds.Left+32,floor,bush,7,5);
+            PlacePlant(Bounds.Left+43,floor,fern,8,6);
+            foreach(int dx in new[]{8,25,28,37,50})PlacePlant(Bounds.Left+dx,floor,tuft,1,2);
             plantLayout=CurrentPlantLayout;
             return true;
         }

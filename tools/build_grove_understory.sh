@@ -2,19 +2,19 @@
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-# Source illustration has three differently sized panels, not equally sized cells.
+# Large shrub and fern share the new two-panel source; tuft retains its own source.
 # Reduce to logical pixels first; every final art pixel is exactly 2x2 game pixels.
 for name in bush fern tuft; do
  filter=point; colors=24; edge=50%
  case "$name" in
-  bush) crop=890x724+0+0; size=22x14!; canvas=24x16; cols=3; rows=2;;
-  fern) crop=; size=30x22; canvas=32x24; cols=4; rows=3; filter=box; colors=8; edge=25%;;
+  bush) crop=1086x724+0+0; size=52x38; canvas=56x40; cols=7; rows=5; filter=box; colors=32; edge=40%;;
+  fern) crop=1086x724+1086+0; size=60x46; canvas=64x48; cols=8; rows=6; filter=box; colors=32; edge=35%;;
   tuft) crop=434x724+1738+0; size=7x15!; canvas=8x16; cols=1; rows=2;;
  esac
  source="$root/tools/art/grove/understory-source.png"
  crop_args=(-crop "$crop" +repage)
- if [[ "$name" == fern ]]; then source="$root/tools/art/grove/fern-source.png"; crop_args=(); fi
- # The fern keeps its natural broad aspect ratio: never squeeze it into a tall frame.
+ if [[ "$name" != tuft ]]; then source="$root/tools/art/grove/lush-understory-source.png"; fi
+ # Keep natural proportions; transparent padding does not stretch plant silhouettes.
  magick "$source" "${crop_args[@]}" \
   -channel A -threshold 85% +channel -trim +repage -filter "$filter" -resize "$size" \
   -channel A -threshold "$edge" +channel +dither -colors "$colors" \
