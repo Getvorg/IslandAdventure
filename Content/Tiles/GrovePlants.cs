@@ -34,6 +34,7 @@ namespace IslandAdventure.Content.Tiles
             Vector2 point = new Vector2(i*16,j*16) - Main.screenPosition;
             if (!Main.drawToScreen) point += new Vector2(Main.offScreenRange);
             Color light = tile.IsTileFullbright?Color.White:Lighting.GetColor(i,j);
+            if(tile.IsActuated)light*=.4f;
             GroveTurfShape.Draw(i,j,batch,texture,point,light);
             // A root fan follows the living tree; it occupies no extra collision tiles.
             // Draw once at the trunk center, rather than offsetting it to a flared side root.

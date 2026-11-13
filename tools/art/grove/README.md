@@ -47,3 +47,13 @@ with these native draw offsets to catch floating props before client review.
 source reduction retains more cluster detail than the old 24x4 strip.
 Six frame gutters remain transparent, but are never sampled by the renderer.
 The body is checked for complete alpha coverage and no near-black opaque pixels.
+
+0.4.11: `vine-source.png` is a generated hanging-vine source using the established
+foliage palette. `bash tools/build_grove_vine.sh` produces `Assets/Grove/Vine.png`:
+32x256 pixels, sixteen consecutive 32x16 pieces, exact 2x2 pixels and binary alpha.
+The runtime keeps native vine tiles, roots, cutting and growth; only their drawing
+changes. Leaves extend 8px either side of the native tile. Native Plants/Plants2
+rooted in gallery grass use the approved Tuft atlas, including anchored wind sway.
+The turf pass now suppresses the vanilla green sprite entirely and draws vanilla
+Dirt pixels under the custom exposed-edge material. Upper-slope masks follow the
+correct solid sides and all slope masks use Terraria's 2px staircase.

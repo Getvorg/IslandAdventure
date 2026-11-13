@@ -12,10 +12,10 @@ namespace IslandAdventure.Content.Tiles
             if(x<0||x>=16||y<0||y>=16)return false;
             if(half)return y>=8;
             return slope switch {
-                SlopeType.SlopeDownRight=>y>=15-x,
-                SlopeType.SlopeDownLeft=>y>=x,
-                SlopeType.SlopeUpRight=>y<=15-x,
-                SlopeType.SlopeUpLeft=>y<=x,
+                SlopeType.SlopeDownRight=>y>=14-(x/2)*2,
+                SlopeType.SlopeDownLeft=>y>=(x/2)*2,
+                SlopeType.SlopeUpRight=>y<=1+(x/2)*2,
+                SlopeType.SlopeUpLeft=>y<=15-(x/2)*2,
                 _=>true
             };
         }
