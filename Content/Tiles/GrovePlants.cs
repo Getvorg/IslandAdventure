@@ -41,10 +41,11 @@ namespace IslandAdventure.Content.Tiles
                 batch.Draw(texture,point+new Vector2(x,top),new Rectangle(frame+x,0,1,height),light);
             }
             // A root fan follows the living tree; it occupies no extra collision tiles.
-            // Draw once at the leftmost base tile, including native flared tree bases.
-            if (Main.tile[i,j-1].HasTile && Main.tile[i,j-1].TileType == TileID.Trees
-                && !(Main.tile[i-1,j-1].HasTile && Main.tile[i-1,j-1].TileType == TileID.Trees))
+            // Draw once at the trunk center, rather than offsetting it to a flared side root.
+            if (Main.tile[i,j-1].HasTile && Main.tile[i,j-1].TileType == TileID.Trees)
             {
+                WorldGen.GetTreeBottom(i,j-1,out int rootX,out int rootY);
+                if(rootX!=i||rootY!=j)return;
                 var roots = ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Tree_Roots", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 batch.Draw(roots,point + new Vector2(8-roots.Width/2,-roots.Height+6),light);
             }

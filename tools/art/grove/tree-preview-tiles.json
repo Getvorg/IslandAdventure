@@ -1,0 +1,123 @@
+{
+  "trunkX": 17,
+  "floor": 68,
+  "tiles": [
+    {
+      "x": 16,
+      "y": 65,
+      "type": 5,
+      "name": "Tree",
+      "fx": 44,
+      "fy": 198,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 58,
+      "type": 5,
+      "name": "Tree",
+      "fx": 22,
+      "fy": 220,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 59,
+      "type": 5,
+      "name": "Tree",
+      "fx": 0,
+      "fy": 44,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 60,
+      "type": 5,
+      "name": "Tree",
+      "fx": 0,
+      "fy": 0,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 61,
+      "type": 5,
+      "name": "Tree",
+      "fx": 0,
+      "fy": 44,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 62,
+      "type": 5,
+      "name": "Tree",
+      "fx": 0,
+      "fy": 22,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 63,
+      "type": 5,
+      "name": "Tree",
+      "fx": 0,
+      "fy": 22,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 64,
+      "type": 5,
+      "name": "Tree",
+      "fx": 22,
+      "fy": 22,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 65,
+      "type": 5,
+      "name": "Tree",
+      "fx": 110,
+      "fy": 110,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 66,
+      "type": 5,
+      "name": "Tree",
+      "fx": 0,
+      "fy": 110,
+      "tree": true
+    },
+    {
+      "x": 17,
+      "y": 67,
+      "type": 5,
+      "name": "Tree",
+      "fx": 0,
+      "fy": 132,
+      "tree": true
+    },
+    {
+      "x": 18,
+      "y": 65,
+      "type": 5,
+      "name": "Tree",
+      "fx": 88,
+      "fy": 88,
+      "tree": true
+    },
+    {
+      "x": 18,
+      "y": 67,
+      "type": 5,
+      "name": "Tree",
+      "fx": 22,
+      "fy": 154,
+      "tree": true
+    }
+  ]
+}

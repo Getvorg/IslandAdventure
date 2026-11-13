@@ -39,25 +39,36 @@ for n in 0 1 2; do
  magick "$tmp/moss.png" -crop "16x8+$((n*16))+8" +repage -background none -gravity northwest -extent 18x8 "$tmp/edge-$n.png"
 done
 magick "$tmp/edge-0.png" "$tmp/edge-1.png" "$tmp/edge-2.png" +append -depth 8 PNG32:"$root/Assets/Grove/GrassEdge.png"
-# New canopy and bark use Terraria's native tree tile and branch attachment masks.
-magick "$root/tools/art/grove/tree-source.png" -crop 1448x724+0+0 +repage \
- -channel A -threshold 85% +channel -trim +repage -filter box -resize 92x60 \
- -channel A -threshold 45% +channel +dither -colors 40 -background none -gravity south -extent 96x64 \
- -scale 200% -gravity northwest -extent 194x130 -depth 8 PNG32:"$root/Assets/Grove/Tree_Tops.png"
+# New rounded crown. Native foliage frames use a 2px trailing gutter.
+magick "$root/tools/art/grove/tree-foliage-source.png" -crop 930x724+0+0 +repage \
+ -channel A -threshold 85% +channel -trim +repage -filter box -resize 124x92 \
+ -channel A -threshold 45% +channel +dither -colors 40 -background none -gravity south -extent 128x96 \
+ -scale 200% -gravity northwest -extent 258x194 -depth 8 PNG32:"$root/Assets/Grove/Tree_Tops.png"
 magick "$root/tools/art/grove/tree-source.png" -crop 704x704+1458+10 +repage \
  -alpha off -filter box -resize 64x64! +dither -colors 32 -scale 200% "$tmp/bark.png"
-magick -size 176x264 tile:"$tmp/bark.png" \( "$root/tools/art/grove/layouts/tree.png" -alpha extract \) \
- -alpha off -compose CopyOpacity -composite -depth 8 PNG32:"$root/Assets/Grove/Tree.png"
-magick "$root/Assets/Grove/Tree_Tops.png" -crop 80x40+50+56 +repage -filter box -resize 8x8! -alpha off -scale 200% "$tmp/leaf.png"
-magick -size 84x126 tile:"$tmp/leaf.png" "$tmp/branches.png"
-for y in 0 42 84; do
- magick "$tmp/bark.png" -crop 14x40+0+0 +repage "$tmp/strip.png"
- for x in 26 42; do
-  magick "$tmp/branches.png" "$tmp/strip.png" -geometry "+$x+$y" -compose over -composite "$tmp/branches.png"
+# Some template joints notch into the trunk. Keep the central 16px opaque
+# in every trunk frame; exclude side-only branches and flared root pieces.
+magick "$root/tools/art/grove/layouts/tree.png" -alpha extract "$tmp/trunk-mask.png"
+for ((r=0;r<12;r++)); do
+ for ((c=0;c<8;c++)); do
+  if (( (c==3 && r<3) || (c==4 && r>=3 && r<6) || ((c==1 || c==2) && r>=6 && r<9) || ((c==2 || c==3) && r>=9) )); then continue; fi
+  magick "$tmp/trunk-mask.png" -fill white -draw "rectangle $((c*22+2)),$((r*22)) $((c*22+17)),$((r*22+19))" "$tmp/trunk-mask.png"
  done
 done
-magick "$tmp/branches.png" \( "$root/tools/art/grove/layouts/branches.png" -alpha extract \) \
- -alpha off -compose CopyOpacity -composite -depth 8 PNG32:"$root/Assets/Grove/Tree_Branches.png"
+magick -size 176x264 tile:"$tmp/bark.png" "$tmp/trunk-mask.png" \
+ -alpha off -compose CopyOpacity -composite -depth 8 PNG32:"$root/Assets/Grove/Tree.png"
+# Use actual leafy branch sprites, not a repeated texture inside a tiny template blob.
+for side in left right; do
+ crop=590x724+930+0; pad=1
+ if [[ "$side" == right ]]; then crop=652x724+1520+0; pad=4; fi
+ magick "$root/tools/art/grove/tree-foliage-source.png" -crop "$crop" +repage \
+  -channel A -threshold 85% +channel -trim +repage -filter box -resize 20x16 \
+  -channel A -threshold 40% +channel +dither -colors 32 -background none -gravity north \
+  -splice "0x$pad" -gravity northwest -extent 20x20 -scale 200% \
+  -gravity northwest -extent 42x42 "$tmp/branch-$side.png"
+done
+magick "$tmp/branch-left.png" "$tmp/branch-right.png" +append "$tmp/branch-row.png"
+magick "$tmp/branch-row.png" "$tmp/branch-row.png" "$tmp/branch-row.png" -append -depth 8 PNG32:"$root/Assets/Grove/Tree_Branches.png"
 # A preview of actual native-size sprites, never the large AI source illustration.
 magick "$tmp/preview-Tuft.png" "$tmp/preview-TallGrass.png" "$tmp/preview-SmallBush.png" "$tmp/preview-SmallFern.png" "$tmp/preview-Moss.png" "$tmp/preview-Roots.png" -background none -gravity south +append "$tmp/green.png"
 magick "$tmp/preview-FallenLog.png" "$tmp/preview-HollowLog.png" "$tmp/preview-Pebble.png" "$tmp/preview-Rock.png" "$tmp/preview-LargeRock.png" "$tmp/preview-Boulder.png" -background none -gravity south +append "$tmp/props.png"

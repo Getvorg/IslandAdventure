@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using IslandAdventure.Content.Tiles;
 using Terraria;
@@ -13,15 +14,15 @@ namespace IslandAdventure.Systems
     {
         public const int GalleryWidth = 176;
         public const int GalleryHeight = 72;
-        private const int CurrentPlantLayout = 5;
+        private const int CurrentPlantLayout = 6;
         public Rectangle Bounds { get; private set; }
         private Vector2 returnPosition;
         private bool canReturn, triedUpgrade;
         private string returnOwner;
-        private int plantLayout;
+        private int plantLayout,treeLayout;
         public override void OnWorldLoad()
         {
-            Bounds=Rectangle.Empty; canReturn=triedUpgrade=false; returnOwner=null; plantLayout=0;
+            Bounds=Rectangle.Empty; canReturn=triedUpgrade=false; returnOwner=null; plantLayout=treeLayout=0;
         }
         public override void PreWorldGen() => OnWorldLoad();
         public override void SaveWorldData(TagCompound tag)
@@ -29,7 +30,7 @@ namespace IslandAdventure.Systems
             if(Bounds.Width>0)
             {
                 tag["x"]=Bounds.X;tag["y"]=Bounds.Y;tag["w"]=Bounds.Width;tag["h"]=Bounds.Height;
-                tag["plantLayout"]=plantLayout;
+                tag["plantLayout"]=plantLayout;tag["treeLayout"]=treeLayout;
             }
             if(canReturn){tag["returnX"]=returnPosition.X;tag["returnY"]=returnPosition.Y;tag["owner"]=returnOwner;}
         }
@@ -38,7 +39,7 @@ namespace IslandAdventure.Systems
             int w=tag.GetInt("w"),h=tag.GetInt("h");
             if((w==56&&h==46)||(w==GalleryWidth&&h==GalleryHeight))
                 Bounds=new Rectangle(tag.GetInt("x"),tag.GetInt("y"),w,h);
-            plantLayout=tag.GetInt("plantLayout");
+            plantLayout=tag.GetInt("plantLayout");treeLayout=tag.GetInt("treeLayout");
             if(tag.ContainsKey("owner")&&float.IsFinite(tag.GetFloat("returnX"))&&float.IsFinite(tag.GetFloat("returnY")))
             {returnPosition=new Vector2(tag.GetFloat("returnX"),tag.GetFloat("returnY"));returnOwner=tag.GetString("owner");canReturn=true;}
         }
@@ -126,13 +127,19 @@ namespace IslandAdventure.Systems
         public bool RefreshPlants()
         {
             if(!Valid(Bounds)||Bounds.Width!=GalleryWidth)return false;
-            // Only our own decorations are replaced; player blocks and living trees survive.
+            // Only our decorations are refreshed. Sample trees are rebuilt once on upgrade;
+            // subsequent refreshes preserve them. Player blocks are never removed.
             for(int x=Bounds.Left;x<Bounds.Right;x++)for(int y=Bounds.Top;y<Bounds.Bottom;y++)
             {
                 var t=Main.tile[x,y];
                 if(t.HasTile&&TileLoader.GetTile(t.TileType) is GrovePlant)t.ClearTile();
             }
             int floor=Bounds.Bottom-4;
+            if(treeLayout<1)
+            {
+                foreach(int dx in new[]{17,43,164})RemoveSampleTree(Bounds.Left+dx,floor);
+                treeLayout=1;
+            }
             EnsureTree(Bounds.Left+17,floor); // Preserve the original preview's tree position.
             EnsureTree(Bounds.Left+43,floor);
             EnsureTree(Bounds.Left+164,floor);
@@ -166,8 +173,31 @@ namespace IslandAdventure.Systems
                 for(int y=floor-40;y<floor;y++)if(Main.tile[tx,y].HasTile)return;
             }
             for(int tx=x-2;tx<=x+2;tx++){var t=Main.tile[tx,floor];t.TileType=TileID.Grass;}
-            try{if(!WorldGen.GrowEpicTree(x,floor))WorldGen.GrowTree(x,floor);}
+            try
+            {
+                for(int attempt=0;attempt<32;attempt++)
+                {
+                    if(!WorldGen.GrowTree(x,floor))break;
+                    int top=floor-1;
+                    while(Main.tile[x,top-1].HasTile&&Main.tile[x,top-1].TileType==TileID.Trees)top--;
+                    if(floor-top>=10||attempt==31)break;
+                    RemoveSampleTree(x,floor);
+                }
+            }
             finally{for(int tx=x-2;tx<=x+2;tx++){var t=Main.tile[tx,floor];t.TileType=(ushort)ModContent.TileType<GroveGrass>();}}
+        }
+        private void RemoveSampleTree(int trunkX,int floor)
+        {
+            // Only a tree rooted at this gallery's exact sample point is rebuilt.
+            // Snapshot positions first: root lookup must see the intact native tree.
+            var cells=new List<Point>();
+            for(int x=trunkX-2;x<=trunkX+2;x++)for(int y=Bounds.Top;y<floor;y++)
+            {
+                var t=Main.tile[x,y];if(!t.HasTile||t.TileType!=TileID.Trees)continue;
+                WorldGen.GetTreeBottom(x,y,out int rootX,out int rootY);
+                if(rootX==trunkX&&rootY==floor)cells.Add(new Point(x,y));
+            }
+            foreach(var p in cells){var t=Main.tile[p.X,p.Y];t.ClearTile();}
         }
     }
 }
