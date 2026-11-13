@@ -31,9 +31,10 @@ namespace IslandAdventure.Content.Tiles
         {
             var tile=Main.tile[i,j];
             int frame=(i%(texture.Width/18))*18;
+            bool isolated=IsIsolated(i,j);
             for(int y=0;y<16;y+=2)for(int x=0;x<16;x+=2)
             {
-                if(TrySample(i,j,x,y,out int along,out int sourceY))
+                if(TrySample(i,j,x,y,isolated,out int along,out int sourceY))
                     batch.Draw(texture,point+new Vector2(x,y),new Rectangle(frame+along,sourceY,2,2),light);
             }
             // Grass tips remain above an exposed flat top; soil/body never spills outside slopes.
@@ -45,13 +46,38 @@ namespace IslandAdventure.Content.Tiles
             }
         }
         // Exposed geometry, not tile-frame indices, controls all connections.
-        // The top is 4px of sod + 2px transition, sides at most 4px;
-        // undersides sample only sparse root tips, never an opaque green band.
+        // Connected terrain: top 4px sod + 2px transition, sides at most 4px,
+        // underside sparse roots. Detached shapes are entirely opaque grass.
         public static bool TrySample(int i,int j,int x,int y,out int along,out int sourceY)
+            =>TrySample(i,j,x,y,IsIsolated(i,j),out along,out sourceY);
+
+        // Diagonal neighbors do not join a face. Check actual contact so slopes,
+        // half blocks, platforms and actuated neighbors cannot fake a connection.
+        public static bool IsIsolated(int i,int j)
+        {
+            var tile=Main.tile[i,j];
+            if(!tile.HasTile)return false;
+            for(int p=0;p<16;p+=2)
+            {
+                if(Contains(tile.Slope,tile.IsHalfBlock,p,0)&&Solid(i*16+p,j*16-1))return false;
+                if(Contains(tile.Slope,tile.IsHalfBlock,p,15)&&Solid(i*16+p,j*16+16))return false;
+                if(Contains(tile.Slope,tile.IsHalfBlock,0,p)&&Solid(i*16-1,j*16+p))return false;
+                if(Contains(tile.Slope,tile.IsHalfBlock,15,p)&&Solid(i*16+16,j*16+p))return false;
+            }
+            return true;
+        }
+        private static bool TrySample(int i,int j,int x,int y,bool isolated,out int along,out int sourceY)
         {
             along=x;sourceY=0;
             var tile=Main.tile[i,j];
             if(!tile.HasTile||!Contains(tile.Slope,tile.IsHalfBlock,x,y))return false;
+            if(isolated)
+            {
+                // Every occupied 2x2 cell must use opaque sod: no dirt hole and
+                // no transparent root pixels, including half blocks/four slopes.
+                sourceY=4+(y&2);
+                return true;
+            }
             int wx=i*16+x,wy=j*16+y;
             for(int step=1;step<=3;step++)
             {
