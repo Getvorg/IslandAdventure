@@ -1,7 +1,4 @@
 using System;
-using IslandAdventure.Biomes;
-using IslandAdventure.Content.Tiles;
-using IslandAdventure.Content.Walls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Generation;
@@ -14,14 +11,6 @@ namespace IslandAdventure.Systems
 {
     public class DarkForestSystem : ModSystem
     {
-        public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
-        {
-            if (Main.gameMenu || !Main.LocalPlayer.InModBiome<DarkForestBiome>()) return;
-            // The block atlases supply their own dark colors. Keep foreground
-            // sunlight neutral; only dim the distant backdrop without a green tint.
-            backgroundColor = new Color((int)(backgroundColor.R * .72f), (int)(backgroundColor.G * .72f), (int)(backgroundColor.B * .72f));
-        }
-
         public static void ShapeTerrain(GenerationProgress progress, GameConfiguration configuration)
         {
             progress.Message = "Формирование холмов и низин тёмного леса";
