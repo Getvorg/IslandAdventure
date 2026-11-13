@@ -72,7 +72,11 @@ namespace IslandAdventure.Content.Tiles
         protected override int PlantWidth => 3;
         protected override int PlantHeight => 2;
     }
-    public class GroveFern : GrovePlant { public override string Texture => "IslandAdventure/Assets/Grove/fern"; }
+    public class GroveFern : GrovePlant
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/fern";
+        protected override int PlantWidth => 4;
+    }
     public class GroveTuft : GrovePlant
     {
         public override string Texture => "IslandAdventure/Assets/Grove/Tuft";

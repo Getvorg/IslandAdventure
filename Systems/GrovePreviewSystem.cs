@@ -15,6 +15,7 @@ namespace IslandAdventure.Systems
         private bool canReturn;
         private string returnOwner;
         private int plantLayout;
+        private const int CurrentPlantLayout = 3;
         public override void OnWorldLoad() { Bounds = Rectangle.Empty; canReturn=false; returnOwner=null; plantLayout=0; }
         public override void PreWorldGen() => OnWorldLoad();
         public override void SaveWorldData(TagCompound tag)
@@ -34,7 +35,7 @@ namespace IslandAdventure.Systems
         public override void PreUpdateWorld()
         {
             if(Main.gameMenu||WorldGen.generatingWorld||Main.netMode==NetmodeID.MultiplayerClient)return;
-            if(Bounds.Width>0&&plantLayout<2)RefreshPlants();
+            if(Bounds.Width>0&&plantLayout<CurrentPlantLayout)RefreshPlants();
         }
         public bool Visit(Player player, out string message)
         {
@@ -59,7 +60,7 @@ namespace IslandAdventure.Systems
                 if(!found){message="Не найден свободный участок неба. Поднимись на поверхность и попробуй снова.";return false;}
             }
             if(!Valid(Bounds)){message="Запись тестового участка повреждена.";return false;}
-            if(plantLayout<2)RefreshPlants();
+            if(plantLayout<CurrentPlantLayout)RefreshPlants();
             Vector2 landing=new Vector2((Bounds.Left+5)*16,(Bounds.Bottom-4)*16-player.height);
             if(!ResumeSystem.TrySafePosition(player,landing,out var safe)){message="Место входа занято блоками.";return false;}
             if(!Bounds.Contains(player.Center.ToTileCoordinates())){returnPosition=player.position;returnOwner=player.name;canReturn=true;}
@@ -96,9 +97,9 @@ namespace IslandAdventure.Systems
             }
             int floor=Bounds.Bottom-4;
             PlacePlant(Bounds.Left+32,floor,bush,3,2);
-            PlacePlant(Bounds.Left+39,floor,fern,2,3);
+            PlacePlant(Bounds.Left+39,floor,fern,4,3);
             foreach(int dx in new[]{8,25,28,45,48})PlacePlant(Bounds.Left+dx,floor,tuft,1,2);
-            plantLayout=2;
+            plantLayout=CurrentPlantLayout;
             return true;
         }
         private static void PlacePlant(int origin,int floor,int type,int width,int height)
