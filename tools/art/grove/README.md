@@ -57,3 +57,12 @@ rooted in gallery grass use the approved Tuft atlas, including anchored wind swa
 The turf pass now suppresses the vanilla green sprite entirely and draws vanilla
 Dirt pixels under the custom exposed-edge material. Upper-slope masks follow the
 correct solid sides and all slope masks use Terraria's 2px staircase.
+
+0.4.13 replaces `turf-source.png` with a thin vanilla-proportioned sod strip,
+not moss cushions. The packed 108x16 atlas keeps six 16px frames with 2px gutters:
+transparent y=0..1, blade tips y=2..3, opaque sod y=4..7, irregular roots
+y=8..11, transparent y=12..15. Runtime top sampling is capped at 6px including
+the transition, side sampling at 4px, and undersides use only the sparse y=10..11
+tips. Sampling/drawing is entirely on a 2x2 grid. The source, atlas builder and
+static contact/tree previews were updated together. Static previews use the
+actual top sample range with a schematic soil guide, not client screenshots.

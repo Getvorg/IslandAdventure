@@ -38,7 +38,7 @@ def render():
                          f"{x-origin_x:+d}{y-origin_y:+d}", "-composite"])
 
         for x in range(origin_x // 16, (origin_x + 400) // 16 + 1):
-            add("GrassEdge", f"16x16+{(x%6)*18}+0", x*16, floor*16-4)
+            add("GrassEdge", f"16x10+{(x%6)*18}+0", x*16, floor*16-4)
         for tile in tiles:
             add("Tree", f"20x20+{tile['fx']}+{tile['fy']}",
                 tile["x"] * 16 - 2, tile["y"] * 16)
@@ -81,7 +81,7 @@ def render_ground_contact():
             args.extend([str(path), "-geometry", f"{x:+d}{y:+d}", "-composite"])
 
         for x in range(0, width, 16):
-            add("GrassEdge", f"16x16+{((x//16)%6)*18}+0", x, baseline-4)
+            add("GrassEdge", f"16x10+{((x//16)%6)*18}+0", x, baseline-4)
         x = 16
         for name, columns, rows in objects:
             offset = 12 if name == "Roots" else 6
