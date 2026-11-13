@@ -38,3 +38,6 @@ for name in bush fern;do
  done
  magick "$tmp/row-0.png" "$tmp/row-1.png" -append -depth 8 PNG32:"$root/Assets/Grove/$name.png"
 done
+if [[ -f "$root/tools/art/grove/understory-source.png" ]]; then
+ bash "$root/tools/build_grove_understory.sh"
+fi

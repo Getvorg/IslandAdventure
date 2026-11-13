@@ -14,19 +14,27 @@ namespace IslandAdventure.Systems
         private Vector2 returnPosition;
         private bool canReturn;
         private string returnOwner;
-        public override void OnWorldLoad() { Bounds = Rectangle.Empty; canReturn=false; returnOwner=null; }
+        private int plantLayout;
+        public override void OnWorldLoad() { Bounds = Rectangle.Empty; canReturn=false; returnOwner=null; plantLayout=0; }
         public override void PreWorldGen() => OnWorldLoad();
         public override void SaveWorldData(TagCompound tag)
         {
             if(Bounds.Width>0){tag["x"]=Bounds.X;tag["y"]=Bounds.Y;tag["w"]=Bounds.Width;tag["h"]=Bounds.Height;}
+            if(Bounds.Width>0)tag["plantLayout"]=plantLayout;
             if(canReturn){tag["returnX"]=returnPosition.X;tag["returnY"]=returnPosition.Y;tag["owner"]=returnOwner;}
         }
         public override void LoadWorldData(TagCompound tag)
         {
             if(tag.GetInt("w")==56 && tag.GetInt("h")==46)
                 Bounds=new Rectangle(tag.GetInt("x"),tag.GetInt("y"),56,46);
+            plantLayout=tag.GetInt("plantLayout");
             if(tag.ContainsKey("owner")&&float.IsFinite(tag.GetFloat("returnX"))&&float.IsFinite(tag.GetFloat("returnY")))
             {returnPosition=new Vector2(tag.GetFloat("returnX"),tag.GetFloat("returnY"));returnOwner=tag.GetString("owner");canReturn=true;}
+        }
+        public override void PreUpdateWorld()
+        {
+            if(Main.gameMenu||WorldGen.generatingWorld||Main.netMode==NetmodeID.MultiplayerClient)return;
+            if(Bounds.Width>0&&plantLayout<2)RefreshPlants();
         }
         public bool Visit(Player player, out string message)
         {
@@ -51,6 +59,7 @@ namespace IslandAdventure.Systems
                 if(!found){message="Не найден свободный участок неба. Поднимись на поверхность и попробуй снова.";return false;}
             }
             if(!Valid(Bounds)){message="Запись тестового участка повреждена.";return false;}
+            if(plantLayout<2)RefreshPlants();
             Vector2 landing=new Vector2((Bounds.Left+5)*16,(Bounds.Bottom-4)*16-player.height);
             if(!ResumeSystem.TrySafePosition(player,landing,out var safe)){message="Место входа занято блоками.";return false;}
             if(!Bounds.Contains(player.Center.ToTileCoordinates())){returnPosition=player.position;returnOwner=player.name;canReturn=true;}
@@ -76,6 +85,29 @@ namespace IslandAdventure.Systems
             {var t=Main.tile[x,y];if(t.HasTile||t.WallType!=WallID.None||t.LiquidAmount!=0)return false;}
             return true;
         }
+        public bool RefreshPlants()
+        {
+            if(!Valid(Bounds))return false;
+            int bush=ModContent.TileType<GroveBush>(),fern=ModContent.TileType<GroveFern>(),tuft=ModContent.TileType<GroveTuft>();
+            for(int x=Bounds.Left;x<Bounds.Right;x++)for(int y=Bounds.Top;y<Bounds.Bottom;y++)
+            {
+                var t=Main.tile[x,y];
+                if(t.HasTile&&(t.TileType==bush||t.TileType==fern||t.TileType==tuft))t.ClearTile();
+            }
+            int floor=Bounds.Bottom-4;
+            PlacePlant(Bounds.Left+32,floor,bush,3,2);
+            PlacePlant(Bounds.Left+39,floor,fern,2,3);
+            foreach(int dx in new[]{8,25,28,45,48})PlacePlant(Bounds.Left+dx,floor,tuft,1,2);
+            plantLayout=2;
+            return true;
+        }
+        private static void PlacePlant(int origin,int floor,int type,int width,int height)
+        {
+            int left=origin-width/2;
+            for(int x=left;x<left+width;x++)for(int y=floor-height;y<floor;y++)
+                if(Main.tile[x,y].HasTile||Main.tile[x,y].LiquidAmount>0)return;
+            WorldGen.PlaceObject(origin,floor-1,type,true);
+        }
         private void Build(Rectangle area)
         {
             int floor=area.Bottom-4;
@@ -84,11 +116,9 @@ namespace IslandAdventure.Systems
             {var t=Main.tile[x,y];t.HasTile=true;t.TileType=(ushort)(y==floor?TileID.Grass:TileID.Dirt);}
             if(!WorldGen.GrowEpicTree(area.Left+17,floor))WorldGen.GrowTree(area.Left+17,floor);
             for(int x=area.Left+2;x<area.Right-2;x++){var t=Main.tile[x,floor];t.TileType=(ushort)ModContent.TileType<GroveGrass>();}
-            WorldGen.PlaceObject(area.Left+32,floor-1,ModContent.TileType<GroveBush>(),true);
-            WorldGen.PlaceObject(area.Left+39,floor-1,ModContent.TileType<GroveFern>(),true);
-            foreach(int dx in new[]{8,25,28,45,48})WorldGen.PlaceObject(area.Left+dx,floor-1,ModContent.TileType<GroveTuft>(),true);
-            WorldGen.RangeFrame(area.Left,area.Top,area.Right,area.Bottom);
             Bounds=area;
+            RefreshPlants();
+            WorldGen.RangeFrame(area.Left,area.Top,area.Right,area.Bottom);
         }
     }
 }

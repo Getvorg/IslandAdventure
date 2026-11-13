@@ -4,6 +4,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using Terraria.DataStructures;
+using Terraria.Enums;
 
 namespace IslandAdventure.Content.Tiles
 {
@@ -42,25 +44,40 @@ namespace IslandAdventure.Content.Tiles
     }
     public abstract class GrovePlant : ModTile
     {
-        protected virtual bool Small => false;
+        protected virtual int PlantWidth => 2;
+        protected virtual int PlantHeight => 3;
+        protected virtual bool Variants => false;
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = Main.tileCut[Type] = Main.tileNoFail[Type] = Main.tileLavaDeath[Type] = true;
             Main.tileNoAttach[Type] = true;
-            TileObjectData.newTile.CopyFrom(Small ? TileObjectData.Style1x1 : TileObjectData.Style2x2);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
+            TileObjectData.newTile.Width = PlantWidth;
+            TileObjectData.newTile.Height = PlantHeight;
+            TileObjectData.newTile.Origin = new Point16(PlantWidth / 2, PlantHeight - 1);
+            TileObjectData.newTile.CoordinateHeights = new int[PlantHeight];
+            for (int row=0;row<PlantHeight;row++) TileObjectData.newTile.CoordinateHeights[row]=16;
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, PlantWidth, 0);
             TileObjectData.newTile.AnchorValidTiles = new[] { TileID.Dirt, TileID.Grass, ModContent.TileType<GroveGrass>() };
-            if (Small) { TileObjectData.newTile.StyleHorizontal = true; TileObjectData.newTile.RandomStyleRange = 3; }
+            if (Variants) { TileObjectData.newTile.StyleHorizontal = true; TileObjectData.newTile.RandomStyleRange = 3; }
             TileObjectData.addTile(Type);
             DustType = DustID.Grass; HitSound = SoundID.Grass;
             AddMapEntry(new Color(62,78,35),CreateMapEntryName());
             VanillaFallbackOnModDeletion = TileID.Plants;
         }
     }
-    public class GroveBush : GrovePlant { public override string Texture => "IslandAdventure/Assets/Grove/bush"; }
+    public class GroveBush : GrovePlant
+    {
+        public override string Texture => "IslandAdventure/Assets/Grove/bush";
+        protected override int PlantWidth => 3;
+        protected override int PlantHeight => 2;
+    }
     public class GroveFern : GrovePlant { public override string Texture => "IslandAdventure/Assets/Grove/fern"; }
     public class GroveTuft : GrovePlant
     {
         public override string Texture => "IslandAdventure/Assets/Grove/Tuft";
-        protected override bool Small => true;
+        protected override int PlantWidth => 1;
+        protected override int PlantHeight => 2;
+        protected override bool Variants => true;
     }
 }
