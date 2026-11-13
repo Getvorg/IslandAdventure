@@ -34,9 +34,16 @@ while read -r name source crop fit cols rows variants; do
  # Reconstructed, exact game-size object for comparing the whole art set.
  cp "$tmp/native.png" "$tmp/preview-$name.png"
 done < "$root/tools/art/grove/objects.tsv"
-# Moss becomes the turf rim too; the installed vanilla dirt underneath stays unchanged.
+# Dedicated continuous turf, rather than slices of separate moss cushions.
+magick "$root/tools/art/grove/turf-source.png" -channel A -threshold 85% +channel \
+ -trim +repage -filter box -resize 24x4! -channel A -threshold 40% +channel \
+ +dither -colors 16 "$tmp/turf-logical.png"
+basecolor="$(magick "$tmp/turf-logical.png" -format '%[pixel:p{12,3}]' info:)"
+magick "$tmp/turf-logical.png" -crop 24x2+0+0 +repage "$tmp/turf-top.png"
+magick "$tmp/turf-logical.png" -crop 24x2+0+2 +repage -background "$basecolor" -alpha remove -alpha off "$tmp/turf-base.png"
+magick "$tmp/turf-top.png" "$tmp/turf-base.png" -append -scale 200% "$tmp/turf.png"
 for n in 0 1 2; do
- magick "$tmp/moss.png" -crop "16x8+$((n*16))+8" +repage -background none -gravity northwest -extent 18x8 "$tmp/edge-$n.png"
+ magick "$tmp/turf.png" -crop "16x8+$((n*16))+0" +repage -background none -gravity northwest -extent 18x8 "$tmp/edge-$n.png"
 done
 magick "$tmp/edge-0.png" "$tmp/edge-1.png" "$tmp/edge-2.png" +append -depth 8 PNG32:"$root/Assets/Grove/GrassEdge.png"
 # New rounded crown. Native foliage frames use a 2px trailing gutter.
@@ -44,8 +51,39 @@ magick "$root/tools/art/grove/tree-foliage-source.png" -crop 930x724+0+0 +repage
  -channel A -threshold 85% +channel -trim +repage -filter box -resize 124x92 \
  -channel A -threshold 45% +channel +dither -colors 40 -background none -gravity south -extent 128x96 \
  -scale 200% -gravity northwest -extent 258x194 -depth 8 PNG32:"$root/Assets/Grove/Tree_Tops.png"
-magick "$root/tools/art/grove/tree-source.png" -crop 704x704+1458+10 +repage \
- -alpha off -filter box -resize 64x64! +dither -colors 32 -scale 200% "$tmp/bark.png"
+# Prepare foliage first so the bark material can be calibrated to its actual wood colors.
+for side in left right; do
+ crop=590x724+930+0; pad=2
+ if [[ "$side" == right ]]; then crop=652x724+1520+0; pad=3; fi
+ magick "$root/tools/art/grove/tree-foliage-source.png" -crop "$crop" +repage \
+  -channel A -threshold 85% +channel -trim +repage -filter box -resize 20x16 \
+  -channel A -threshold 40% +channel +dither -colors 32 -background none -gravity north \
+  -splice "0x$pad" -gravity northwest -extent 20x20 -scale 200% \
+  -gravity northwest -extent 42x42 "$tmp/branch-$side.png"
+done
+magick "$root/tools/art/grove/bark-source.png" -alpha off -filter box -resize 64x64! -scale 200% "$tmp/bark.png"
+# Read-only color measurement; ImageMagick applies the calibration to the generated bark.
+read -r red_factor green_factor blue_factor < <(python3 - "$tmp/bark.png" "$tmp/branch-left.png" "$tmp/branch-right.png" <<'PYCOLORS'
+import subprocess,sys
+
+def brown_mean(paths):
+    sums=[0,0,0]; count=0
+    for path in paths:
+        raw=subprocess.check_output(['magick',path,'-depth','8','RGBA:-'])
+        for i in range(0,len(raw),4):
+            r,g,b,a=raw[i:i+4]
+            if a==255 and r>g*1.12 and g>b*1.1:
+                for k,v in enumerate((r,g,b)):sums[k]+=v
+                count+=1
+    if not count:raise RuntimeError('No opaque wood pixels in reference')
+    return [v/count for v in sums]
+source=brown_mean([sys.argv[1]]); target=brown_mean(sys.argv[2:])
+print(*(f'{t/s:.8f}' for s,t in zip(source,target)))
+PYCOLORS
+)
+magick "$tmp/bark.png" -channel R -evaluate Multiply "$red_factor" \
+ -channel G -evaluate Multiply "$green_factor" -channel B -evaluate Multiply "$blue_factor" \
+ +channel +dither -colors 32 "$tmp/bark.png"
 # Some template joints notch into the trunk. Keep the central 16px opaque
 # in every trunk frame; exclude side-only branches and flared root pieces.
 magick "$root/tools/art/grove/layouts/tree.png" -alpha extract "$tmp/trunk-mask.png"
@@ -55,17 +93,24 @@ for ((r=0;r<12;r++)); do
   magick "$tmp/trunk-mask.png" -fill white -draw "rectangle $((c*22+2)),$((r*22)) $((c*22+17)),$((r*22+19))" "$tmp/trunk-mask.png"
  done
 done
+# Thicken the side twig frames at logical resolution, keeping 2x2 art pixels.
+for spec in '3 0' '4 3'; do
+ read -r col first_row <<< "$spec"
+ for ((r=first_row;r<first_row+3;r++)); do
+  magick "$tmp/trunk-mask.png" -crop "20x20+$((col*22))+$((r*22))" +repage \
+   -filter point -resize 50% -morphology Dilate Square:1 -scale 200% "$tmp/twig-mask.png"
+  magick "$tmp/trunk-mask.png" "$tmp/twig-mask.png" -geometry "+$((col*22))+$((r*22))" -compose Copy -composite "$tmp/trunk-mask.png"
+ done
+done
 magick -size 176x264 tile:"$tmp/bark.png" "$tmp/trunk-mask.png" \
  -alpha off -compose CopyOpacity -composite -depth 8 PNG32:"$root/Assets/Grove/Tree.png"
-# Use actual leafy branch sprites, not a repeated texture inside a tiny template blob.
+# Six-pixel connectors touch the native trunk at y=24 / y=30.
+# They use the exact same bark pixels as the trunk, rather than a separate color.
 for side in left right; do
- crop=590x724+930+0; pad=1
- if [[ "$side" == right ]]; then crop=652x724+1520+0; pad=4; fi
- magick "$root/tools/art/grove/tree-foliage-source.png" -crop "$crop" +repage \
-  -channel A -threshold 85% +channel -trim +repage -filter box -resize 20x16 \
-  -channel A -threshold 40% +channel +dither -colors 32 -background none -gravity north \
-  -splice "0x$pad" -gravity northwest -extent 20x20 -scale 200% \
-  -gravity northwest -extent 42x42 "$tmp/branch-$side.png"
+ x=32; y=22
+ if [[ "$side" == right ]]; then x=0; y=28; fi
+ magick "$tmp/bark.png" -crop 8x6+0+0 +repage "$tmp/joint.png"
+ magick "$tmp/branch-$side.png" "$tmp/joint.png" -geometry "+$x+$y" -compose over -composite "$tmp/branch-$side.png"
 done
 magick "$tmp/branch-left.png" "$tmp/branch-right.png" +append "$tmp/branch-row.png"
 magick "$tmp/branch-row.png" "$tmp/branch-row.png" "$tmp/branch-row.png" -append -depth 8 PNG32:"$root/Assets/Grove/Tree_Branches.png"

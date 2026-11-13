@@ -11,6 +11,7 @@ namespace IslandAdventure.Content.Tiles
 {
     public class GroveGrass : ModTile
     {
+        public const int RootSink = 14;
         // Actual dirt pixels remain the installed vanilla dirt; only the rim is new.
         public override string Texture => $"Terraria/Images/Tiles_{TileID.Dirt}";
         public override void SetStaticDefaults()
@@ -38,7 +39,7 @@ namespace IslandAdventure.Content.Tiles
                 int top = tile.IsHalfBlock ? 8 : tile.Slope == SlopeType.SlopeDownRight ? 15-x
                     : tile.Slope == SlopeType.SlopeDownLeft ? x : 0;
                 int height = System.Math.Min(8,16-top);
-                batch.Draw(texture,point+new Vector2(x,top),new Rectangle(frame+x,0,1,height),light);
+                batch.Draw(texture,point+new Vector2(x,top),new Rectangle(frame+x,8-height,1,height),light);
             }
             // A root fan follows the living tree; it occupies no extra collision tiles.
             // Draw once at the trunk center, rather than offsetting it to a flared side root.
@@ -47,7 +48,7 @@ namespace IslandAdventure.Content.Tiles
                 WorldGen.GetTreeBottom(i,j-1,out int rootX,out int rootY);
                 if(rootX!=i||rootY!=j)return;
                 var roots = ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Tree_Roots", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                batch.Draw(roots,point + new Vector2(8-roots.Width/2,-roots.Height+6),light);
+                batch.Draw(roots,point + new Vector2(8-roots.Width/2,-roots.Height+RootSink),light);
             }
         }
     }
@@ -57,6 +58,7 @@ namespace IslandAdventure.Content.Tiles
         protected virtual int PlantHeight => 3;
         protected virtual bool Variants => false;
         protected virtual bool Cuttable => true;
+        protected virtual int SurfaceOffset => 4;
         protected virtual int MaterialDrop => 0;
         protected virtual Color MapColor => new Color(56,110,66);
         public override void SetStaticDefaults()
@@ -68,6 +70,7 @@ namespace IslandAdventure.Content.Tiles
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.Width = PlantWidth;
             TileObjectData.newTile.Height = PlantHeight;
+            TileObjectData.newTile.DrawYOffset = SurfaceOffset;
             TileObjectData.newTile.Origin = new Point16(PlantWidth / 2, PlantHeight - 1);
             TileObjectData.newTile.CoordinateHeights = new int[PlantHeight];
             for (int row=0;row<PlantHeight;row++) TileObjectData.newTile.CoordinateHeights[row]=16;
@@ -129,11 +132,13 @@ namespace IslandAdventure.Content.Tiles
     {
         protected override bool Cuttable => false;
         protected override int MaterialDrop => ItemID.Wood;
+        protected override int SurfaceOffset => 6;
         protected override Color MapColor => new Color(87,61,42);
     }
     public class GroveRoots : GroveWoodDecoration
     {
         public override string Texture => "IslandAdventure/Assets/Grove/Roots";
+        protected override int SurfaceOffset => 12;
         protected override int PlantWidth => 6;
         protected override int PlantHeight => 2;
     }
@@ -153,6 +158,7 @@ namespace IslandAdventure.Content.Tiles
     {
         protected override bool Cuttable => false;
         protected override int MaterialDrop => ItemID.StoneBlock;
+        protected override int SurfaceOffset => 6;
         protected override Color MapColor => new Color(103,126,130);
     }
     public class GrovePebble : GroveStoneDecoration

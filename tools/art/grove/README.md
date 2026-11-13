@@ -2,8 +2,9 @@
 
 Sources: `lush-understory-source.png` (approved large shrub/fern),
 `foliage-source.png` (grass, small plants, moss and roots), `props-source.png`
-(fallen wood and four rock sizes), `tree-source.png` (bark), `tree-foliage-source.png` (rounded crown/branches).
-Bark uses the right panel of tree-source. New foliage crops are recorded in the builder.
+(fallen wood and four rock sizes), `bark-source.png` (new shared bark), `turf-source.png` (continuous ground rim), `tree-foliage-source.png` (rounded crown/branches).
+Bark RGB is calibrated to the opaque brown pixels of the branch sprites;
+the same calibrated material fills trunk and six-pixel branch connectors.
 Generated panel boundaries are recorded explicitly to avoid clipping props.
 
 Run `bash tools/build_grove_preview.sh` from the repository with ImageMagick 7.
@@ -22,10 +23,21 @@ is repaired to be continuous; side-only root/branch shapes stay separate. `Tree_
 the same drawing split into an ordinary 6x2-tile decorative object.
 
 Live trees grow on custom turf, drop vanilla wood, and render in normal world
-lighting. Only the turf rim uses moss pixels; its dirt base uses vanilla Dirt.
+lighting. The turf rim has a separate continuous source: the lower 4px of each 16px
+frame are fully opaque. It no longer slices separate moss cushions. The dirt
+base remains vanilla Dirt.
 Large shrub and fern source/art were retained from 0.4.3.
 
 `tree-frame-preview.png` is a zero-wind native-frame reconstruction from the
 exported `tree-preview-tiles.json` fixture. Run
 `python3 tools/render_grove_tree_preview.py` to check complete-tree joins,
 rather than comparing source illustrations to in-game sprites.
+
+Sample trees again use native GrowEpicTree (20–29 tiles). Every plain
+/grovepreview call rebuilds the sample, resetting old paint/coatings on its
+own decorations/trees while preserving the saved Back position and foreign blocks.
+RootSink=14 embeds live roots; TileObjectData.DrawYOffset is 12 for exposed
+roots, 6 for wood/stone props, 4 for other plants. The static renderer now
+includes the actual turf rim and a schematic soil guide.
+`ground-contact-preview.png` assembles the actual rock/log/root atlas cells
+with these native draw offsets to catch floating props before client review.

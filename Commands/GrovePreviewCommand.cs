@@ -15,8 +15,7 @@ namespace IslandAdventure.Commands
             var preview=ModContent.GetInstance<GrovePreviewSystem>();
             if(args.Length==1&&args[0]=="back"){caller.Reply(preview.Back(caller.Player)?"Возвращаемся.":"Нет сохранённой безопасной точки возврата.");return;}
             if(args.Length>1||(args.Length==1&&args[0]!="refresh")){caller.Reply(Usage);return;}
-            bool visited=preview.Visit(caller.Player,out string message);
-            if(visited&&args.Length==1)preview.RefreshPlants();
+            preview.Visit(caller.Player,out string message);
             caller.Reply(message);
         }
     }

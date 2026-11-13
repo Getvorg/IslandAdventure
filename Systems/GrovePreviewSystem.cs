@@ -14,7 +14,8 @@ namespace IslandAdventure.Systems
     {
         public const int GalleryWidth = 176;
         public const int GalleryHeight = 72;
-        private const int CurrentPlantLayout = 6;
+        private const int CurrentPlantLayout = 7;
+        private const int CurrentTreeLayout = 2;
         public Rectangle Bounds { get; private set; }
         private Vector2 returnPosition;
         private bool canReturn, triedUpgrade;
@@ -64,12 +65,13 @@ namespace IslandAdventure.Systems
             else if(Bounds.Width==0&&!CreateNear(player))
             {message="Не найден свободный участок неба. Поднимись на поверхность и попробуй снова.";return false;}
             if(!Valid(Bounds)){message="Запись тестового участка повреждена.";return false;}
-            if(plantLayout<CurrentPlantLayout)RefreshPlants();
+            BuildBase();
+            RefreshPlants(rebuildTrees:true);
             Vector2 landing=new Vector2((Bounds.Left+5)*16,(Bounds.Bottom-4)*16-player.height);
             if(!ResumeSystem.TrySafePosition(player,landing,out var safe)){message="Место входа занято блоками.";return false;}
             if(!wasInPlot){returnPosition=player.position;returnOwner=player.name;canReturn=true;}
             Move(player,safe);
-            message="Образец рощи расширен: пройди вправо до большого валуна и второго дерева. /grovepreview back — вернуться.";
+            message="Образец рощи обновлён: пройди вправо до большого валуна и второго дерева. /grovepreview back — вернуться.";
             return true;
         }
         public bool Back(Player player)
@@ -103,7 +105,7 @@ namespace IslandAdventure.Systems
                 {
                     var area=new Rectangle(left,floor-GalleryHeight+4,GalleryWidth,GalleryHeight);
                     if(!Empty(area))continue;
-                    Bounds=area;BuildBase();RefreshPlants();return true;
+                    Bounds=area;return true;
                 }
             }
             return false;
@@ -124,23 +126,23 @@ namespace IslandAdventure.Systems
                 t.HasTile=true;t.TileType=(ushort)(y==floor?ModContent.TileType<GroveGrass>():TileID.Dirt);
             }
         }
-        public bool RefreshPlants()
+        public bool RefreshPlants(bool rebuildTrees = false)
         {
             if(!Valid(Bounds)||Bounds.Width!=GalleryWidth)return false;
-            // Only our decorations are refreshed. Sample trees are rebuilt once on upgrade;
-            // subsequent refreshes preserve them. Player blocks are never removed.
+            // The command rebuilds sample trees as well as decorations. Automatic upgrades
+            // and direct decoration refreshes keep current trees. Foreign blocks survive.
             for(int x=Bounds.Left;x<Bounds.Right;x++)for(int y=Bounds.Top;y<Bounds.Bottom;y++)
             {
                 var t=Main.tile[x,y];
-                if(t.HasTile&&TileLoader.GetTile(t.TileType) is GrovePlant)t.ClearTile();
+                if(t.HasTile&&TileLoader.GetTile(t.TileType) is GrovePlant)ClearSampleTile(t);
             }
             int floor=Bounds.Bottom-4;
-            if(treeLayout<1)
+            if(rebuildTrees||treeLayout<CurrentTreeLayout)
             {
                 foreach(int dx in new[]{17,43,164})RemoveSampleTree(Bounds.Left+dx,floor);
-                treeLayout=1;
+                treeLayout=CurrentTreeLayout;
             }
-            EnsureTree(Bounds.Left+17,floor); // Preserve the original preview's tree position.
+            EnsureTree(Bounds.Left+17,floor); // Restore the original tall sample trees.
             EnsureTree(Bounds.Left+43,floor);
             EnsureTree(Bounds.Left+164,floor);
             foreach(int dx in new[]{8,12,39,72,158,172})Place<GroveTuft>(dx,floor);
@@ -173,17 +175,7 @@ namespace IslandAdventure.Systems
                 for(int y=floor-40;y<floor;y++)if(Main.tile[tx,y].HasTile)return;
             }
             for(int tx=x-2;tx<=x+2;tx++){var t=Main.tile[tx,floor];t.TileType=TileID.Grass;}
-            try
-            {
-                for(int attempt=0;attempt<32;attempt++)
-                {
-                    if(!WorldGen.GrowTree(x,floor))break;
-                    int top=floor-1;
-                    while(Main.tile[x,top-1].HasTile&&Main.tile[x,top-1].TileType==TileID.Trees)top--;
-                    if(floor-top>=10||attempt==31)break;
-                    RemoveSampleTree(x,floor);
-                }
-            }
+            try{if(!WorldGen.GrowEpicTree(x,floor))WorldGen.GrowTree(x,floor);}
             finally{for(int tx=x-2;tx<=x+2;tx++){var t=Main.tile[tx,floor];t.TileType=(ushort)ModContent.TileType<GroveGrass>();}}
         }
         private void RemoveSampleTree(int trunkX,int floor)
@@ -197,7 +189,15 @@ namespace IslandAdventure.Systems
                 WorldGen.GetTreeBottom(x,y,out int rootX,out int rootY);
                 if(rootX==trunkX&&rootY==floor)cells.Add(new Point(x,y));
             }
-            foreach(var p in cells){var t=Main.tile[p.X,p.Y];t.ClearTile();}
+            foreach(var p in cells)ClearSampleTile(Main.tile[p.X,p.Y]);
+        }
+        private static void ClearSampleTile(Tile tile)
+        {
+            tile.ClearTile();
+            // ClearTile alone retains paint/coatings in the tile map. A fresh sample
+            // must not inherit old invisible or differently painted wood/foliage.
+            tile.TileColor=PaintID.None;
+            tile.IsTileInvisible=tile.IsTileFullbright=false;
         }
     }
 }
