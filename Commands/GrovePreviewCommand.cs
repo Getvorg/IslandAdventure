@@ -7,15 +7,15 @@ namespace IslandAdventure.Commands
     {
         public override CommandType Type => CommandType.Chat;
         public override string Command => "grovepreview";
-        public override string Usage => "/grovepreview [back|refresh]";
+        public override string Usage => "/grovepreview [back|refresh|shapes]";
         public override string Description => "Тестовый участок травы и растений священной рощи";
         public override void Action(CommandCaller caller,string input,string[] args)
         {
             if(Terraria.Main.netMode!=NetmodeID.SinglePlayer){caller.Reply("Только одиночная игра.");return;}
             var preview=ModContent.GetInstance<GrovePreviewSystem>();
             if(args.Length==1&&args[0]=="back"){caller.Reply(preview.Back(caller.Player)?"Возвращаемся.":"Нет сохранённой безопасной точки возврата.");return;}
-            if(args.Length>1||(args.Length==1&&args[0]!="refresh")){caller.Reply(Usage);return;}
-            preview.Visit(caller.Player,out string message);
+            if(args.Length>1||(args.Length==1&&args[0]!="refresh"&&args[0]!="shapes")){caller.Reply(Usage);return;}
+            if(preview.Visit(caller.Player,out string message)&&args.Length==1&&args[0]=="shapes")preview.BuildShapeExamples();
             caller.Reply(message);
         }
     }

@@ -165,6 +165,19 @@ namespace IslandAdventure.Systems
                 if(Main.tile[x,y].HasTile||Main.tile[x,y].LiquidAmount>0)return;
             WorldGen.PlaceObject(origin,floor-1,type,true);
         }
+        public void BuildShapeExamples()
+        {
+            if(Bounds.Width!=GalleryWidth)return;
+            for(int shape=0;shape<6;shape++)
+            {
+                int x=Bounds.Left+90+shape*4,y=Bounds.Bottom-20;
+                var tile=Main.tile[x,y];if(tile.HasTile)continue;
+                tile.HasTile=true;tile.TileType=(ushort)ModContent.TileType<GroveGrass>();
+                tile.IsHalfBlock=shape==1;
+                tile.Slope=(Terraria.ID.SlopeType)(shape<2?0:shape-1);
+                WorldGen.SquareTileFrame(x,y);
+            }
+        }
         private void EnsureTree(int x,int floor)
         {
             // Grow on vanilla grass first, then use the grove's native ModTree renderer.
