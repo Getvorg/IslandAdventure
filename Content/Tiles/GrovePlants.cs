@@ -12,7 +12,6 @@ namespace IslandAdventure.Content.Tiles
 {
     public class GroveGrass : ModTile
     {
-        public const int RootSink = 14;
         // Legacy ID retained for saved worlds; ForestMaterialMigration restores native grass.
         public override string Texture => $"Terraria/Images/Tiles_{TileID.Dirt}";
         public override void SetStaticDefaults()
@@ -23,26 +22,6 @@ namespace IslandAdventure.Content.Tiles
             DustType = DustID.Grass; HitSound = SoundID.Dig;
             RegisterItemDrop(ItemID.DirtBlock); VanillaFallbackOnModDeletion = TileID.Grass;
             AddMapEntry(new Color(62, 78, 35), CreateMapEntryName());
-        }
-        public override void PostDraw(int i, int j, SpriteBatch batch)
-            => DrawRoots(i,j,batch);
-        public static void DrawRoots(int i,int j,SpriteBatch batch)
-        {
-            var tile = Main.tile[i,j];
-            if(!TileDrawing.IsVisible(tile)||tile.TileColor!=PaintID.None)return;
-            Vector2 point = new Vector2(i*16,j*16) - Main.screenPosition;
-            if (!Main.drawToScreen) point += new Vector2(Main.offScreenRange);
-            Color light = tile.IsTileFullbright?Color.White:Lighting.GetColor(i,j);
-            if(tile.IsActuated)light*=.4f;
-            // A root fan follows the living tree; it occupies no extra collision tiles.
-            // Draw once at the trunk center, rather than offsetting it to a flared side root.
-            if (Main.tile[i,j-1].HasTile && Main.tile[i,j-1].TileType == TileID.Trees)
-            {
-                WorldGen.GetTreeBottom(i,j-1,out int rootX,out int rootY);
-                if(rootX!=i||rootY!=j)return;
-                var roots = ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Tree_Roots", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                batch.Draw(roots,point + new Vector2(8-roots.Width/2,-roots.Height+RootSink),light);
-            }
         }
     }
     public abstract class GrovePlant : ModTile

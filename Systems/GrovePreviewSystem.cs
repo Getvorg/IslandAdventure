@@ -7,6 +7,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
+using Terraria.Localization;
 
 namespace IslandAdventure.Systems
 {
@@ -71,7 +72,8 @@ namespace IslandAdventure.Systems
             if(!ResumeSystem.TrySafePosition(player,landing,out var safe)){message="Место входа занято блоками.";return false;}
             if(!wasInPlot){returnPosition=player.position;returnOwner=player.name;canReturn=true;}
             Move(player,safe);
-            message="Образец рощи обновлён: пройди вправо до большого валуна и второго дерева. /grovepreview back — вернуться.";
+            message=Language.GetTextValue("Mods.IslandAdventure.Grove.PreviewUpdated",
+                Language.GetTextValue("Mods.IslandAdventure.Grove.TreeName"));
             return true;
         }
         public bool Back(Player player)

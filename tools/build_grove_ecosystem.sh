@@ -9,7 +9,6 @@ while read -r name source crop fit cols rows variants; do
   -channel A -threshold 40% +channel +dither -colors 32 \
   -background none -gravity south -extent "$((cols*8))x$((rows*8))" \
   -scale 200% -depth 8 PNG32:"$tmp/native.png"
- [[ "$name" == Roots ]] && cp "$tmp/native.png" "$root/Assets/Grove/Tree_Roots.png"
  [[ "$name" == Moss ]] && cp "$tmp/native.png" "$tmp/moss.png"
  for ((r=0;r<rows;r++)); do
   cells=()
@@ -90,26 +89,8 @@ PYCOLORS
 magick "$tmp/bark.png" -channel R -evaluate Multiply "$red_factor" \
  -channel G -evaluate Multiply "$green_factor" -channel B -evaluate Multiply "$blue_factor" \
  +channel +dither -colors 32 "$tmp/bark.png"
-# Some template joints notch into the trunk. Keep the central 16px opaque
-# in every trunk frame; exclude side-only branches and flared root pieces.
-magick "$root/tools/art/grove/layouts/tree.png" -alpha extract "$tmp/trunk-mask.png"
-for ((r=0;r<12;r++)); do
- for ((c=0;c<8;c++)); do
-  if (( (c==3 && r<3) || (c==4 && r>=3 && r<6) || ((c==1 || c==2) && r>=6 && r<9) || ((c==2 || c==3) && r>=9) )); then continue; fi
-  magick "$tmp/trunk-mask.png" -fill white -draw "rectangle $((c*22+2)),$((r*22)) $((c*22+17)),$((r*22+19))" "$tmp/trunk-mask.png"
- done
-done
-# Thicken the side twig frames at logical resolution, keeping 2x2 art pixels.
-for spec in '3 0' '4 3'; do
- read -r col first_row <<< "$spec"
- for ((r=first_row;r<first_row+3;r++)); do
-  magick "$tmp/trunk-mask.png" -crop "20x20+$((col*22))+$((r*22))" +repage \
-   -filter point -resize 50% -morphology Dilate Square:1 -scale 200% "$tmp/twig-mask.png"
-  magick "$tmp/trunk-mask.png" "$tmp/twig-mask.png" -geometry "+$((col*22))+$((r*22))" -compose Copy -composite "$tmp/trunk-mask.png"
- done
-done
-magick -size 176x264 tile:"$tmp/bark.png" "$tmp/trunk-mask.png" \
- -alpha off -compose CopyOpacity -composite -depth 8 PNG32:"$root/Assets/Grove/Tree.png"
+# Quiet vanilla-like stem; approved foliage and branch art stay separate.
+bash "$root/tools/build_grove_trunk.sh"
 # Six-pixel connectors touch the native trunk at y=24 / y=30.
 # They use the exact same bark pixels as the trunk, rather than a separate color.
 for side in left right; do

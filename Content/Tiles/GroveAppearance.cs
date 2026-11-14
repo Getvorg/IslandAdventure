@@ -53,11 +53,6 @@ namespace IslandAdventure.Content.Tiles
         public static Rectangle VineSource(int variant,int segment,bool tip)
             =>new Rectangle(variant*16,(tip?7:segment%7)*16,16,16);
 
-        public override void PostDraw(int i,int j,int type,SpriteBatch batch)
-        {
-            if(type==TileID.Grass&&InGrove(i,j))GroveGrass.DrawRoots(i,j,batch);
-        }
-
         public override bool PreDraw(int i,int j,int type,SpriteBatch batch)
         {
             var surface=Main.tile[i,j];

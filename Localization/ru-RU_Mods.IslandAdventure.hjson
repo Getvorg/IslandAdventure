@@ -1,4 +1,5 @@
 {
+  "Grove": {"TreeName": "Древний камфорник", "PreviewUpdated": "Образец рощи обновлён. Дерево: {0}. Пройди вправо до валуна. /grovepreview back — вернуться."},
   "Items": {
     "TideliteOre": {
       "DisplayName": "Приливитовая руда",

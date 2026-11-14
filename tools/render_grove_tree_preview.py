@@ -20,7 +20,6 @@ def render():
     trunk = sample["trunkX"]
     floor = sample["floor"]
     crown_width, crown_height = 256, 192
-    root_sink = sample.get("rootSink", 14)
     top = min(t["y"] * 16 + 16 - crown_height for t in tiles
               if t["fx"] == 22 and t["fy"] >= 198)
     origin_x = trunk * 16 + 8 - 200
@@ -53,8 +52,6 @@ def render():
                 add("Tree_Branches", "40x40+0+0", x - 24, y - 12)
             elif tile["fx"] == 66:
                 add("Tree_Branches", "40x40+42+0", x, y - 12)
-        add("Tree_Roots", "96x32+0+0", trunk * 16 + 8 - 48,
-            floor * 16 - 32 + root_sink)
         args.append(str(ART / "tree-frame-preview.png"))
         subprocess.run(args, check=True)
 
