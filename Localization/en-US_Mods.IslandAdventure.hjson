@@ -1,5 +1,5 @@
 {
-  "Grove": {"TreeName": "Ancient Camphor", "PreviewUpdated": "Grove sample refreshed. Tree: {0}. Walk right toward the boulder. /grovepreview back — return."},
+  "Grove": {"PreviewUpdated": "Grove sample refreshed. Walk right toward the boulder. /grovepreview back — return."},
   "Items": {
     "TideliteOre": {
       "DisplayName": "Tidelite Ore",

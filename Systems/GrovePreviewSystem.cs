@@ -16,7 +16,7 @@ namespace IslandAdventure.Systems
         public const int GalleryWidth = 176;
         public const int GalleryHeight = 72;
         private const int CurrentPlantLayout = 9;
-        private const int CurrentTreeLayout = 2;
+        private const int CurrentTreeLayout = 3;
         public Rectangle Bounds { get; private set; }
         private Vector2 returnPosition;
         private bool canReturn, triedUpgrade;
@@ -48,7 +48,7 @@ namespace IslandAdventure.Systems
         public override void PreUpdateWorld()
         {
             if(Main.gameMenu||WorldGen.generatingWorld||Main.netMode!=NetmodeID.SinglePlayer)return;
-            if(Bounds.Width==0||plantLayout>=CurrentPlantLayout||triedUpgrade)return;
+            if(Bounds.Width==0||(plantLayout>=CurrentPlantLayout&&treeLayout>=CurrentTreeLayout)||triedUpgrade)return;
             triedUpgrade=true;
             if(Bounds.Width==GalleryWidth||TryExpand())RefreshPlants();
         }
@@ -67,13 +67,12 @@ namespace IslandAdventure.Systems
             {message="Не найден свободный участок неба. Поднимись на поверхность и попробуй снова.";return false;}
             if(!Valid(Bounds)){message="Запись тестового участка повреждена.";return false;}
             BuildBase();
-            RefreshPlants(rebuildTrees:true);
+            RefreshPlants();
             Vector2 landing=new Vector2((Bounds.Left+5)*16,(Bounds.Bottom-4)*16-player.height);
             if(!ResumeSystem.TrySafePosition(player,landing,out var safe)){message="Место входа занято блоками.";return false;}
             if(!wasInPlot){returnPosition=player.position;returnOwner=player.name;canReturn=true;}
             Move(player,safe);
-            message=Language.GetTextValue("Mods.IslandAdventure.Grove.PreviewUpdated",
-                Language.GetTextValue("Mods.IslandAdventure.Grove.TreeName"));
+            message=Language.GetTextValue("Mods.IslandAdventure.Grove.PreviewUpdated");
             return true;
         }
         public bool Back(Player player)
@@ -130,26 +129,22 @@ namespace IslandAdventure.Systems
                 t.HasTile=true;t.TileType=(ushort)(y==floor?TileID.Grass:TileID.Dirt);
             }
         }
-        public bool RefreshPlants(bool rebuildTrees = false)
+        public bool RefreshPlants()
         {
             if(!Valid(Bounds)||Bounds.Width!=GalleryWidth)return false;
             SeedFoundationGrass();
-            // The command rebuilds sample trees as well as decorations. Automatic upgrades
-            // and direct decoration refreshes keep current trees. Foreign blocks survive.
+            // Remove only the former sample trees, preserving foreign blocks.
             for(int x=Bounds.Left;x<Bounds.Right;x++)for(int y=Bounds.Top;y<Bounds.Bottom;y++)
             {
                 var t=Main.tile[x,y];
                 if(t.HasTile&&TileLoader.GetTile(t.TileType) is GrovePlant)ClearSampleTile(t);
             }
             int floor=Bounds.Bottom-4;
-            if(rebuildTrees||treeLayout<CurrentTreeLayout)
+            if(treeLayout<CurrentTreeLayout)
             {
                 foreach(int dx in new[]{17,43,164})RemoveSampleTree(Bounds.Left+dx,floor);
                 treeLayout=CurrentTreeLayout;
             }
-            EnsureTree(Bounds.Left+17,floor); // Restore the original tall sample trees.
-            EnsureTree(Bounds.Left+43,floor);
-            EnsureTree(Bounds.Left+164,floor);
             foreach(int dx in new[]{8,12,39,72,158,172})Place<GroveTuft>(dx,floor);
             Place<GroveSmallBush>(29,floor);Place<GroveSmallFern>(35,floor);
             Place<GroveBush>(55,floor);Place<GroveFern>(66,floor);
@@ -194,17 +189,6 @@ namespace IslandAdventure.Systems
                 tile.Slope=(Terraria.ID.SlopeType)(shape<2?0:shape-1);
                 WorldGen.SquareTileFrame(x,y);
             }
-        }
-        private void EnsureTree(int x,int floor)
-        {
-            // Keep native soil/tree identities. The grove changes their drawing only.
-            for(int tx=x-2;tx<=x+2;tx++)
-            {
-                var ground=Main.tile[tx,floor];
-                if(!ground.HasTile||ground.TileType!=TileID.Grass)return;
-                for(int y=floor-40;y<floor;y++)if(Main.tile[tx,y].HasTile)return;
-            }
-            if(!WorldGen.GrowEpicTree(x,floor))WorldGen.GrowTree(x,floor);
         }
         private void RemoveSampleTree(int trunkX,int floor)
         {

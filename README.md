@@ -942,3 +942,6 @@ Tiles_2.zip. Исходный PNG 288x1980 сохранён целиком в
 Сборка и серверные регрессии прошли, включая отсутствие старой корневой
 накладки, локализацию имени, родную высоту/кадры и прежние механики.
 Графическая проверка в клиенте ещё нужна.
+
+
+Version 0.4.23: custom live grove tree removed completely (assets, sources, renderer, registration and placement). Existing gallery sample trees are removed once on load/refresh. Other plants, decorative roots/logs, grass and vanilla trees elsewhere are preserved. Earlier tree sections describe historical versions. Ground contact preview: tools/render_grove_contact_preview.py.
