@@ -989,3 +989,20 @@ Validation for 0.4.26: build passes with zero warnings/errors, packaging succeed
 94,327 loaded-tModLoader assertions pass. The stem/root PNG is byte-identical
 to 0.4.25. All four atlases pass frame-size, binary-alpha and exact 2x2 grid
 checks. Static join preview reviewed; graphical-client review remains pending.
+
+## 0.4.27 — connected Camphor joints and consistent wood tones
+
+Native branch wood replaces rectangular sockets. All six bough variants form
+continuous shapes to their native attachment; the raised third left arm is
+aligned explicitly, with stray floating fragments removed. Wood shade ranks
+now match the stem brightness distribution, rather than collapsing generated
+brown pixels into dark shades. The crown neck is centered at x134 in a 268px
+frame and grafted with a native 16px stem strip. Right-side wind pivot uses the
+native attachment height. The stem/root PNG, gameplay and tile layout remain.
+A new packed-pixel contact test exports magnified branch/crown closeups.
+
+Validation for 0.4.27: build succeeds with zero warnings/errors; packaging and
+94,327 loaded-tModLoader assertions pass. Packed-pixel contact checks pass for
+all six branch-to-stem pairs and the centered crown neck. Stem/root pixels match
+the approved 0.4.25 signature; four atlases retain binary alpha and the 2x2 grid.
+Magnified joint preview reviewed. Graphical-client confirmation is still pending.

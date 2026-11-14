@@ -47,8 +47,8 @@ namespace IslandAdventure.Content.Tiles
                 var branch=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Camphor_Boughs",AssetRequestMode.ImmediateLoad).Value;
                 int style=System.Math.Clamp((fy-198)/22,0,2);
                 bool left=fx==44;
-                batch.Draw(branch,point+new Vector2(left?16:0,12),
-                    new Rectangle(left?0:66,style*50,AncientCamphor.BoughWidth,AncientCamphor.BoughHeight),light,sway,new Vector2(left?AncientCamphor.BoughWidth:0,36),1,SpriteEffects.None,0);
+                batch.Draw(branch,point+new Vector2(left?16:0,left?12:18),
+                    new Rectangle(left?0:66,style*50,AncientCamphor.BoughWidth,AncientCamphor.BoughHeight),light,sway,new Vector2(left?AncientCamphor.BoughWidth:0,left?36:42),1,SpriteEffects.None,0);
             }
             return false;
         }

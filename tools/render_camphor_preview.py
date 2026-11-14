@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Assemble an exported native tree with ImageMagick; do not repaint its art.
 
-Uses TileDrawing's zero-wind 20px trunk, 64px bough and custom 256px crown frames.
+Uses TileDrawing's zero-wind 20px trunk, 64px bough and custom 268px crown frames.
 This is a static join diagnostic, not a graphical-client screenshot.
 """
 import json
@@ -19,7 +19,7 @@ def render():
     tiles = sample["tiles"]
     trunk = sample["trunkX"]
     floor = sample["floor"]
-    crown_width, crown_height = 256, 176
+    crown_width, crown_height = 268, 176
     top = min(t["y"] * 16 + 16 - crown_height for t in tiles
               if t["fx"] == 22 and t["fy"] >= 198)
     origin_x = trunk * 16 + 8 - 200

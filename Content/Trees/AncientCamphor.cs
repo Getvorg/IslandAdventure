@@ -12,7 +12,7 @@ namespace IslandAdventure.Content.Trees
     // This registration also supports legacy grove soil in saved worlds.
     public class AncientCamphor : ModTree
     {
-        public const int CrownWidth = 256, CrownHeight = 176;
+        public const int CrownWidth = 268, CrownHeight = 176;
         public const int BranchWidth = 40, BranchHeight = 40;
         public const int BoughWidth = 64, BoughHeight = 48;
         public override TreePaintingSettings TreeShaderSettings => new TreePaintingSettings();

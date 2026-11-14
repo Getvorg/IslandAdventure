@@ -7,7 +7,7 @@ source="$root/tools/art/grove/concepts/camphor-parts-source.png"
 magick "$source" -crop 1180x724+0+0 +repage -channel A -threshold 85% +channel \
  -trim +repage -filter box -resize 128x84 -channel A -threshold 50% +channel \
  +dither -colors 32 -background none -gravity south -extent 128x88 -scale 200% \
- -background none -gravity northwest -extent 258x178 -depth 8 PNG32:"$root/Assets/Grove/Camphor_Tops.png"
+ -background none -gravity northwest -extent 270x178 -depth 8 PNG32:"$root/Assets/Grove/Camphor_Tops.png"
 for style in 0 1 2; do
  for side in left right; do
   crop=450x400+1180+280; if [[ "$side" == right ]];then crop=480x400+1692+280;fi
@@ -17,10 +17,7 @@ for style in 0 1 2; do
    -trim +repage -filter box -resize "$fit" -channel A -threshold 50% +channel \
    +dither -colors 32 -background none -gravity south -extent 32x24 -scale 200% \
    -depth 8 PNG32:"$camphor_tmp/$side-$style.png"
-  # A solid socket touches the native stem; no thin stretched connector.
-  x=56;if [[ "$side" == right ]];then x=0;fi
-  magick "$camphor_tmp/$side-$style.png" -fill '#523c29' -draw "rectangle $x,32 $((x+7)),39" \
-   -background none -gravity northwest -extent 66x50 "$camphor_tmp/$side-$style.png"
+  magick "$camphor_tmp/$side-$style.png" -background none -gravity northwest -extent 66x50 "$camphor_tmp/$side-$style.png"
  done
  magick "$camphor_tmp/left-$style.png" "$camphor_tmp/right-$style.png" +append "$camphor_tmp/row-$style.png"
 done
@@ -32,9 +29,7 @@ for style in 0 1 2; do
   magick "$camphor_tmp/$side-$style.png" -crop 64x48+0+0 +repage -filter box -resize 20x16! \
    -channel A -threshold 50% +channel -background none -gravity south -extent 20x20 \
    -scale 200% "$camphor_tmp/native-$side-$style.png"
-  x=32;if [[ "$side" == right ]];then x=0;fi
-  magick "$camphor_tmp/native-$side-$style.png" -fill '#523c29' -draw "rectangle $x,20 $((x+7)),27" \
-   -background none -gravity northwest -extent 42x42 "$camphor_tmp/native-$side-$style.png"
+  magick "$camphor_tmp/native-$side-$style.png" -background none -gravity northwest -extent 42x42 "$camphor_tmp/native-$side-$style.png"
  done
  magick "$camphor_tmp/native-left-$style.png" "$camphor_tmp/native-right-$style.png" +append "$camphor_tmp/native-row-$style.png"
 done
