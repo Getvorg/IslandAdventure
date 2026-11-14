@@ -14,7 +14,7 @@ namespace IslandAdventure.Systems
     {
         public const int GalleryWidth = 176;
         public const int GalleryHeight = 72;
-        private const int CurrentPlantLayout = 7;
+        private const int CurrentPlantLayout = 8;
         private const int CurrentTreeLayout = 2;
         public Rectangle Bounds { get; private set; }
         private Vector2 returnPosition;
@@ -148,7 +148,6 @@ namespace IslandAdventure.Systems
             EnsureTree(Bounds.Left+43,floor);
             EnsureTree(Bounds.Left+164,floor);
             foreach(int dx in new[]{8,12,39,72,158,172})Place<GroveTuft>(dx,floor);
-            foreach(int dx in new[]{21,24,168})Place<GroveTallGrass>(dx,floor);
             Place<GroveSmallBush>(29,floor);Place<GroveSmallFern>(35,floor);
             Place<GroveBush>(55,floor);Place<GroveFern>(66,floor);
             Place<GroveMoss>(48,floor);Place<GroveMoss>(154,floor);

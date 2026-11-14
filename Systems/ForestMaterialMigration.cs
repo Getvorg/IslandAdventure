@@ -7,6 +7,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using SubworldLibrary;
 using IslandAdventure.Subworlds;
+using System.Reflection;
+using Terraria.ModLoader.Default;
 
 namespace IslandAdventure.Systems
 {
@@ -31,6 +33,24 @@ namespace IslandAdventure.Systems
             int stack = item.stack; bool favorite = item.favorited;
             item.SetDefaults(type); item.stack = stack; item.favorited = favorite;
         }
+        // Keep only the saved-name check for removed content; no tile type/asset is registered.
+        private static (PosData<ushort>[] lookup, System.Collections.Generic.HashSet<ushort> ids) RemovedPlants()
+        {
+            var ids=new System.Collections.Generic.HashSet<ushort>();
+            var io=typeof(Mod).Assembly.GetType("Terraria.ModLoader.IO.TileIO")?
+                .GetField("Tiles",BindingFlags.Static|BindingFlags.NonPublic)?.GetValue(null);
+            var entries=io?.GetType().GetField("entries")?.GetValue(io) as Array;
+            var lookup=io?.GetType().GetField("unloadedEntryLookup")?.GetValue(io) as PosData<ushort>[];
+            if(entries!=null&&lookup!=null)
+                for(int n=0;n<entries.Length;n++)
+                {
+                    var entry=entries.GetValue(n);if(entry==null)continue;
+                    var type=entry.GetType();
+                    if(type.GetField("modName")?.GetValue(entry) as string=="IslandAdventure"
+                        &&type.GetField("name")?.GetValue(entry) as string=="GroveTallGrass")ids.Add((ushort)n);
+                }
+            return (lookup,ids);
+        }
         public override void PreUpdateWorld()
         {
             if (!pending || Main.gameMenu || WorldGen.generatingWorld) return;
@@ -41,6 +61,7 @@ namespace IslandAdventure.Systems
             foreach (int id in new[] { ModContent.TileType<DarkSoilTile>(), ModContent.TileType<DarkGrassTile>(), ModContent.TileType<GroveGrass>(), ModContent.TileType<DarkStoneTile>(), ModContent.TileType<DarkWoodTile>(), ModContent.TileType<DarkPlantTile>(), ModContent.TileType<DarkVineTile>() })
                 mapping[id] = VanillaTile(id);
             bool island = SubworldSystem.IsActive<IslandSubworld>();
+            var removed=RemovedPlants();
             int minX = Main.maxTilesX, minY = Main.maxTilesY, maxX = 0, maxY = 0, changed = 0;
             for (int x = 1; x < Main.maxTilesX - 1; x++)
                 for (int y = 1; y < Main.maxTilesY - 1; y++)
@@ -48,7 +69,10 @@ namespace IslandAdventure.Systems
                     var tile = Main.tile[x,y]; bool altered = false;
                     if (tile.HasTile)
                     {
-                        if (mapping.TryGetValue(tile.TileType, out int type)) { tile.TileType = (ushort)type; altered = true; }
+                        if(removed.ids.Count>0&&TileLoader.GetTile(tile.TileType) is UnloadedTile
+                            &&removed.ids.Contains(removed.lookup.Lookup(x,y)))
+                        {tile.ClearTile();altered=true;}
+                        else if (mapping.TryGetValue(tile.TileType, out int type)) { tile.TileType = (ushort)type; altered = true; }
                     }
                     if (island && x >= 500 && x < Main.maxTilesX - 500
                         && tile.HasTile && tile.TileType is TileID.Grass or TileID.Plants or TileID.Plants2 or TileID.Vines or TileID.Trees

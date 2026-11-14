@@ -38,9 +38,8 @@ done < "$root/tools/art/grove/objects.tsv"
 bash "$root/tools/build_grove_turf.sh"
 bash "$root/tools/build_grove_ground_plants.sh"
 # Refresh object previews from the new actual atlases, not the old source crops.
-for name in Tuft TallGrass; do
+for name in Tuft; do
  cols=2; rows=1
- [[ "$name" == TallGrass ]] && { cols=3; rows=4; }
  previews=()
  for ((r=0;r<rows;r++)); do
   cells=()
@@ -122,7 +121,7 @@ done
 magick "$tmp/branch-left.png" "$tmp/branch-right.png" +append "$tmp/branch-row.png"
 magick "$tmp/branch-row.png" "$tmp/branch-row.png" "$tmp/branch-row.png" -append -depth 8 PNG32:"$root/Assets/Grove/Tree_Branches.png"
 # A preview of actual native-size sprites, never the large AI source illustration.
-magick "$tmp/preview-Tuft.png" "$tmp/preview-TallGrass.png" "$tmp/preview-SmallBush.png" "$tmp/preview-SmallFern.png" "$tmp/preview-Moss.png" "$tmp/preview-Roots.png" -background none -gravity south +append "$tmp/green.png"
+magick "$tmp/preview-Tuft.png" "$tmp/preview-SmallBush.png" "$tmp/preview-SmallFern.png" "$tmp/preview-Moss.png" "$tmp/preview-Roots.png" -background none -gravity south +append "$tmp/green.png"
 magick "$tmp/preview-FallenLog.png" "$tmp/preview-HollowLog.png" "$tmp/preview-Pebble.png" "$tmp/preview-Rock.png" "$tmp/preview-LargeRock.png" "$tmp/preview-Boulder.png" -background none -gravity south +append "$tmp/props.png"
 magick "$tmp/green.png" "$tmp/props.png" -background '#6588ac' -gravity west -append -alpha remove \
  -filter point -resize 200% -depth 8 PNG32:"$root/tools/art/grove/ecosystem-preview.png"

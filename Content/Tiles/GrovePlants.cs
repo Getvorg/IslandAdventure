@@ -137,13 +137,6 @@ namespace IslandAdventure.Content.Tiles
         protected override int PlantHeight => 1;
         protected override bool Variants => true;
     }
-    public class GroveTallGrass : GrovePlant
-    {
-        public override float SwayAmplitude => 6f;
-        public override string Texture => "IslandAdventure/Assets/Grove/TallGrass";
-        protected override int PlantWidth => 3;
-        protected override int PlantHeight => 4;
-    }
     public class GroveSmallBush : GrovePlant
     {
         public override float SwayAmplitude => 4f;

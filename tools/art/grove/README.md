@@ -12,7 +12,7 @@ Run `bash tools/build_grove_preview.sh` from the repository with ImageMagick 7.
 and variant counts. Each game tile is 16x16 with a 2px atlas gutter. Builders
 reduce artwork to logical resolution first, quantize colors and alpha, and
 then upscale 2x: native art pixels are exactly 2x2, with no partial alpha.
-Both low and tall grass use a narrow blade silhouette; all other silhouettes
+Low grass uses a narrow blade silhouette; all other silhouettes
 keep their natural aspect ratio. `ecosystem-preview.png` reconstructs the
 actual small sprites and enlarges them 2x, rather than showing source art.
 
@@ -71,7 +71,7 @@ actual top sample range with a schematic soil guide, not client screenshots.
 silhouettes and eight small woodland-flower variations. The dedicated
 `build_grove_ground_plants.sh` packs sixteen 32x32 frames into
 `Assets/Grove/GroundPlants.png` (512x32), and also replaces the gallery's
-Tuft/TallGrass art while preserving their native object footprints/atlas layouts.
+Tuft art while preserving their native object footprints/atlas layouts.
 Short grass is fitted to 14x7 logical pixels; taller grass to 12x14, flowers
 to 12x12 or 12x13. The runtime anchors all variants to the soil at the same
 baseline and deterministically chooses flowers about one quarter of the time.

@@ -27,21 +27,6 @@ for n in 0 1 2; do
  done
 done
 magick "${cells[@]}" +append -depth 8 PNG32:"$root/Assets/Grove/Tuft.png"
-# Existing tall-grass objects retain their footprint, with a finer blade silhouette.
-magick "$tmp/plant-4.png" -filter point -resize 50% -trim +repage -resize 20x22 \
- -background none -gravity south -extent 24x32 -scale 200% "$tmp/tall.png"
-rows=()
-for r in 0 1 2 3; do
- cells=()
- for c in 0 1 2; do
-  file="$tmp/tall-$r-$c.png";cells+=("$file")
-  magick "$tmp/tall.png" -crop "16x16+$((c*16))+$((r*16))" +repage \
-   -background none -gravity northwest -extent 18x18 "$file"
- done
- row="$tmp/tall-row-$r.png";rows+=("$row")
- magick "${cells[@]}" +append "$row"
-done
-magick "${rows[@]}" -append -depth 8 PNG32:"$root/Assets/Grove/TallGrass.png"
 # Actual game-size frames for visual review, rather than large source illustrations.
 magick "${frames[@]:0:8}" -background '#516579' +append "$tmp/grasses.png"
 magick "${frames[@]:8:8}" -background '#516579' +append "$tmp/flowers.png"
