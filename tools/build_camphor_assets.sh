@@ -3,3 +3,4 @@
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 python3 "$root/tools/build_camphor_assets.py"
+bash "$root/tools/build_camphor_foliage.sh"

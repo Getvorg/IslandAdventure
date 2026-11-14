@@ -39,16 +39,16 @@ namespace IslandAdventure.Content.Tiles
             if(fx==22)
             {
                 var crown=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Camphor_Tops",AssetRequestMode.ImmediateLoad).Value;
-                batch.Draw(crown,point+new Vector2(8,16),new Rectangle(System.Math.Clamp((fy-198)/22,0,2)*82,0,AncientCamphor.CrownWidth,AncientCamphor.CrownHeight),
+                batch.Draw(crown,point+new Vector2(8,16),new Rectangle(0,0,AncientCamphor.CrownWidth,AncientCamphor.CrownHeight),
                     light,sway,new Vector2(AncientCamphor.CrownWidth/2,AncientCamphor.CrownHeight),1,SpriteEffects.None,0);
             }
             else if(fx==44||fx==66)
             {
-                var branch=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Camphor_Branches",AssetRequestMode.ImmediateLoad).Value;
+                var branch=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Camphor_Boughs",AssetRequestMode.ImmediateLoad).Value;
                 int style=System.Math.Clamp((fy-198)/22,0,2);
                 bool left=fx==44;
                 batch.Draw(branch,point+new Vector2(left?16:0,12),
-                    new Rectangle(left?0:42,style*42,40,40),light,sway,new Vector2(left?40:0,24),1,SpriteEffects.None,0);
+                    new Rectangle(left?0:66,style*50,AncientCamphor.BoughWidth,AncientCamphor.BoughHeight),light,sway,new Vector2(left?AncientCamphor.BoughWidth:0,36),1,SpriteEffects.None,0);
             }
             return false;
         }

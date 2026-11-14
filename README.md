@@ -975,3 +975,17 @@ Validation for 0.4.25: build passes with zero warnings/errors; tModLoader packin
 and 94,326 loaded assertions pass. The palette builder verifies full dimensions,
 identical alpha, unchanged non-palette pixels and the original 2x2 grid in all
 three sheets. Static preview updated; graphical-client review remains pending.
+
+## 0.4.26 — original Camphor crown and boughs, native stem
+
+The vanilla-based stem/root PNG stays byte-identical to 0.4.25. The approved
+Camphor canopy returns with original larger leafy side branches (64x48 gallery
+frames, three sizes/styles) and wood matched to the stem palette. A separate
+40x40 branch atlas supports the native ModTree API. Solid sockets and exact
+2x2 pixels are preserved. Gallery layout 6 refreshes existing samples through
+`/grovepreview`; normal heights, wood drops, chopping and outside trees remain.
+
+Validation for 0.4.26: build passes with zero warnings/errors, packaging succeeds,
+94,327 loaded-tModLoader assertions pass. The stem/root PNG is byte-identical
+to 0.4.25. All four atlases pass frame-size, binary-alpha and exact 2x2 grid
+checks. Static join preview reviewed; graphical-client review remains pending.

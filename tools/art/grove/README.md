@@ -52,7 +52,9 @@ Each framed decoration tile is 16x16 with a 2px atlas gutter.
 
 The former custom tree was removed in 0.4.23. Version 0.4.24 introduces the
 newly approved Ancient Camphor. In 0.4.25 its artwork is based directly on
-the complete vanilla tree sheets with an exact palette transform. See
+the complete vanilla stem/root sheet with an exact palette transform.
+Version 0.4.26 retains that stem byte-for-byte and adds original Camphor crown
+and larger leafy boughs from the approved concept. See
 concepts/README.md for sources, native frame packing, tree dimensions and
 regional behavior. Run `bash tools/build_camphor_assets.sh` and
 `python3 tools/render_camphor_preview.py` to rebuild its assets and join preview.

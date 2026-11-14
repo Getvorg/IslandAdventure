@@ -5,19 +5,23 @@ previous tree was removed. camphor-parts-source.png contains a newly generated
 canopy and left/right boughs, using that concept and ecosystem-preview.png
 (existing grove plants) as references. Neither source image is loaded in game.
 
-## Current implementation (0.4.25)
+## Current implementation (0.4.26)
 
-After in-game review the user explicitly requested actual vanilla textures as
-the basis. The earlier concept and generated parts are archived references only;
-neither is used by the builder. build_camphor_assets.py now transforms the exact
-palettes of vanilla/Tiles_5.png, Tree_Tops_0.png and Tree_Branches_0.png.
-No crop, resize, quantization, custom material or alpha reconstruction is used.
-All native wood shading, root/branch joints and three foliage variants remain.
+User clarification: keep the actual vanilla-based trunk and roots, but use
+original Camphor crown and branches. Camphor.png is byte-identical to 0.4.25:
+complete Tiles_5.png with the same exact six-shade wood palette transform.
+The stem builder does not crop, resize, quantize or reconstruct native alpha.
 
-Camphor.png is 176x264; Camphor_Tops.png is 246x82 (three 80x80 frames at
-82px stride); Camphor_Branches.png is 84x126 (40px frames at 42px stride).
-The builder verifies dimensions, identical alpha, unchanged non-palette pixels
-and an exact 2x2 grid. Native compact roots need no separate root overlay.
+build_camphor_foliage.sh packs the approved generated Camphor parts separately:
+- Camphor_Tops.png: 256x176 crown plus native trailing gutter (258x178).
+- Camphor_Boughs.png: 64x48 gallery branches, 66x50 stride, two sides/three styles.
+- Camphor_Branches.png: separate 40x40 fallback required by the ModTree API.
+
+match_camphor_wood.py matches brown pixels to the stem's six wood shades;
+foliage stays green. Hard alpha and 2x2 pixels are established before packing.
+Solid 8px sockets match the renderer's pivot and avoid thin branch attachments.
+The original concept and parts source remain; vanilla foliage sheets are now
+references only. No generated material is applied to the trunk or roots.
 
 Native tree IDs, epic-tree height, wood drops and chopping remain. Regional
 CamphorAppearance applies only to unpainted native trees rooted on gallery
@@ -26,7 +30,7 @@ Legacy GroveGrass soils have an AncientCamphor ModTree registration until
 material migration restores native grass. No new autonomous growth is enabled.
 
 /grovepreview refreshes three sample trees and props on every use. Automatic
-layout upgrade 5 also adds trees to worlds saved with the tree-free version.
+layout upgrade 6 also adds trees to worlds saved with the tree-free version.
 Occupied sample space is skipped. Back locations and other blocks survive.
 
 camphor-preview-tiles.json is a native frame fixture exported by the loaded
