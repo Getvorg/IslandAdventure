@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Drawing;
-using Terraria.GameContent;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using IslandAdventure.Systems;
@@ -28,8 +28,15 @@ namespace IslandAdventure.Content.Tiles
             return InGrove(i,y)&&Main.tile[i,y].HasTile&&Main.tile[i,y].TileType==TileID.Grass;
         }
 
-        public static Rectangle SoilSource(int i,int j)
-            => new Rectangle(18+((i+j)%3)*18,18,16,16);
+        public static bool UsesGrassAtlas(int i,int j,int type)
+            =>type==TileID.Grass&&InGrove(i,j)&&Main.tile[i,j].TileColor==PaintID.None;
+
+        public override void DrawEffects(int i,int j,int type,SpriteBatch batch,ref TileDrawInfo drawData)
+        {
+            if(UsesGrassAtlas(i,j,type))
+                drawData.drawTexture=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/GrassAtlas",
+                    ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+        }
 
         private static uint PlantHash(int i,int j)
         {
@@ -48,7 +55,7 @@ namespace IslandAdventure.Content.Tiles
 
         public override void PostDraw(int i,int j,int type,SpriteBatch batch)
         {
-            if(type==TileID.Grass&&InGrove(i,j))GroveGrass.DrawTurf(i,j,batch);
+            if(type==TileID.Grass&&InGrove(i,j))GroveGrass.DrawRoots(i,j,batch);
         }
 
         public override bool PreDraw(int i,int j,int type,SpriteBatch batch)
@@ -58,23 +65,6 @@ namespace IslandAdventure.Content.Tiles
             {
                 Main.instance.TilesRenderer.AddSpecialPoint(i,j,TileDrawing.TileCounterType.CustomNonSolid);
                 return false; // Do not enqueue vanilla windy grass/vines as well.
-            }
-            if(type==TileID.Grass&&InGrove(i,j)&&surface.TileColor==PaintID.None)
-            {
-                if(!TileDrawing.IsVisible(surface))return false;
-                Main.instance.LoadTiles(TileID.Dirt);
-                var soil=TextureAssets.Tile[TileID.Dirt].Value;
-                Rectangle source=SoilSource(i,j);
-                Vector2 position=new Vector2(i*16,j*16)-Main.screenPosition;
-                if(!Main.drawToScreen)position+=new Vector2(Main.offScreenRange);
-                Color color=surface.IsTileFullbright?Color.White:Lighting.GetColor(i,j);
-                if(surface.IsActuated)color*=.4f;
-                // Replace the whole native grass drawing, not just its top edge.
-                // Soil pixels stay vanilla; the separate turf pass supplies all green edges.
-                for(int y=0;y<16;y+=2)for(int x=0;x<16;x+=2)
-                    if(GroveTurfShape.Contains(surface.Slope,surface.IsHalfBlock,x,y))
-                        batch.Draw(soil,position+new Vector2(x,y),new Rectangle(source.X+x,source.Y+y,2,2),color);
-                return false;
             }
             if(type!=TileID.Trees||!InGrove(i,j))return true;
             WorldGen.GetTreeBottom(i,j,out int rootX,out int rootY);

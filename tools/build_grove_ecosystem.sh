@@ -35,7 +35,7 @@ while read -r name source crop fit cols rows variants; do
  cp "$tmp/native.png" "$tmp/preview-$name.png"
 done < "$root/tools/art/grove/objects.tsv"
 # Rebuild the dedicated textured turf rim.
-bash "$root/tools/build_grove_turf.sh"
+python3 "$root/tools/build_grove_grass_atlas.py"
 bash "$root/tools/build_grove_ground_plants.sh"
 # Refresh object previews from the new actual atlases, not the old source crops.
 for name in Tuft; do
