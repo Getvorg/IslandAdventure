@@ -32,3 +32,9 @@ zero-wind comparison; graphical-client review remains pending.
 
 Native generation may choose a broken top; initial V2 samples normalize their
 cap to the living-crown marker. Chopped stumps still keep native broken tops.
+
+0.4.31: the 16px stem profile extends through the full 24px crown neck, removing
+an 8px bottleneck. Bottom edge RGBA matches every native straight-body style.
+The final 8px collar is drawn without rotation to retain contact during wind.
+The checker exports neck-closeup.png from actual packed pixels. V1, V2 stem
+and branch PNGs remain unchanged.

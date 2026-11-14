@@ -38,6 +38,13 @@ for side in range(2):
  pixels={(x,y) for y in range(40) for x in range(40) if im.getpixel((x,y))[3]}
  edge=[p for p in pixels if (p[0]>=38 if side==0 else p[0]<2)]
  assert pixels<=connected(im,edge[0]),'detached bough pixels'
+# Exact-width profile from the fork through the neck, plus a matching join
+# to every straight native body style (not just alpha connectivity).
+crown=parts['BunaClassic_Tops']
+for y in range(88,112):
+ assert all(crown.getpixel((x,y))[3]==255 for x in range(56,72)), 'narrow crown neck'
+for fy in (0,22,44):
+ assert [crown.getpixel((x,111)) for x in range(56,72)]==[stem.getpixel((x,fy)) for x in range(2,18)],'stem/crown edge palette mismatch'
 fixture=json.loads((ROOT/'tools/art/buna-classic/native-fixture.json').read_text());floor=fixture['floor']
 height=max(448,max((floor-t['y'])*16+112 for t in fixture['tiles']))+48
 baseline=height-24;sheet=Image.new('RGBA',(736,height),'#6588ac')
@@ -64,4 +71,10 @@ for root,anchor in [(43,448),(164,640)]:
 draw=ImageDraw.Draw(sheet);draw.rectangle((0,baseline,735,height-1),fill='#6b513a')
 draw.text((88,baseline+6),'Buna I',fill='white');draw.text((420,baseline+6),'Buna II',fill='white');draw.text((596,baseline+6),'Buna II tall',fill='white')
 sheet.save(ROOT/'tools/art/buna-classic/comparison.png')
+# Magnify the actual fork/neck/body contact, without redrawing its pixels.
+join=Image.new('RGBA',(64,64),'#6588ac')
+join.alpha_composite(parts['BunaClassic_Tops'].crop((32,72,96,112)),(0,0))
+join.alpha_composite(stem.crop((2,22,18,42)),(24,40))
+join.resize((256,256),Image.Resampling.NEAREST).save(ROOT/'tools/art/buna-classic/neck-closeup.png')
+
 print('V2 native alpha, 16px width, 2x2 grid, branch sockets and actual tree contacts passed; comparison rendered')

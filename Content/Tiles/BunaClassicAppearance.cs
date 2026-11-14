@@ -43,6 +43,8 @@ namespace IslandAdventure.Content.Tiles
                 var crown=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/BunaClassic_Tops",AssetRequestMode.ImmediateLoad).Value;
                 batch.Draw(crown,point+new Vector2(8,16),new Rectangle(0,0,128,112),light,
                     sway,new Vector2(64,112),1,SpriteEffects.None,0);
+                // Keep the collar locked to the stem while the upper crown sways.
+                batch.Draw(crown,point+new Vector2(0,8),new Rectangle(56,104,16,8),light);
             }
             else if(fx==44||fx==66)
             {

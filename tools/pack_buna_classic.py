@@ -39,8 +39,12 @@ def match(image):
 crown=match(Image.open(assets/'BunaClassic_Tops.png').convert('RGBA'))
 # Establish exactly the same 16px socket/profile as the native straight stem.
 strip=atlas.crop((2,22,18,42))
-# Keep the generated fork; only the last 12px receive its own continuous bark.
-crown.alpha_composite(strip.crop((0,8,16,20)),(56,100))
+# Carry the full 16px stem up to the fork: the generated 8px neck must not
+# narrow and suddenly widen into a rectangular socket at the bottom.
+neck=Image.new('RGBA',(16,24))
+neck.paste(strip,(0,0))
+for y in (20,22):neck.paste(strip.crop((0,18,16,20)),(0,y))
+crown.alpha_composite(neck,(56,88))
 out=Image.new('RGBA',(130,114));out.paste(crown,(0,0));out.save(assets/'BunaClassic_Tops.png')
 branches=Image.new('RGBA',(84,126))
 for side in range(2):
