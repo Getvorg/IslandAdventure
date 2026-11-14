@@ -1,4 +1,5 @@
-Grove.PreviewUpdated: Grove sample refreshed. Walk right toward the boulder. /grovepreview back — return.
+Grove.PreviewUpdated: "Grove sample refreshed: Buna (Japanese beech). /grovepreview back — return."
+Grove.BunaName: "Buna — Japanese beech"
 
 Items: {
 	TideliteOre: {
