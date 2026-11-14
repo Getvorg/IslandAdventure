@@ -18,3 +18,4 @@ for face in top right bottom left; do
  magick "${files[@]}" +append "$row"
 done
 magick "${rows[@]}" -append -depth 8 PNG32:"$root/Assets/Grove/GrassFaces.png"
+python3 "$root/tools/build_grove_turf_corners.py"

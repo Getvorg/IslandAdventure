@@ -109,3 +109,14 @@ Concave corners use clipped fragments; flat connected rows have no side seams.
 sample rectangles. `render_grove_turf_faces_preview.py` reassembles those samples
 over schematic soil; the preview is not a client screenshot. Source-image
 RGBA equality and exact 2x2 grid were checked for all 24 oriented sprites.
+
+
+0.4.20 adds `GrassCorners.png` (120x80): four slope rows, six source variants.
+`build_grove_turf_corners.py` composes cardinal faces with unfiltered 2px source
+columns shifted along the diagonal staircase, then closes tiny internal holes
+with an existing opaque source cell. Every occupied triangle pixel is opaque,
+every pixel outside its shape is transparent, and all colors come from the
+original GrassEdge palette. `build_grove_turf_faces.sh` rebuilds it automatically.
+Half blocks now use both top and bottom, with the top source shifted to y=8
+and its 2px tips at y=6. The runtime sample export and diagram renderer include
+the extra slope atlas. Previous bottom-only half-block instructions are superseded.

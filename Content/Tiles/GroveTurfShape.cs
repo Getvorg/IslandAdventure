@@ -30,7 +30,7 @@ namespace IslandAdventure.Content.Tiles
         }
         public static int ShapeFaces(SlopeType slope,bool half)
         {
-            if(half)return Bottom;
+            if(half)return Top|Bottom;
             return slope switch {
                 SlopeType.SlopeDownRight=>Bottom|Right,
                 SlopeType.SlopeDownLeft=>Bottom|Left,
@@ -41,7 +41,7 @@ namespace IslandAdventure.Content.Tiles
         }
         private static bool EdgeOpen(int i,int j,int face,int along)
             =>face switch {
-                Top=>!Solid(i*16+along,j*16-1),
+                Top=>!Solid(i*16+along,j*16+(Main.tile[i,j].IsHalfBlock?7:-1)),
                 Right=>!Solid(i*16+16,j*16+along),
                 Bottom=>!Solid(i*16+along,j*16+16),
                 _=>!Solid(i*16-1,j*16+along)
@@ -51,29 +51,34 @@ namespace IslandAdventure.Content.Tiles
             int row=face==Top?0:face==Right?1:face==Bottom?2:3;
             return new Rectangle((i%6)*20,row*20,20,20);
         }
+        public static Rectangle CornerFrame(int i,SlopeType slope)
+            =>new Rectangle((i%6)*20,((int)slope-1)*20,20,20);
         public static bool FaceSample(int i,int j,int face,int x,int y,out Rectangle source)
         {
             source=Rectangle.Empty;
             var tile=Main.tile[i,j];
             if(!tile.HasTile||(ShapeFaces(tile.Slope,tile.IsHalfBlock)&face)==0)return false;
+            int top=tile.IsHalfBlock?8:0;
+            int textureY=face==Top?y-top:y;
             int along=face==Top||face==Bottom?x:y;
             if(along<0||along>=16)return false;
             bool inside=x>=0&&x<16&&y>=0&&y<16;
             if(inside)
             {
-                if(!Contains(tile.Slope,tile.IsHalfBlock,x,y))return false;
+                if(!Contains(tile.Slope,tile.IsHalfBlock,x,y)
+                    &&!(tile.IsHalfBlock&&face==Top&&y==top-2))return false;
             }
             else
             {
                 bool tip=face switch {
-                    Top=>y==-2&&Contains(tile.Slope,tile.IsHalfBlock,x,0),
+                    Top=>y==top-2&&Contains(tile.Slope,tile.IsHalfBlock,x,top),
                     Right=>x==16&&Contains(tile.Slope,tile.IsHalfBlock,15,y),
                     Bottom=>y==16&&Contains(tile.Slope,tile.IsHalfBlock,x,15),
                     _=>x==-2&&Contains(tile.Slope,tile.IsHalfBlock,0,y)
                 };
                 if(!tip)return false;
             }
-            int depth=face switch {Top=>y,Right=>14-x,Bottom=>14-y,_=>x};
+            int depth=face switch {Top=>textureY,Right=>14-x,Bottom=>14-y,_=>x};
             if(depth < -2||depth>6)return false;
             if(!EdgeOpen(i,j,face,along))
             {
@@ -89,10 +94,10 @@ namespace IslandAdventure.Content.Tiles
                 if(EdgeOpen(i,j,adjacent,adjacentAlong)||Solid(i*16+dx,j*16+dy))return false;
             }
             var frame=FaceFrame(i,face);
-            source=new Rectangle(frame.X+x+2,frame.Y+y+2,2,2);
+            source=new Rectangle(frame.X+x+2,frame.Y+textureY+2,2,2);
             return true;
         }
-        public static void Draw(int i,int j,SpriteBatch batch,Texture2D texture,Vector2 point,Color light)
+        public static void Draw(int i,int j,SpriteBatch batch,Texture2D texture,Vector2 point,Color light,Texture2D corners)
         {
             var tile=Main.tile[i,j];
             int faces=ShapeFaces(tile.Slope,tile.IsHalfBlock);
@@ -109,6 +114,8 @@ namespace IslandAdventure.Content.Tiles
                         if(FaceSample(i,j,face,x,y,out var source))
                             batch.Draw(texture,point+new Vector2(x,y),source,light);
             }
+            if(!tile.IsHalfBlock&&tile.Slope!=SlopeType.Solid)
+                batch.Draw(corners,point-new Vector2(2),CornerFrame(i,tile.Slope),light);
         }
     }
 }
