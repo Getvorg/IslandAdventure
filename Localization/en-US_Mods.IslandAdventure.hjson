@@ -1,177 +1,143 @@
-{
-  "Grove": {"TreeName": "Ancient Camphor", "PreviewUpdated": "Grove sample refreshed. Tree: {0}. Walk right toward the boulder. /grovepreview back — return."},
-  "Items": {
-    "TideliteOre": {
-      "DisplayName": "Tidelite Ore",
-      "Tooltip": ""
-    },
-    "TideliteBar": {
-      "DisplayName": "Tidelite Bar",
-      "Tooltip": ""
-    },
-    "TideliteBrick": {
-      "DisplayName": "Tidelite Brick",
-      "Tooltip": ""
-    },
-    "TideliteBrickWall": {
-      "DisplayName": "Tidelite Brick Wall",
-      "Tooltip": ""
-    },
-    "TideliteSword": {
-      "DisplayName": "Tidelite Sword",
-      "Tooltip": ""
-    },
-    "TidelitePickaxe": {
-      "DisplayName": "Tidelite Pickaxe",
-      "Tooltip": ""
-    },
-    "TideliteAxe": {
-      "DisplayName": "Tidelite Axe",
-      "Tooltip": ""
-    },
-    "TideliteHammer": {
-      "DisplayName": "Tidelite Hammer",
-      "Tooltip": ""
-    },
-    "RoyalConch": {
-      "DisplayName": "Royal Conch",
-      "Tooltip": "Summons the Mermaid Queen at an ocean on the second island\nNot consumed\nSingle-player prototype"
-    },
-    "DarkSoil": {
-      "DisplayName": "Dark Humus",
-      "Tooltip": ""
-    },
-    "DarkStone": {
-      "DisplayName": "Forest Slate",
-      "Tooltip": ""
-    },
-    "DarkWood": {
-      "DisplayName": "Dark Oak Wood",
-      "Tooltip": ""
-    }
-  },
-  "Tiles": {
-    "TideliteOreTile": {
-      "MapEntry": "Tidelite Ore"
-    },
-    "TideliteBarTile": {
-      "MapEntry": "Tidelite Bar"
-    },
-    "TideliteBrickTile": {
-      "MapEntry": "Tidelite Brick"
-    },
-    "DarkSoilTile": {
-      "MapEntry": "Dark Humus"
-    },
-    "DarkStoneTile": {
-      "MapEntry": "Forest Slate"
-    },
-    "DarkGrassTile": {
-      "MapEntry": "Dark Forest Turf"
-    },
-    "DarkWoodTile": {
-      "MapEntry": "Dark Oak Wood"
-    },
-    "DarkPlantTile": {
-      "MapEntry": "Forest Undergrowth"
-    },
-    "DarkVineTile": {
-      "MapEntry": "Dark Forest Vines"
-    },
-    "GroveGrass": {
-      "MapEntry": "Grove Turf"
-    },
-    "GroveTuft": {
-      "MapEntry": "Low Grove Grass"
-    },
-    "GroveBush": {
-      "MapEntry": "Grove Shrub"
-    },
-    "GroveFern": {
-      "MapEntry": "Grove Fern"
-    },
-    "GroveSmallBush": {
-      "MapEntry": "Small Grove Shrub"
-    },
-    "GroveSmallFern": {
-      "MapEntry": "Small Grove Fern"
-    },
-    "GroveMoss": {
-      "MapEntry": "Forest Moss"
-    },
-    "GroveRoots": {
-      "MapEntry": "Mossy Roots"
-    },
-    "GroveFallenLog": {
-      "MapEntry": "Broken Fallen Trunk"
-    },
-    "GroveHollowLog": {
-      "MapEntry": "Hollow Fallen Trunk"
-    },
-    "GrovePebble": {
-      "MapEntry": "Mossy Pebble"
-    },
-    "GroveRock": {
-      "MapEntry": "Forest Rock"
-    },
-    "GroveLargeRock": {
-      "MapEntry": "Large Forest Rock"
-    },
-    "GroveBoulder": {
-      "MapEntry": "Ancient Mossy Boulder"
-    }
-  },
-  "Walls": {
-    "TideliteWall": {
-      "DisplayName": "Tidelite Brick Wall"
-    },
-    "DarkSoilWall": {
-      "DisplayName": "Dark Humus Wall"
-    },
-    "DarkStoneWall": {
-      "DisplayName": "Forest Slate Wall"
-    }
-  },
-  "NPCs": {
-    "Mermaid": {
-      "DisplayName": "Mermaid",
-      "Bestiary": "Swims near the island shores and lunges at swimmers who venture too close. Struggles on dry land."
-    },
-    "Merman": {
-      "DisplayName": "Merman",
-      "Bestiary": "A larger sea dweller. Pursues swimmers near the island shores, but struggles on dry land."
-    },
-    "MermaidQueen": {
-      "DisplayName": "Mermaid Queen",
-      "Bestiary": "An ocean sovereign whose enchanting song confuses challengers. Charges, raises ever larger waves and calls morays to her side."
-    },
-    "RoyalMoray": {
-      "DisplayName": "Royal Moray"
-    }
-  },
-  "Projectiles": {
-    "RoyalWave": {
-      "DisplayName": "Royal Wave"
-    },
-    "RoyalSong": {
-      "DisplayName": "Royal Song"
-    }
-  },
-  "QueenEncounter": {
-    "SinglePlayer": "This boss encounter is currently available in single-player.",
-    "AlreadyActive": "The Mermaid Queen is already present.",
-    "IslandOnly": "Use the conch at an ocean on the second island.",
-    "DeepOcean": "Stand near a deep ocean to summon the Mermaid Queen.",
-    "NoSlot": "Could not summon the boss: the creature limit has been reached.",
-    "Summoned": "The Mermaid Queen has answered your call!",
-    "Singing": "The Queen begins to sing!"
-  },
-  "Resume": {
-    "LoadFailed": "Could not load the island. Your character remains in the main world."
-  },
-  "Biomes": {
-    "DarkForestBiome": {
-      "DisplayName": "Dark Forest"
-    }
-  }
+Grove.PreviewUpdated: Grove sample refreshed. Walk right toward the boulder. /grovepreview back — return.
+
+Items: {
+	TideliteOre: {
+		DisplayName: Tidelite Ore
+		Tooltip: ""
+	}
+
+	TideliteBar: {
+		DisplayName: Tidelite Bar
+		Tooltip: ""
+	}
+
+	TideliteBrick: {
+		DisplayName: Tidelite Brick
+		Tooltip: ""
+	}
+
+	TideliteBrickWall: {
+		DisplayName: Tidelite Brick Wall
+		Tooltip: ""
+	}
+
+	TideliteSword: {
+		DisplayName: Tidelite Sword
+		Tooltip: ""
+	}
+
+	TidelitePickaxe: {
+		DisplayName: Tidelite Pickaxe
+		Tooltip: ""
+	}
+
+	TideliteAxe: {
+		DisplayName: Tidelite Axe
+		Tooltip: ""
+	}
+
+	TideliteHammer: {
+		DisplayName: Tidelite Hammer
+		Tooltip: ""
+	}
+
+	RoyalConch: {
+		DisplayName: Royal Conch
+		Tooltip:
+			'''
+			Summons the Mermaid Queen at an ocean on the second island
+			Not consumed
+			Single-player prototype
+			'''
+	}
+
+	DarkSoil: {
+		DisplayName: Dark Humus
+		Tooltip: ""
+	}
+
+	DarkStone: {
+		DisplayName: Forest Slate
+		Tooltip: ""
+	}
+
+	DarkWood: {
+		DisplayName: Dark Oak Wood
+		Tooltip: ""
+	}
+}
+
+Tiles: {
+	TideliteOreTile.MapEntry: Tidelite Ore
+	TideliteBarTile.MapEntry: Tidelite Bar
+	TideliteBrickTile.MapEntry: Tidelite Brick
+	DarkSoilTile.MapEntry: Dark Humus
+	DarkStoneTile.MapEntry: Forest Slate
+	DarkGrassTile.MapEntry: Dark Forest Turf
+	DarkWoodTile.MapEntry: Dark Oak Wood
+	DarkPlantTile.MapEntry: Forest Undergrowth
+	DarkVineTile.MapEntry: Dark Forest Vines
+	GroveGrass.MapEntry: Grove Turf
+	GroveTuft.MapEntry: Low Grove Grass
+	GroveBush.MapEntry: Grove Shrub
+	GroveFern.MapEntry: Grove Fern
+	GroveSmallBush.MapEntry: Small Grove Shrub
+	GroveSmallFern.MapEntry: Small Grove Fern
+	GroveMoss.MapEntry: Forest Moss
+	GroveRoots.MapEntry: Mossy Roots
+	GroveFallenLog.MapEntry: Broken Fallen Trunk
+	GroveHollowLog.MapEntry: Hollow Fallen Trunk
+	GrovePebble.MapEntry: Mossy Pebble
+	GroveRock.MapEntry: Forest Rock
+	GroveLargeRock.MapEntry: Large Forest Rock
+	GroveBoulder.MapEntry: Ancient Mossy Boulder
+}
+
+Walls: {
+	TideliteWall.DisplayName: Tidelite Brick Wall
+	DarkSoilWall.DisplayName: Dark Humus Wall
+	DarkStoneWall.DisplayName: Forest Slate Wall
+}
+
+NPCs: {
+	Mermaid: {
+		DisplayName: Mermaid
+		Bestiary: Swims near the island shores and lunges at swimmers who venture too close. Struggles on dry land.
+	}
+
+	Merman: {
+		DisplayName: Merman
+		Bestiary: A larger sea dweller. Pursues swimmers near the island shores, but struggles on dry land.
+	}
+
+	MermaidQueen: {
+		DisplayName: Mermaid Queen
+		Bestiary: An ocean sovereign whose enchanting song confuses challengers. Charges, raises ever larger waves and calls morays to her side.
+	}
+
+	RoyalMoray.DisplayName: Royal Moray
+}
+
+Projectiles: {
+	RoyalWave.DisplayName: Royal Wave
+	RoyalSong.DisplayName: Royal Song
+}
+
+QueenEncounter: {
+	SinglePlayer: This boss encounter is currently available in single-player.
+	AlreadyActive: The Mermaid Queen is already present.
+	IslandOnly: Use the conch at an ocean on the second island.
+	DeepOcean: Stand near a deep ocean to summon the Mermaid Queen.
+	NoSlot: Could not summon the boss: the creature limit has been reached.
+	Summoned: The Mermaid Queen has answered your call!
+	Singing: The Queen begins to sing!
+}
+
+Resume.LoadFailed: Could not load the island. Your character remains in the main world.
+
+Biomes: {
+	DarkForestBiome: {
+		DisplayName: Dark Forest
+		TownNPCDialogueName: the Dark Forest Biome
+	}
 }

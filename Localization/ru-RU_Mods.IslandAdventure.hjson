@@ -1,177 +1,143 @@
-{
-  "Grove": {"TreeName": "Древний камфорник", "PreviewUpdated": "Образец рощи обновлён. Дерево: {0}. Пройди вправо до валуна. /grovepreview back — вернуться."},
-  "Items": {
-    "TideliteOre": {
-      "DisplayName": "Приливитовая руда",
-      "Tooltip": "Тёмный камень хранит цвет морских глубин"
-    },
-    "TideliteBar": {
-      "DisplayName": "Приливитовый слиток",
-      "Tooltip": "Четыре куска руды, жар печи и немного терпения"
-    },
-    "TideliteBrick": {
-      "DisplayName": "Приливитовый кирпич",
-      "Tooltip": "Морская прожилка в отполированном камне"
-    },
-    "TideliteBrickWall": {
-      "DisplayName": "Приливитовая кирпичная стена",
-      "Tooltip": ""
-    },
-    "TideliteSword": {
-      "DisplayName": "Приливитовый меч",
-      "Tooltip": ""
-    },
-    "TidelitePickaxe": {
-      "DisplayName": "Приливитовая кирка",
-      "Tooltip": ""
-    },
-    "TideliteAxe": {
-      "DisplayName": "Приливитовый топор",
-      "Tooltip": ""
-    },
-    "TideliteHammer": {
-      "DisplayName": "Приливитовый молот",
-      "Tooltip": ""
-    },
-    "RoyalConch": {
-      "DisplayName": "Королевская раковина",
-      "Tooltip": "Призывает Королеву Русалок у океана второго острова\nНе расходуется\nПервая версия боя — одиночная"
-    },
-    "DarkSoil": {
-      "DisplayName": "Тёмный перегной",
-      "Tooltip": ""
-    },
-    "DarkStone": {
-      "DisplayName": "Лесной сланец",
-      "Tooltip": ""
-    },
-    "DarkWood": {
-      "DisplayName": "Древесина тёмного дуба",
-      "Tooltip": ""
-    }
-  },
-  "Tiles": {
-    "TideliteOreTile": {
-      "MapEntry": "Приливитовая руда"
-    },
-    "TideliteBarTile": {
-      "MapEntry": "Приливитовый слиток"
-    },
-    "TideliteBrickTile": {
-      "MapEntry": "Приливитовый кирпич"
-    },
-    "DarkSoilTile": {
-      "MapEntry": "Тёмный перегной"
-    },
-    "DarkStoneTile": {
-      "MapEntry": "Лесной сланец"
-    },
-    "DarkGrassTile": {
-      "MapEntry": "Дернина тёмного леса"
-    },
-    "DarkWoodTile": {
-      "MapEntry": "Древесина тёмного дуба"
-    },
-    "DarkPlantTile": {
-      "MapEntry": "Лесной подлесок"
-    },
-    "DarkVineTile": {
-      "MapEntry": "Лианы тёмного леса"
-    },
-    "GroveGrass": {
-      "MapEntry": "Дернина рощи"
-    },
-    "GroveTuft": {
-      "MapEntry": "Низкая трава рощи"
-    },
-    "GroveBush": {
-      "MapEntry": "Куст рощи"
-    },
-    "GroveFern": {
-      "MapEntry": "Папоротник рощи"
-    },
-    "GroveSmallBush": {
-      "MapEntry": "Малый куст рощи"
-    },
-    "GroveSmallFern": {
-      "MapEntry": "Малый папоротник рощи"
-    },
-    "GroveMoss": {
-      "MapEntry": "Лесной мох"
-    },
-    "GroveRoots": {
-      "MapEntry": "Мшистые корни"
-    },
-    "GroveFallenLog": {
-      "MapEntry": "Сломанный ствол"
-    },
-    "GroveHollowLog": {
-      "MapEntry": "Полый поваленный ствол"
-    },
-    "GrovePebble": {
-      "MapEntry": "Мшистый камень"
-    },
-    "GroveRock": {
-      "MapEntry": "Лесной камень"
-    },
-    "GroveLargeRock": {
-      "MapEntry": "Большой лесной камень"
-    },
-    "GroveBoulder": {
-      "MapEntry": "Древний мшистый валун"
-    }
-  },
-  "Walls": {
-    "TideliteWall": {
-      "DisplayName": "Приливитовая кирпичная стена"
-    },
-    "DarkSoilWall": {
-      "DisplayName": "Стена из тёмного перегноя"
-    },
-    "DarkStoneWall": {
-      "DisplayName": "Стена из лесного сланца"
-    }
-  },
-  "NPCs": {
-    "Mermaid": {
-      "DisplayName": "Русалка",
-      "Bestiary": "Плавает у берегов острова и бросается на тех, кто заплывает слишком близко. На суше почти беспомощна."
-    },
-    "Merman": {
-      "DisplayName": "Русал",
-      "Bestiary": "Более крупный морской житель. Преследует пловцов у берегов острова, но на суше теряет подвижность."
-    },
-    "MermaidQueen": {
-      "DisplayName": "Королева Русалок",
-      "Bestiary": "Владычица океана, чьё чарующее пение сбивает путников с толку. Атакует рывками, поднимает всё более высокие волны и призывает мурен."
-    },
-    "RoyalMoray": {
-      "DisplayName": "Королевская мурена"
-    }
-  },
-  "Projectiles": {
-    "RoyalWave": {
-      "DisplayName": "Королевская волна"
-    },
-    "RoyalSong": {
-      "DisplayName": "Королевское пение"
-    }
-  },
-  "QueenEncounter": {
-    "SinglePlayer": "Первая версия боя доступна только в одиночной игре.",
-    "AlreadyActive": "Королева Русалок уже призвана.",
-    "IslandOnly": "Используй раковину у океана второго острова.",
-    "DeepOcean": "Подойди к глубокому океану, чтобы призвать Королеву Русалок.",
-    "NoSlot": "Не удалось призвать босса: достигнут лимит существ.",
-    "Summoned": "Королева Русалок ответила на твой зов!",
-    "Singing": "Королева начинает петь!"
-  },
-  "Resume": {
-    "LoadFailed": "Не удалось загрузить остров: персонаж остаётся в основном мире."
-  },
-  "Biomes": {
-    "DarkForestBiome": {
-      "DisplayName": "Тёмный лес"
-    }
-  }
+Grove.PreviewUpdated: Образец рощи обновлён. Пройди вправо до валуна. /grovepreview back — вернуться.
+
+Items: {
+	TideliteOre: {
+		DisplayName: Приливитовая руда
+		Tooltip: Тёмный камень хранит цвет морских глубин
+	}
+
+	TideliteBar: {
+		DisplayName: Приливитовый слиток
+		Tooltip: Четыре куска руды, жар печи и немного терпения
+	}
+
+	TideliteBrick: {
+		DisplayName: Приливитовый кирпич
+		Tooltip: Морская прожилка в отполированном камне
+	}
+
+	TideliteBrickWall: {
+		DisplayName: Приливитовая кирпичная стена
+		Tooltip: ""
+	}
+
+	TideliteSword: {
+		DisplayName: Приливитовый меч
+		Tooltip: ""
+	}
+
+	TidelitePickaxe: {
+		DisplayName: Приливитовая кирка
+		Tooltip: ""
+	}
+
+	TideliteAxe: {
+		DisplayName: Приливитовый топор
+		Tooltip: ""
+	}
+
+	TideliteHammer: {
+		DisplayName: Приливитовый молот
+		Tooltip: ""
+	}
+
+	RoyalConch: {
+		DisplayName: Королевская раковина
+		Tooltip:
+			'''
+			Призывает Королеву Русалок у океана второго острова
+			Не расходуется
+			Первая версия боя — одиночная
+			'''
+	}
+
+	DarkSoil: {
+		DisplayName: Тёмный перегной
+		Tooltip: ""
+	}
+
+	DarkStone: {
+		DisplayName: Лесной сланец
+		Tooltip: ""
+	}
+
+	DarkWood: {
+		DisplayName: Древесина тёмного дуба
+		Tooltip: ""
+	}
+}
+
+Tiles: {
+	TideliteOreTile.MapEntry: Приливитовая руда
+	TideliteBarTile.MapEntry: Приливитовый слиток
+	TideliteBrickTile.MapEntry: Приливитовый кирпич
+	DarkSoilTile.MapEntry: Тёмный перегной
+	DarkStoneTile.MapEntry: Лесной сланец
+	DarkGrassTile.MapEntry: Дернина тёмного леса
+	DarkWoodTile.MapEntry: Древесина тёмного дуба
+	DarkPlantTile.MapEntry: Лесной подлесок
+	DarkVineTile.MapEntry: Лианы тёмного леса
+	GroveGrass.MapEntry: Дернина рощи
+	GroveTuft.MapEntry: Низкая трава рощи
+	GroveBush.MapEntry: Куст рощи
+	GroveFern.MapEntry: Папоротник рощи
+	GroveSmallBush.MapEntry: Малый куст рощи
+	GroveSmallFern.MapEntry: Малый папоротник рощи
+	GroveMoss.MapEntry: Лесной мох
+	GroveRoots.MapEntry: Мшистые корни
+	GroveFallenLog.MapEntry: Сломанный ствол
+	GroveHollowLog.MapEntry: Полый поваленный ствол
+	GrovePebble.MapEntry: Мшистый камень
+	GroveRock.MapEntry: Лесной камень
+	GroveLargeRock.MapEntry: Большой лесной камень
+	GroveBoulder.MapEntry: Древний мшистый валун
+}
+
+Walls: {
+	TideliteWall.DisplayName: Приливитовая кирпичная стена
+	DarkSoilWall.DisplayName: Стена из тёмного перегноя
+	DarkStoneWall.DisplayName: Стена из лесного сланца
+}
+
+NPCs: {
+	Mermaid: {
+		DisplayName: Русалка
+		Bestiary: Плавает у берегов острова и бросается на тех, кто заплывает слишком близко. На суше почти беспомощна.
+	}
+
+	Merman: {
+		DisplayName: Русал
+		Bestiary: Более крупный морской житель. Преследует пловцов у берегов острова, но на суше теряет подвижность.
+	}
+
+	MermaidQueen: {
+		DisplayName: Королева Русалок
+		Bestiary: Владычица океана, чьё чарующее пение сбивает путников с толку. Атакует рывками, поднимает всё более высокие волны и призывает мурен.
+	}
+
+	RoyalMoray.DisplayName: Королевская мурена
+}
+
+Projectiles: {
+	RoyalWave.DisplayName: Королевская волна
+	RoyalSong.DisplayName: Королевское пение
+}
+
+QueenEncounter: {
+	SinglePlayer: Первая версия боя доступна только в одиночной игре.
+	AlreadyActive: Королева Русалок уже призвана.
+	IslandOnly: Используй раковину у океана второго острова.
+	DeepOcean: Подойди к глубокому океану, чтобы призвать Королеву Русалок.
+	NoSlot: Не удалось призвать босса: достигнут лимит существ.
+	Summoned: Королева Русалок ответила на твой зов!
+	Singing: Королева начинает петь!
+}
+
+Resume.LoadFailed: Не удалось загрузить остров: персонаж остаётся в основном мире.
+
+Biomes: {
+	DarkForestBiome: {
+		DisplayName: Тёмный лес
+		// TownNPCDialogueName: the Dark Forest Biome
+	}
 }
