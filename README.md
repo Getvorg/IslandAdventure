@@ -945,3 +945,19 @@ Tiles_2.zip. Исходный PNG 288x1980 сохранён целиком в
 
 
 Version 0.4.23: custom live grove tree removed completely (assets, sources, renderer, registration and placement). Existing gallery sample trees are removed once on load/refresh. Other plants, decorative roots/logs, grass and vanilla trees elsewhere are preserved. Earlier tree sections describe historical versions. Ground contact preview: tools/render_grove_contact_preview.py.
+
+## 0.4.24 — new Ancient Camphor
+
+A new tree built from the approved whole-tree concept and fresh canopy/bough
+art matches the grove plants. Its narrow four-tone brown stem and compact
+native roots use native frame geometry; old tree artwork is not restored.
+The gallery owns the regional renderer and three tall native sample trees.
+Run `/grovepreview` to refresh an existing sample; no new world is required.
+The art pipeline includes source images, frame mask provenance and an actual-size
+join preview. Native wood drops/chopping, painting and trees elsewhere remain.
+
+Validation for 0.4.24: C# build has zero warnings/errors, mod packaging succeeds,
+94,326 loaded-tModLoader assertions pass (including tree-free save upgrade,
+repeat refresh, native chopping, painted-tree fallback and outside-tree routing).
+Packed assets have binary alpha and an exact 2x2 pixel grid. Static join preview
+reviewed; graphical-client review is pending. Existing small-icon warning remains.

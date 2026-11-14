@@ -50,10 +50,12 @@ Each framed decoration tile is 16x16 with a 2px atlas gutter.
 
 ## Contact preview
 
-The custom live tree, its registration, rendering, assets, source art and builder
-were removed in 0.4.23 at user request. Existing exact gallery sample trees are
-removed once on load/refresh. Other plants and vanilla trees elsewhere remain.
-Roots.png is still the independent decorative root object; fallen logs remain.
+The former custom tree was removed in 0.4.23. Version 0.4.24 introduces the
+newly approved Ancient Camphor, using fresh visible artwork. See
+concepts/README.md for sources, native frame packing, tree dimensions and
+regional behavior. Run `bash tools/build_camphor_assets.sh` and
+`python3 tools/render_camphor_preview.py` to rebuild its assets and join preview.
+Roots.png remains the independent decorative root object; fallen logs remain.
 
 Run `python3 tools/render_grove_contact_preview.py` to rebuild the ground-contact
 preview from actual packed props and native grass frames over schematic soil.
