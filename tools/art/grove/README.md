@@ -95,3 +95,17 @@ thin-feature rule. Contact tests account for slope/half-block geometry.
 The gallery seeds its lower foundation and side ends through native grass
 spread eligibility, so vines attach to actual turf rather than a dirt-only
 visual overlay. Historical references to sparse undersides above are superseded.
+
+
+0.4.19 supersedes the procedural opaque fill. `GrassEdge.png` is unchanged.
+`build_grove_turf_faces.sh` copies each 16x10 source region (y=2..11) into
+a 20x20 cell, including 2px outward tips. It produces exact top/right/bottom/left
+rows in `GrassFaces.png` (120x80) using only 90/270-degree rotations and a
+vertical flip. Runtime combines the required side images and clips them to
+the actual shape/neighbor geometry, without synthesizing interior green rows.
+Half blocks use bottom only; slopes use their corresponding two solid sides.
+Concave corners use clipped fragments; flat connected rows have no side seams.
+`turf-face-cases.json` exports actual runtime
+sample rectangles. `render_grove_turf_faces_preview.py` reassembles those samples
+over schematic soil; the preview is not a client screenshot. Source-image
+RGBA equality and exact 2x2 grid were checked for all 24 oriented sprites.

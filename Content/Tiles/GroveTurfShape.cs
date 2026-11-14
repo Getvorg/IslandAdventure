@@ -2,11 +2,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.Enums;
+
 namespace IslandAdventure.Content.Tiles
 {
     public static class GroveTurfShape
     {
+        public const int Top=1,Right=2,Bottom=4,Left=8;
         public static bool Contains(SlopeType slope,bool half,int x,int y)
         {
             if(x<0||x>=16||y<0||y>=16)return false;
@@ -23,82 +24,91 @@ namespace IslandAdventure.Content.Tiles
         {
             int i=x>>4,j=y>>4;
             if(i<0||j<0||i>=Main.maxTilesX||j>=Main.maxTilesY)return false;
-            var t=Main.tile[i,j];
-            return t.HasTile&&!t.IsActuated&&Main.tileSolid[t.TileType]&&!Main.tileSolidTop[t.TileType]
-                &&Contains(t.Slope,t.IsHalfBlock,x&15,y&15);
+            var tile=Main.tile[i,j];
+            return tile.HasTile&&!tile.IsActuated&&Main.tileSolid[tile.TileType]
+                &&!Main.tileSolidTop[tile.TileType]&&Contains(tile.Slope,tile.IsHalfBlock,x&15,y&15);
+        }
+        public static int ShapeFaces(SlopeType slope,bool half)
+        {
+            if(half)return Bottom;
+            return slope switch {
+                SlopeType.SlopeDownRight=>Bottom|Right,
+                SlopeType.SlopeDownLeft=>Bottom|Left,
+                SlopeType.SlopeUpRight=>Top|Right,
+                SlopeType.SlopeUpLeft=>Top|Left,
+                _=>Top|Right|Bottom|Left
+            };
+        }
+        private static bool EdgeOpen(int i,int j,int face,int along)
+            =>face switch {
+                Top=>!Solid(i*16+along,j*16-1),
+                Right=>!Solid(i*16+16,j*16+along),
+                Bottom=>!Solid(i*16+along,j*16+16),
+                _=>!Solid(i*16-1,j*16+along)
+            };
+        public static Rectangle FaceFrame(int i,int face)
+        {
+            int row=face==Top?0:face==Right?1:face==Bottom?2:3;
+            return new Rectangle((i%6)*20,row*20,20,20);
+        }
+        public static bool FaceSample(int i,int j,int face,int x,int y,out Rectangle source)
+        {
+            source=Rectangle.Empty;
+            var tile=Main.tile[i,j];
+            if(!tile.HasTile||(ShapeFaces(tile.Slope,tile.IsHalfBlock)&face)==0)return false;
+            int along=face==Top||face==Bottom?x:y;
+            if(along<0||along>=16)return false;
+            bool inside=x>=0&&x<16&&y>=0&&y<16;
+            if(inside)
+            {
+                if(!Contains(tile.Slope,tile.IsHalfBlock,x,y))return false;
+            }
+            else
+            {
+                bool tip=face switch {
+                    Top=>y==-2&&Contains(tile.Slope,tile.IsHalfBlock,x,0),
+                    Right=>x==16&&Contains(tile.Slope,tile.IsHalfBlock,15,y),
+                    Bottom=>y==16&&Contains(tile.Slope,tile.IsHalfBlock,x,15),
+                    _=>x==-2&&Contains(tile.Slope,tile.IsHalfBlock,0,y)
+                };
+                if(!tip)return false;
+            }
+            int depth=face switch {Top=>y,Right=>14-x,Bottom=>14-y,_=>x};
+            if(depth < -2||depth>6)return false;
+            if(!EdgeOpen(i,j,face,along))
+            {
+                // A concave corner exists only when both adjacent faces are
+                // connected but the diagonal is empty. Flat strips keep no seams.
+                if(!inside||depth>2||(along>2&&along<12))return false;
+                bool nearStart=along<=2;
+                bool vertical=face==Top||face==Bottom;
+                int dx=vertical?(nearStart?-1:16):(face==Left?-1:16);
+                int dy=vertical?(face==Top?-1:16):(nearStart?-1:16);
+                int adjacent=vertical?(nearStart?Left:Right):(nearStart?Top:Bottom);
+                int adjacentAlong=face==Bottom||face==Right?14:0;
+                if(EdgeOpen(i,j,adjacent,adjacentAlong)||Solid(i*16+dx,j*16+dy))return false;
+            }
+            var frame=FaceFrame(i,face);
+            source=new Rectangle(frame.X+x+2,frame.Y+y+2,2,2);
+            return true;
         }
         public static void Draw(int i,int j,SpriteBatch batch,Texture2D texture,Vector2 point,Color light)
         {
             var tile=Main.tile[i,j];
-            int frame=(i%(texture.Width/18))*18;
-            bool fullyCovered=FullyCovered(i,j);
-            for(int y=0;y<16;y+=2)for(int x=0;x<16;x+=2)
+            int faces=ShapeFaces(tile.Slope,tile.IsHalfBlock);
+            for(int face=Top;face<=Left;face<<=1)
             {
-                if(TrySample(i,j,x,y,fullyCovered,out int along,out int sourceY))
-                    batch.Draw(texture,point+new Vector2(x,y),new Rectangle(frame+along,sourceY,2,2),light);
+                if((faces&face)==0)continue;
+                bool whole=tile.Slope==SlopeType.Solid&&!tile.IsHalfBlock;
+                if(whole)for(int along=0;along<16;along+=2)
+                    if(!EdgeOpen(i,j,face,along)){whole=false;break;}
+                if(whole)
+                    batch.Draw(texture,point-new Vector2(2),FaceFrame(i,face),light);
+                else
+                    for(int y=-2;y<=16;y+=2)for(int x=-2;x<=16;x+=2)
+                        if(FaceSample(i,j,face,x,y,out var source))
+                            batch.Draw(texture,point+new Vector2(x,y),source,light);
             }
-            // Grass tips remain above an exposed flat top; soil/body never spills outside slopes.
-            if(tile.Slope==SlopeType.Solid)
-            {
-                int top=tile.IsHalfBlock?8:0;
-                for(int x=0;x<16;x+=2)if(!Solid(i*16+x,j*16+top-2))
-                    batch.Draw(texture,point+new Vector2(x,top-2),new Rectangle(frame+x,2,2,2),light);
-            }
-        }
-        // Exposed geometry, not tile-frame indices, controls all connections.
-        // Thick terrain has a grass rim on every exposed face, including below.
-        // Isolated shapes and one-tile-thick rows/columns are fully grass-covered.
-        public static bool TrySample(int i,int j,int x,int y,out int along,out int sourceY)
-            =>TrySample(i,j,x,y,FullyCovered(i,j),out along,out sourceY);
-
-        // Diagonal neighbors do not join a face. Check actual contact so slopes,
-        // half blocks, platforms and actuated neighbors cannot fake a connection.
-        private static int Contacts(int i,int j)
-        {
-            var tile=Main.tile[i,j];
-            if(!tile.HasTile)return 15;
-            int mask=0;
-            for(int p=0;p<16;p+=2)
-            {
-                if(Contains(tile.Slope,tile.IsHalfBlock,p,0)&&Solid(i*16+p,j*16-1))mask|=4;
-                if(Contains(tile.Slope,tile.IsHalfBlock,p,15)&&Solid(i*16+p,j*16+16))mask|=8;
-                if(Contains(tile.Slope,tile.IsHalfBlock,0,p)&&Solid(i*16-1,j*16+p))mask|=1;
-                if(Contains(tile.Slope,tile.IsHalfBlock,15,p)&&Solid(i*16+16,j*16+p))mask|=2;
-            }
-            return mask;
-        }
-        public static bool IsIsolated(int i,int j)=>Contacts(i,j)==0;
-        public static bool FullyCovered(int i,int j)
-        {
-            int contacts=Contacts(i,j);
-            return (contacts&12)==0||(contacts&3)==0;
-        }
-        private static bool TrySample(int i,int j,int x,int y,bool fullyCovered,out int along,out int sourceY)
-        {
-            along=x;sourceY=0;
-            var tile=Main.tile[i,j];
-            if(!tile.HasTile||!Contains(tile.Slope,tile.IsHalfBlock,x,y))return false;
-            if(fullyCovered)
-            {
-                // Every occupied 2x2 cell must use opaque sod: no dirt hole and
-                // no transparent root pixels, including half blocks/four slopes.
-                sourceY=4+(y&2);
-                return true;
-            }
-            int wx=i*16+x,wy=j*16+y;
-            for(int step=1;step<=3;step++)
-            {
-                int d=step*2;
-                if(!Solid(wx,wy-d)){sourceY=4+(step-1)*2;return true;}
-                if(step<=2&&(!Solid(wx-d,wy)||!Solid(wx+d,wy)))
-                {along=y;sourceY=4+(step-1)*2;return true;}
-                if(step<=2&&!Solid(wx,wy+d)){sourceY=4+(step-1)*2;return true;}
-                if(step<=2&&(!Solid(wx-d,wy-d)||!Solid(wx+d,wy-d)))
-                {sourceY=6+(step-1)*2;return true;}
-                if(step<=2&&(!Solid(wx-d,wy+d)||!Solid(wx+d,wy+d)))
-                {sourceY=6+(step-1)*2;return true;}
-            }
-            return false;
         }
     }
 }

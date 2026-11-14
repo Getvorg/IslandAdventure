@@ -30,7 +30,7 @@ namespace IslandAdventure.Content.Tiles
         {
             var tile = Main.tile[i,j];
             if(!TileDrawing.IsVisible(tile)||tile.TileColor!=PaintID.None)return;
-            var texture = ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/GrassEdge", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            var texture = ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/GrassFaces", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             Vector2 point = new Vector2(i*16,j*16) - Main.screenPosition;
             if (!Main.drawToScreen) point += new Vector2(Main.offScreenRange);
             Color light = tile.IsTileFullbright?Color.White:Lighting.GetColor(i,j);

@@ -22,3 +22,4 @@ for n in 0 1 2 3 4 5; do
   -background none -gravity northwest -extent 18x16 "$file"
 done
 magick "${frames[@]}" +append -depth 8 PNG32:"$root/Assets/Grove/GrassEdge.png"
+bash "$root/tools/build_grove_turf_faces.sh"
