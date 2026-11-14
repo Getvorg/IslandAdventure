@@ -12,7 +12,7 @@ namespace IslandAdventure.Content.Trees
     // This registration also supports legacy grove soil in saved worlds.
     public class AncientCamphor : ModTree
     {
-        public const int CrownWidth = 256, CrownHeight = 176;
+        public const int CrownWidth = 80, CrownHeight = 80;
         public const int BranchWidth = 40, BranchHeight = 40;
         public override TreePaintingSettings TreeShaderSettings => new TreePaintingSettings();
         public override void SetStaticDefaults() => GrowsOnTileId = new[] { ModContent.TileType<GroveGrass>() };
@@ -20,7 +20,7 @@ namespace IslandAdventure.Content.Trees
         public override Asset<Texture2D> GetTopTextures() => ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Camphor_Tops");
         public override Asset<Texture2D> GetBranchTextures() => ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Camphor_Branches");
         public override void SetTreeFoliageSettings(int i,int j,Tile tile,int xoffset,ref int treeFrame,int floorY,ref int width,ref int height)
-        { treeFrame=0; width=CrownWidth; height=CrownHeight; }
+        { treeFrame=System.Math.Clamp(treeFrame,0,2); width=CrownWidth; height=CrownHeight; }
         public override int DropWood() => ItemID.Wood;
     }
 }

@@ -16,7 +16,7 @@ namespace IslandAdventure.Systems
         public const int GalleryWidth = 176;
         public const int GalleryHeight = 72;
         private const int CurrentPlantLayout = 9;
-        private const int CurrentTreeLayout = 4;
+        private const int CurrentTreeLayout = 5;
         public Rectangle Bounds { get; private set; }
         private Vector2 returnPosition;
         private bool canReturn, triedUpgrade;

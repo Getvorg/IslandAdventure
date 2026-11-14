@@ -39,7 +39,7 @@ namespace IslandAdventure.Content.Tiles
             if(fx==22)
             {
                 var crown=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/Camphor_Tops",AssetRequestMode.ImmediateLoad).Value;
-                batch.Draw(crown,point+new Vector2(8,16),new Rectangle(0,0,AncientCamphor.CrownWidth,AncientCamphor.CrownHeight),
+                batch.Draw(crown,point+new Vector2(8,16),new Rectangle(System.Math.Clamp((fy-198)/22,0,2)*82,0,AncientCamphor.CrownWidth,AncientCamphor.CrownHeight),
                     light,sway,new Vector2(AncientCamphor.CrownWidth/2,AncientCamphor.CrownHeight),1,SpriteEffects.None,0);
             }
             else if(fx==44||fx==66)

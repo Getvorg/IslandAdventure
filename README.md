@@ -961,3 +961,17 @@ Validation for 0.4.24: C# build has zero warnings/errors, mod packaging succeeds
 repeat refresh, native chopping, painted-tree fallback and outside-tree routing).
 Packed assets have binary alpha and an exact 2x2 pixel grid. Static join preview
 reviewed; graphical-client review is pending. Existing small-icon warning remains.
+
+## 0.4.25 — actual vanilla tree textures
+
+Following in-game review, the user requested the real vanilla tree sheets as
+the basis. Camphor now uses an exact RGB palette transformation of Tiles_5,
+Tree_Tops_0 and Tree_Branches_0. Native bark shading, roots, joints and all three
+80x80 crown variants are preserved; source PNGs and provenance are included.
+The former concept crop/mask-filling pipeline is replaced. Gallery layout 5
+refreshes existing samples. Earlier 0.4.24 art notes describe the prior version.
+
+Validation for 0.4.25: build passes with zero warnings/errors; tModLoader packing
+and 94,326 loaded assertions pass. The palette builder verifies full dimensions,
+identical alpha, unchanged non-palette pixels and the original 2x2 grid in all
+three sheets. Static preview updated; graphical-client review remains pending.
