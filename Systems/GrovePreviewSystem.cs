@@ -14,7 +14,7 @@ namespace IslandAdventure.Systems
     {
         public const int GalleryWidth = 176;
         public const int GalleryHeight = 72;
-        private const int CurrentPlantLayout = 8;
+        private const int CurrentPlantLayout = 9;
         private const int CurrentTreeLayout = 2;
         public Rectangle Bounds { get; private set; }
         private Vector2 returnPosition;
@@ -131,6 +131,7 @@ namespace IslandAdventure.Systems
         public bool RefreshPlants(bool rebuildTrees = false)
         {
             if(!Valid(Bounds)||Bounds.Width!=GalleryWidth)return false;
+            SeedFoundationGrass();
             // The command rebuilds sample trees as well as decorations. Automatic upgrades
             // and direct decoration refreshes keep current trees. Foreign blocks survive.
             for(int x=Bounds.Left;x<Bounds.Right;x++)for(int y=Bounds.Top;y<Bounds.Bottom;y++)
@@ -156,6 +157,19 @@ namespace IslandAdventure.Systems
             plantLayout=CurrentPlantLayout;triedUpgrade=true;
             WorldGen.RangeFrame(Bounds.Left,Bounds.Top,Bounds.Right,Bounds.Bottom);
             return true;
+        }
+        private void SeedFoundationGrass()
+        {
+            int floor=Bounds.Bottom-4;
+            // The sample's three-layer foundation needs real turf underneath too.
+            // Use native spread eligibility; never paint grass onto bare dirt visually.
+            for(int x=Bounds.Left+2;x<Bounds.Right-2;x++)for(int y=floor;y<=floor+2;y++)
+            {
+                if(y!=floor+2&&x!=Bounds.Left+2&&x!=Bounds.Right-3)continue;
+                var tile=Main.tile[x,y];
+                if(!tile.HasTile||tile.TileType!=TileID.Dirt)continue;
+                WorldGen.SpreadGrass(x,y,TileID.Dirt,TileID.Grass,repeat:false,tile.BlockColorAndCoating());
+            }
         }
         private void Place<T>(int dx,int floor) where T:ModTile
         {

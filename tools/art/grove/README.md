@@ -85,3 +85,13 @@ Vines use vanilla 16px width rather than the previous 32px leafy rope. All new
 atlases retain binary alpha and exact 2x2 source pixels. `ground-plants-preview.png`
 shows the actual packed frames at 4x, and the ecosystem preview is reconstructed
 from the updated game atlases. Both are art previews, not client screenshots.
+
+
+0.4.18 changes runtime coverage, not the source texture. One-tile-thick rows
+and columns use opaque y=4..7 sod throughout their occupied shape. Thicker
+terrain now uses an opaque 4px underside rim from the same rows, instead of
+y=10..11 sparse roots. The isolated-shape rule remains a special case of this
+thin-feature rule. Contact tests account for slope/half-block geometry.
+The gallery seeds its lower foundation and side ends through native grass
+spread eligibility, so vines attach to actual turf rather than a dirt-only
+visual overlay. Historical references to sparse undersides above are superseded.

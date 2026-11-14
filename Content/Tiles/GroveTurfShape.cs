@@ -31,10 +31,10 @@ namespace IslandAdventure.Content.Tiles
         {
             var tile=Main.tile[i,j];
             int frame=(i%(texture.Width/18))*18;
-            bool isolated=IsIsolated(i,j);
+            bool fullyCovered=FullyCovered(i,j);
             for(int y=0;y<16;y+=2)for(int x=0;x<16;x+=2)
             {
-                if(TrySample(i,j,x,y,isolated,out int along,out int sourceY))
+                if(TrySample(i,j,x,y,fullyCovered,out int along,out int sourceY))
                     batch.Draw(texture,point+new Vector2(x,y),new Rectangle(frame+along,sourceY,2,2),light);
             }
             // Grass tips remain above an exposed flat top; soil/body never spills outside slopes.
@@ -46,32 +46,39 @@ namespace IslandAdventure.Content.Tiles
             }
         }
         // Exposed geometry, not tile-frame indices, controls all connections.
-        // Connected terrain: top 4px sod + 2px transition, sides at most 4px,
-        // underside sparse roots. Detached shapes are entirely opaque grass.
+        // Thick terrain has a grass rim on every exposed face, including below.
+        // Isolated shapes and one-tile-thick rows/columns are fully grass-covered.
         public static bool TrySample(int i,int j,int x,int y,out int along,out int sourceY)
-            =>TrySample(i,j,x,y,IsIsolated(i,j),out along,out sourceY);
+            =>TrySample(i,j,x,y,FullyCovered(i,j),out along,out sourceY);
 
         // Diagonal neighbors do not join a face. Check actual contact so slopes,
         // half blocks, platforms and actuated neighbors cannot fake a connection.
-        public static bool IsIsolated(int i,int j)
+        private static int Contacts(int i,int j)
         {
             var tile=Main.tile[i,j];
-            if(!tile.HasTile)return false;
+            if(!tile.HasTile)return 15;
+            int mask=0;
             for(int p=0;p<16;p+=2)
             {
-                if(Contains(tile.Slope,tile.IsHalfBlock,p,0)&&Solid(i*16+p,j*16-1))return false;
-                if(Contains(tile.Slope,tile.IsHalfBlock,p,15)&&Solid(i*16+p,j*16+16))return false;
-                if(Contains(tile.Slope,tile.IsHalfBlock,0,p)&&Solid(i*16-1,j*16+p))return false;
-                if(Contains(tile.Slope,tile.IsHalfBlock,15,p)&&Solid(i*16+16,j*16+p))return false;
+                if(Contains(tile.Slope,tile.IsHalfBlock,p,0)&&Solid(i*16+p,j*16-1))mask|=4;
+                if(Contains(tile.Slope,tile.IsHalfBlock,p,15)&&Solid(i*16+p,j*16+16))mask|=8;
+                if(Contains(tile.Slope,tile.IsHalfBlock,0,p)&&Solid(i*16-1,j*16+p))mask|=1;
+                if(Contains(tile.Slope,tile.IsHalfBlock,15,p)&&Solid(i*16+16,j*16+p))mask|=2;
             }
-            return true;
+            return mask;
         }
-        private static bool TrySample(int i,int j,int x,int y,bool isolated,out int along,out int sourceY)
+        public static bool IsIsolated(int i,int j)=>Contacts(i,j)==0;
+        public static bool FullyCovered(int i,int j)
+        {
+            int contacts=Contacts(i,j);
+            return (contacts&12)==0||(contacts&3)==0;
+        }
+        private static bool TrySample(int i,int j,int x,int y,bool fullyCovered,out int along,out int sourceY)
         {
             along=x;sourceY=0;
             var tile=Main.tile[i,j];
             if(!tile.HasTile||!Contains(tile.Slope,tile.IsHalfBlock,x,y))return false;
-            if(isolated)
+            if(fullyCovered)
             {
                 // Every occupied 2x2 cell must use opaque sod: no dirt hole and
                 // no transparent root pixels, including half blocks/four slopes.
@@ -85,11 +92,11 @@ namespace IslandAdventure.Content.Tiles
                 if(!Solid(wx,wy-d)){sourceY=4+(step-1)*2;return true;}
                 if(step<=2&&(!Solid(wx-d,wy)||!Solid(wx+d,wy)))
                 {along=y;sourceY=4+(step-1)*2;return true;}
-                if(step==1&&!Solid(wx,wy+d)){sourceY=10;return true;}
+                if(step<=2&&!Solid(wx,wy+d)){sourceY=4+(step-1)*2;return true;}
                 if(step<=2&&(!Solid(wx-d,wy-d)||!Solid(wx+d,wy-d)))
                 {sourceY=6+(step-1)*2;return true;}
-                if(step==1&&(!Solid(wx-d,wy+d)||!Solid(wx+d,wy+d)))
-                {sourceY=10;return true;}
+                if(step<=2&&(!Solid(wx-d,wy+d)||!Solid(wx+d,wy+d)))
+                {sourceY=6+(step-1)*2;return true;}
             }
             return false;
         }
