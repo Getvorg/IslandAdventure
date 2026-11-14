@@ -17,7 +17,7 @@ namespace IslandAdventure.Systems
         public const int GalleryWidth = 176;
         public const int GalleryHeight = 72;
         private const int CurrentPlantLayout = 9;
-        private const int CurrentTreeLayout = 8;
+        private const int CurrentTreeLayout = 9;
         public Rectangle Bounds { get; private set; }
         private Vector2 returnPosition;
         private bool canReturn, triedUpgrade;
@@ -146,8 +146,9 @@ namespace IslandAdventure.Systems
                 foreach(int dx in new[]{17,43,164})RemoveSampleTree(Bounds.Left+dx,floor);
                 treeLayout=CurrentTreeLayout;
             }
-            foreach(int dx in new[]{17,43,164})
-                if(!Main.tile[Bounds.Left+dx,floor-1].HasTile)BunaTree.TryGrow(Bounds.Left+dx,floor);
+            if(!Main.tile[Bounds.Left+17,floor-1].HasTile)BunaTree.TryGrow(Bounds.Left+17,floor);
+            if(!Main.tile[Bounds.Left+43,floor-1].HasTile)BunaClassicTree.TryGrow(Bounds.Left+43,floor,tall:false);
+            if(!Main.tile[Bounds.Left+164,floor-1].HasTile)BunaClassicTree.TryGrow(Bounds.Left+164,floor,tall:true);
             foreach(int dx in new[]{8,12,39,72,158,172})Place<GroveTuft>(dx,floor);
             Place<GroveSmallBush>(29,floor);Place<GroveSmallFern>(35,floor);
             Place<GroveBush>(55,floor);Place<GroveFern>(66,floor);

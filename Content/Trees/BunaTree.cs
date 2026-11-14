@@ -16,7 +16,7 @@ namespace IslandAdventure.Content.Trees
             var bounds=ModContent.GetInstance<GrovePreviewSystem>().Bounds;
             int dx=x-bounds.Left;
             return bounds.Width==GrovePreviewSystem.GalleryWidth&&floor==bounds.Bottom-4
-                &&(dx==17||dx==43||dx==164);
+                &&dx==17;
         }
         public static bool Mirrored(int x)
             =>x-ModContent.GetInstance<GrovePreviewSystem>().Bounds.Left==43;

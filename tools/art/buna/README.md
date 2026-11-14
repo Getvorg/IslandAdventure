@@ -29,3 +29,7 @@ Validation: check_buna_art.py verifies connected silhouette, binary alpha and th
 2x2 grid. Given a JSON strip export from the loaded-game harness, it reassembles
 all 28 bands for each sample, including mirrored art, and compares exact pixels
 to the original image. This is a static rendering check; client review remains.
+
+In 0.4.30 the accepted V1 image and source remain unchanged. The gallery now
+keeps this whole-tree variant at the left point only; center and right compare
+the separately textured Buna II (see ../buna-classic/README.md).
