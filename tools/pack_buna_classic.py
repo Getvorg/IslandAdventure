@@ -37,14 +37,25 @@ def match(image):
  image.putdata([mapping.get(p,p) for p in image.get_flattened_data()]);return image
 
 crown=match(Image.open(assets/'BunaClassic_Tops.png').convert('RGBA'))
-# Establish exactly the same 16px socket/profile as the native straight stem.
-strip=atlas.crop((2,22,18,42))
-# Carry the full 16px stem up to the fork: the generated 8px neck must not
-# narrow and suddenly widen into a rectangular socket at the bottom.
-neck=Image.new('RGBA',(16,24))
-neck.paste(strip,(0,0))
-for y in (20,22):neck.paste(strip.crop((0,18,16,20)),(0,y))
-crown.alpha_composite(neck,(56,88))
+# Shape only the last part of the new organic neck, using its own wood pixels.
+# No rectangular trunk texture is pasted through the fork.
+logical=crown.resize((64,56),Image.Resampling.NEAREST)
+for y in range(46,56):
+ xs=[x for x in range(20,44) if logical.getpixel((x,y))[3] and logical.getpixel((x,y))[:3] in palette]
+ runs=[]
+ for x in xs:
+  if not runs or x!=runs[-1][-1]+1:runs.append([x])
+  else:runs[-1].append(x)
+ run=min(runs,key=lambda r:abs((r[0]+r[-1]+1)/2-32))
+ start,end=run[0],run[-1]+1
+ width=max(end-start,6) if y<52 else 8
+ left=32-width//2
+ wood=logical.crop((start,y,end,y+1)).resize((width,1),Image.Resampling.NEAREST)
+ for x in run:logical.putpixel((x,y),(0,0,0,0))
+ logical.paste(wood,(left,y))
+crown=logical.resize((128,112),Image.Resampling.NEAREST)
+# Only the final logical row matches the stem edge exactly.
+crown.paste(atlas.crop((2,0,18,2)),(56,110))
 out=Image.new('RGBA',(130,114));out.paste(crown,(0,0));out.save(assets/'BunaClassic_Tops.png')
 branches=Image.new('RGBA',(84,126))
 for side in range(2):

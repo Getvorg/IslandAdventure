@@ -38,10 +38,9 @@ for side in range(2):
  pixels={(x,y) for y in range(40) for x in range(40) if im.getpixel((x,y))[3]}
  edge=[p for p in pixels if (p[0]>=38 if side==0 else p[0]<2)]
  assert pixels<=connected(im,edge[0]),'detached bough pixels'
-# Exact-width profile from the fork through the neck, plus a matching join
-# to every straight native body style (not just alpha connectivity).
+# The short collar joins exactly; the fork above keeps its organic shape.
 crown=parts['BunaClassic_Tops']
-for y in range(88,112):
+for y in range(104,112):
  assert all(crown.getpixel((x,y))[3]==255 for x in range(56,72)), 'narrow crown neck'
 for fy in (0,22,44):
  assert [crown.getpixel((x,111)) for x in range(56,72)]==[stem.getpixel((x,fy)) for x in range(2,18)],'stem/crown edge palette mismatch'

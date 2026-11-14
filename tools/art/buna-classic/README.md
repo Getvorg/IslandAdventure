@@ -38,3 +38,10 @@ an 8px bottleneck. Bottom edge RGBA matches every native straight-body style.
 The final 8px collar is drawn without rotation to retain contact during wind.
 The checker exports neck-closeup.png from actual packed pixels. V1, V2 stem
 and branch PNGs remain unchanged.
+
+0.4.32 replaces the rectangular fork overlay rejected by the user. A new
+crown-source.png redraws the fork organically using the existing V2 crown as
+reference. Only native edge pixels in the final 2px row are copied from the
+stem. Lower-neck rows resample their own wood into a gentle 12px-to-16px
+transition; no separate bark rectangle is pasted through the fork. V1, V2 stem
+and directional boughs remain unchanged. The short wind collar still locks.

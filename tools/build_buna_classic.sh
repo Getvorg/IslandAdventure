@@ -4,7 +4,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 buna2_tmp="$(mktemp -d)";trap 'rm -rf "$buna2_tmp"' EXIT
 source="$root/tools/art/buna-classic/foliage-source.png"
-magick "$source" -crop 1000x768+0+0 +repage -channel A -threshold 85% +channel \
+magick "$root/tools/art/buna-classic/crown-source.png" -channel A -threshold 85% +channel \
  -trim +repage -filter box -resize 64x56! -channel A -threshold 50% +channel +dither -colors 32 \
  -scale 200% -depth 8 PNG32:"$root/Assets/Grove/BunaClassic_Tops.png"
 for side in left right;do
