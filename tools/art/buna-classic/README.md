@@ -1,4 +1,4 @@
-# Buna II — shared wood/leaf component masters (0.4.33)
+# Buna II — shared branch nodes and dense leafy crown (0.4.34)
 
 The user keeps Buna I and the accepted 16px Buna II stem, but requests coherent
 branches/crown built from that stem rather than adjusted independent pictures.
@@ -33,3 +33,11 @@ six arm forms, exact child-frame overlap, crown seam and actual native fixture
 contacts. It renders comparison.png and neck-closeup.png. wood-joints.png shows
 the connected wood before leaf composition. Static review is complete; review
 in the graphical game client remains pending.
+
+In 0.4.34 the user accepts the boughs and requests vanilla-like occlusion at the
+top: the stem enters a dense rounded leafy mass and the large fork is hidden.
+dense-leaves-source.png is a new foliage-only source referencing approved Buna I.
+The shell builder prepares a 128x104 leaf layer inside the unchanged 136x112
+crown frame. Wood is behind it; visible wood is limited to the short central
+stem base. The original stem/branches/V1 are byte-identical. Tests explicitly
+reject exposed wood above the lower stem-entry area. No C# or gameplay change.

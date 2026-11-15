@@ -1,7 +1,7 @@
 """Derive V2 connected components from the accepted whole Buna and native joints."""
 from pathlib import Path
 from collections import deque
-import json
+import json,sys
 from PIL import Image,ImageFilter
 root=Path(__file__).resolve().parents[1];assets=root/'Assets/Grove';art=root/'tools/art/buna-classic'
 stem=Image.open(assets/'BunaClassic.png').convert('RGBA')
@@ -77,10 +77,19 @@ while True:
   wood.putpixel(found,255);found=previous[found]
 assert flood({(x,y) for y in range(56) for x in range(68) if wood.getpixel((x,y))},[(34,55)])=={(x,y) for y in range(56) for x in range(68) if wood.getpixel((x,y))}, 'broken bare crown'
 crownwood=shade(wood);crownwood.paste(Image.frombytes('RGBA',(8,1),bytes(c for p in profile for c in p)),(30,55))
-crown=crownwood.copy();crown.alpha_composite(leaves)
-# The socket is part of this common master before splitting into game sprites.
+# The leafy mass occludes the crown anatomy, as in vanilla forest trees.
 crownwood=crownwood.resize((136,112),Image.Resampling.NEAREST)
-crown=crown.resize((136,112),Image.Resampling.NEAREST)
+dense=Image.open(sys.argv[1]).convert('RGBA')
+assert dense.size==(128,104)
+leaflayer=Image.new('RGBA',(136,112));leaflayer.paste(dense,(4,0))
+crown=Image.new('RGBA',(136,112))
+for y in range(112):
+ for x in range(136):
+  if leaflayer.getpixel((x,y))[3]:crown.putpixel((x,y),crownwood.getpixel((x,y)))
+# Native stem rises behind the leaves; only a short base is visible below them.
+row=Image.frombytes('RGBA',(8,1),bytes(c for p in profile for c in p)).resize((16,2),Image.Resampling.NEAREST)
+for y in range(76,112,2):crown.paste(row,(60,y))
+crown.alpha_composite(leaflayer)
 out=Image.new('RGBA',(138,114));out.paste(crown,(0,0));out.save(assets/'BunaClassic_Tops.png')
 
 # Small foliage cut from the SAME accepted whole image, with wood excluded.
@@ -153,4 +162,4 @@ for style in range(3):
   plate.alpha_composite(node,(224+style*128,side*128+8))
 plate.resize((1232,576),Image.Resampling.NEAREST).save(art/'wood-joints.png')
 metadata=json.loads((art/'layout.json').read_text());metadata['crown']=[136,112];metadata['crownAnchor']=[68,112];metadata['branchStyles']=['native0','native1','native2'];(art/'layout.json').write_text(json.dumps(metadata,indent=2)+'\n')
-print('Wood-first Buna II: shared stem nodes, three directional arms, crown cut from accepted whole tree')
+print('Buna II: unchanged shared branch nodes, dense foliage hides the crown wood')

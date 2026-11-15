@@ -53,6 +53,10 @@ for side in range(2):
 crown=parts['BunaClassic_Tops']
 for y in range(104,112):
  assert all(crown.getpixel((x,y))[3]==255 for x in range(60,76)), 'narrow crown neck'
+# The canopy conceals the fork: visible stem is restricted to its short base.
+woodcolors={p[:3] for p in stem.get_flattened_data() if p[3]}
+visiblewood=[(x,y) for y in range(112) for x in range(136) if crown.getpixel((x,y))[3] and crown.getpixel((x,y))[:3] in woodcolors]
+assert visiblewood and all(60<=x<76 and y>=96 for x,y in visiblewood),'exposed fork above foliage'
 for fy in (0,22,44):
  assert [crown.getpixel((x,111)) for x in range(60,76)]==[stem.getpixel((x,fy)) for x in range(2,18)],'stem/crown edge palette mismatch'
 fixture=json.loads((ROOT/'tools/art/buna-classic/native-fixture.json').read_text());floor=fixture['floor']
