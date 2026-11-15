@@ -19,8 +19,9 @@ namespace IslandAdventure.Content.Trees
         public override Asset<Texture2D> GetBranchTextures()=>ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/BunaClassic_Branches");
         public override void SetTreeFoliageSettings(int i,int j,Tile tile,int xoffset,ref int treeFrame,int floorY,ref int width,ref int height)
         {treeFrame=xoffset==0?0:System.Math.Clamp(treeFrame,0,2);width=CrownWidth;height=CrownHeight;}
-        public override int DropWood()=>ItemID.Wood;
-        public static bool IsSampleRoot(int x,int floor)
+        public override int DropWood()=>ModContent.ItemType<Items.BunaWood>();
+        public static bool IsBunaRoot(int x,int floor)=>IsPreviewRoot(x,floor)||ModContent.GetInstance<BunaTreeRegistry>().Owns(x,floor);
+        public static bool IsPreviewRoot(int x,int floor)
         {
             var b=ModContent.GetInstance<GrovePreviewSystem>().Bounds;
             return b.Width==GrovePreviewSystem.GalleryWidth&&floor==b.Bottom-4
@@ -44,6 +45,7 @@ namespace IslandAdventure.Content.Trees
             while(Main.tile[x,top-1].HasTile&&Main.tile[x,top-1].TileType==TileID.Trees)top--;
             var cap=Main.tile[x,top];cap.TileFrameX=22;
             cap.TileFrameY=(short)(198+System.Math.Clamp((cap.TileFrameY-198)/22,0,2)*22);
+            ModContent.GetInstance<BunaTreeRegistry>().Register(x,floor);
             return true;
         }
     }

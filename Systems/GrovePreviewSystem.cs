@@ -206,6 +206,7 @@ namespace IslandAdventure.Systems
                 if(rootX==trunkX&&rootY==floor)cells.Add(new Point(x,y));
             }
             foreach(var p in cells)ClearSampleTile(Main.tile[p.X,p.Y]);
+            ModContent.GetInstance<BunaTreeRegistry>().Forget(trunkX,floor);
         }
         private static void ClearSampleTile(Tile tile)
         {

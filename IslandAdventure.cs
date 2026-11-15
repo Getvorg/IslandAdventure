@@ -1,15 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+using IslandAdventure.Systems;
 
 namespace IslandAdventure
 {
-	// Please read https://github.com/tModLoader/tModLoader/wiki/Basic-tModLoader-Modding-Guide#mod-skeleton-contents for more information about the various files in a mod.
 	public class IslandAdventure : Mod
 	{
-
+		public override void HandlePacket(BinaryReader reader,int whoAmI)
+		{
+			byte kind=reader.ReadByte();
+			if(kind!=1)return;
+			int x=reader.ReadInt32(),floor=reader.ReadInt32();bool add=reader.ReadBoolean();
+			if(Main.netMode==NetmodeID.MultiplayerClient)ModContent.GetInstance<BunaTreeRegistry>().ApplyRemote(x,floor,add);
+		}
 	}
 }

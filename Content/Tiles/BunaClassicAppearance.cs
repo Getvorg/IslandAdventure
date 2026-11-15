@@ -14,9 +14,7 @@ namespace IslandAdventure.Content.Tiles
     {
         public static bool Applies(int i,int j,int type)
         {
-            if(type!=TileID.Trees||!GroveAppearance.InGrove(i,j))return false;
-            WorldGen.GetTreeBottom(i,j,out int rootX,out int floor);
-            return BunaClassicTree.IsSampleRoot(rootX,floor);
+            return type==TileID.Trees&&ModContent.GetInstance<BunaTreeRegistry>().TryRoot(i,j,out _);
         }
         public override bool PreDraw(int i,int j,int type,SpriteBatch batch)
         {

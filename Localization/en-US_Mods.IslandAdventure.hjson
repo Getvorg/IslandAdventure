@@ -2,6 +2,11 @@ Grove.PreviewUpdated: "Sample refreshed: Buna I on the left, Buna II in the midd
 Grove.BunaName: "Buna — Japanese beech"
 
 Items: {
+	BunaNut: {
+		DisplayName: Beechnuts
+		Tooltip: "Plant on grass to grow a Buna beech. Requires open space."
+	}
+	BunaWood.DisplayName: Beech Wood
 	TideliteOre: {
 		DisplayName: Tidelite Ore
 		Tooltip: ""
@@ -142,3 +147,6 @@ Biomes: {
 		TownNPCDialogueName: the Dark Forest Biome
 	}
 }
+
+Tiles.BunaSapling.MapEntry: Buna Sapling
+Tiles.BunaWoodBlock.MapEntry: Beech Wood

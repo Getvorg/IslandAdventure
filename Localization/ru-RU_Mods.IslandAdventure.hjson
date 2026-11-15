@@ -2,6 +2,11 @@ Grove.PreviewUpdated: "Образец обновлён: слева Буна I, �
 Grove.BunaName: "Буна — бук городчатый"
 
 Items: {
+	BunaNut: {
+		DisplayName: Буковые орешки
+		Tooltip: "Посади на траве, чтобы вырастить Буну. Нужно свободное место."
+	}
+	BunaWood.DisplayName: Буковая древесина
 	TideliteOre: {
 		DisplayName: Приливитовая руда
 		Tooltip: Тёмный камень хранит цвет морских глубин
@@ -142,3 +147,6 @@ Biomes: {
 		// TownNPCDialogueName: the Dark Forest Biome
 	}
 }
+
+Tiles.BunaSapling.MapEntry: Саженец Буны
+Tiles.BunaWoodBlock.MapEntry: Буковая древесина
