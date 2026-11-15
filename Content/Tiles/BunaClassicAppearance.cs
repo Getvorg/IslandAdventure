@@ -41,10 +41,10 @@ namespace IslandAdventure.Content.Tiles
             if(fx==22)
             {
                 var crown=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/BunaClassic_Tops",AssetRequestMode.ImmediateLoad).Value;
-                batch.Draw(crown,point+new Vector2(8,16),new Rectangle(0,0,128,112),light,
-                    sway,new Vector2(64,112),1,SpriteEffects.None,0);
+                batch.Draw(crown,point+new Vector2(8,16),new Rectangle(0,0,136,112),light,
+                    sway,new Vector2(68,112),1,SpriteEffects.None,0);
                 // Keep the collar locked to the stem while the upper crown sways.
-                batch.Draw(crown,point+new Vector2(0,8),new Rectangle(56,104,16,8),light);
+                batch.Draw(crown,point+new Vector2(0,8),new Rectangle(60,104,16,8),light);
             }
             else if(fx==44||fx==66)
             {
@@ -52,6 +52,8 @@ namespace IslandAdventure.Content.Tiles
                 var branch=ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/BunaClassic_Branches",AssetRequestMode.ImmediateLoad).Value;
                 batch.Draw(branch,point+new Vector2(left?16:0,left?12:18),new Rectangle(left?0:42,style*42,40,40),light,
                     sway,new Vector2(left?40:0,left?24:30),1,SpriteEffects.None,0);
+                // The shared native joint stays fixed while its leafy tip sways.
+                batch.Draw(stem,point+new Vector2(-2,0),new Rectangle(fx,fy,20,20),light);
             }
             return false;
         }

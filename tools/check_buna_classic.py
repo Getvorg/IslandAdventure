@@ -8,7 +8,7 @@ v1=Image.open(assets/'Buna.png').convert('RGBA')
 assert hashlib.sha256(Image.open(assets/'Buna.png').convert('RGBA').tobytes()).hexdigest()=='d29781087e19cc8bba08179c8cb7df4f0a43605d146d0e9cd225ac37b2951f9d', 'approved V1 pixels changed'
 assert hashlib.sha256(Image.open(assets/'BunaStump.png').convert('RGBA').tobytes()).hexdigest()=='a2a2ab633192a8032d09d37c9fbede82cf9cb3f667806a17b39ce72c45835760', 'approved V1 pixels changed'
 parts={n:Image.open(assets/(n+'.png')).convert('RGBA') for n in ['BunaClassic','BunaClassic_Tops','BunaClassic_Branches']}
-for n,size in [('BunaClassic',(176,264)),('BunaClassic_Tops',(130,114)),('BunaClassic_Branches',(84,126))]:
+for n,size in [('BunaClassic',(176,264)),('BunaClassic_Tops',(138,114)),('BunaClassic_Branches',(84,126))]:
  im=parts[n];assert im.size==size
  assert set(im.getchannel('A').get_flattened_data())=={0,255}
  for y in range(0,im.height,2):
@@ -33,17 +33,28 @@ def connected(im,seed):
   seen.add((x,y));q.extend(((x-1,y),(x+1,y),(x,y-1),(x,y+1)))
  return seen
 
+for style in range(3):
+ for side in range(2):
+  im=parts['BunaClassic_Branches'].crop((side*42,style*42,side*42+40,style*42+40))
+  pixels={(x,y) for y in range(40) for x in range(40) if im.getpixel((x,y))[3]}
+  edge=[p for p in pixels if (p[0]>=38 if side==0 else p[0]<2)]
+  assert pixels<=connected(im,edge[0]),('detached bough pixels',style,side)
+  # The native child arm is part of the same master before extraction.
+  child=stem.crop((44 if side==0 else 66,198+style*22,64 if side==0 else 86,218+style*22))
+  for y in range(20):
+   for x in range(20):
+    dx=x+(22 if side==0 else -2);dy=y+12
+    if 0<=dx<40 and child.getpixel((x,y))[3]:assert im.getpixel((dx,dy))==child.getpixel((x,y)),('joint pixels mismatch',side,style,x,y)
+
+# Different native arm directions must never collapse to a repeated sprite.
 for side in range(2):
- im=parts['BunaClassic_Branches'].crop((side*42,0,side*42+40,40))
- pixels={(x,y) for y in range(40) for x in range(40) if im.getpixel((x,y))[3]}
- edge=[p for p in pixels if (p[0]>=38 if side==0 else p[0]<2)]
- assert pixels<=connected(im,edge[0]),'detached bough pixels'
+ assert len({parts['BunaClassic_Branches'].crop((side*42,y*42,side*42+40,y*42+40)).tobytes() for y in range(3)})==3
 # The short collar joins exactly; the fork above keeps its organic shape.
 crown=parts['BunaClassic_Tops']
 for y in range(104,112):
- assert all(crown.getpixel((x,y))[3]==255 for x in range(56,72)), 'narrow crown neck'
+ assert all(crown.getpixel((x,y))[3]==255 for x in range(60,76)), 'narrow crown neck'
 for fy in (0,22,44):
- assert [crown.getpixel((x,111)) for x in range(56,72)]==[stem.getpixel((x,fy)) for x in range(2,18)],'stem/crown edge palette mismatch'
+ assert [crown.getpixel((x,111)) for x in range(60,76)]==[stem.getpixel((x,fy)) for x in range(2,18)],'stem/crown edge palette mismatch'
 fixture=json.loads((ROOT/'tools/art/buna-classic/native-fixture.json').read_text());floor=fixture['floor']
 height=max(448,max((floor-t['y'])*16+112 for t in fixture['tiles']))+48
 baseline=height-24;sheet=Image.new('RGBA',(736,height),'#6588ac')
@@ -58,7 +69,7 @@ for root,anchor in [(43,448),(164,640)]:
  for t in tiles:
   fx,fy=t['fx'],t['fy'];x=center+(t['x']-root)*16;y=baseline+(t['y']-floor)*16
   if fy<198:continue
-  if fx==22:tree.alpha_composite(parts['BunaClassic_Tops'].crop((0,0,128,112)),(x+8-64,y+16-112))
+  if fx==22:tree.alpha_composite(parts['BunaClassic_Tops'].crop((0,0,136,112)),(x+8-68,y+16-112))
   elif fx in (44,66):
    style=min(2,(fy-198)//22);sx=0 if fx==44 else 42
    branch=parts['BunaClassic_Branches'].crop((sx,style*42,sx+40,style*42+40))
@@ -72,7 +83,7 @@ draw.text((88,baseline+6),'Buna I',fill='white');draw.text((420,baseline+6),'Bun
 sheet.save(ROOT/'tools/art/buna-classic/comparison.png')
 # Magnify the actual fork/neck/body contact, without redrawing its pixels.
 join=Image.new('RGBA',(64,64),'#6588ac')
-join.alpha_composite(parts['BunaClassic_Tops'].crop((32,72,96,112)),(0,0))
+join.alpha_composite(parts['BunaClassic_Tops'].crop((36,72,100,112)),(0,0))
 join.alpha_composite(stem.crop((2,22,18,42)),(24,40))
 join.resize((256,256),Image.Resampling.NEAREST).save(ROOT/'tools/art/buna-classic/neck-closeup.png')
 

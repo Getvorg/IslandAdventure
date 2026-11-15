@@ -11,14 +11,14 @@ namespace IslandAdventure.Content.Trees
 {
     public class BunaClassicTree : ModTree
     {
-        public const int CrownWidth=128,CrownHeight=112;
+        public const int CrownWidth=136,CrownHeight=112;
         public override TreePaintingSettings TreeShaderSettings=>new TreePaintingSettings();
         public override void SetStaticDefaults()=>GrowsOnTileId=new[]{ModContent.TileType<GroveGrass>()};
         public override Asset<Texture2D> GetTexture()=>ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/BunaClassic");
         public override Asset<Texture2D> GetTopTextures()=>ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/BunaClassic_Tops");
         public override Asset<Texture2D> GetBranchTextures()=>ModContent.Request<Texture2D>("IslandAdventure/Assets/Grove/BunaClassic_Branches");
         public override void SetTreeFoliageSettings(int i,int j,Tile tile,int xoffset,ref int treeFrame,int floorY,ref int width,ref int height)
-        {treeFrame=0;width=CrownWidth;height=CrownHeight;}
+        {treeFrame=xoffset==0?0:System.Math.Clamp(treeFrame,0,2);width=CrownWidth;height=CrownHeight;}
         public override int DropWood()=>ItemID.Wood;
         public static bool IsSampleRoot(int x,int floor)
         {
